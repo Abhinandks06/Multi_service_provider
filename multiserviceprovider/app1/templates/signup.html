@@ -1,0 +1,380 @@
+{% load static %}
+<html>
+    <head>
+      <link rel="stylesheet" href="{% static 'css/reg.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <!-- Left Side: Text Heading -->
+            <a class="navbar-brand" href="#">MULTI-SERVICE PROVIDER</a>
+    
+            <!-- Right Side: Home and Sign In Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signin">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <form id="regForm" action="{% url 'signup' %}" method='POST' onsubmit='return validateForm();'>
+      {% csrf_token %}
+      <section class="h-custom gradient-custom-2 mb-0">
+        <div class="container py-5 h-100">
+          <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-12 d-flex align-items-start">
+              <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                <div class="card-body p-0">
+                  <div class="row g-0">
+                    <div class="col-lg-6">
+                      <div class="p-5">
+                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Registration form</h3>
+      
+                        <div class="mb-1 pb-1">
+                          <h4>Name</h4>
+                        </div>
+      
+                        <div class="row">
+                          <div class="col-md-6 mb-4 pb-2">
+      
+                            <div class="form-outline">
+                              <label class="form-label" for="form3Examplev2">First name</label>
+                              <input type="text" id="firstname"  name="firstname" class="form-control form-control-lg" />
+                              <span id="firstnameError"></span>
+                            </div>
+      
+                          </div>
+                          <div class="col-md-6 mb-4 pb-2">
+      
+                            <div class="form-outline">
+                             <label class="form-label" for="form3Examplev3">Last name</label>
+                              <input type="text" id="lastname" name="lastname" class="form-control form-control-lg" />
+                             <span id="lastnameError"></span></div>
+      
+                          </div>
+                        </div>
+                        <div class="mb-4 pb-2">
+                          <div class="form-outline">
+                           <label class="form-label" for="form3Examplev4">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" class="form-control form-control-lg" />
+                             <span id="dobError"></span>
+                          </div>
+                        </div>
+      
+        
+                          <div class="col-md-8 mb-4 pb-2 mb-md-0 pb-md-0">
+                            <div class="form-outline">
+                              <label class="form-label" for="form3Examplev3">Username</label>
+                               <input type="text" id="username" name="username" class="form-control form-control-lg" />
+                              <span id="UsernameError"></span></div>
+       
+                            <div class="form-outline1">
+                             <label class="form-label" for="form3Examplev5">Password</label>
+                                <input type="password" id="password" name="password" class="form-control form-control-lg" /><br>
+                                 <span id="passwordError"></span>
+                              </div>
+                              <div class="form-outline2">
+                                <label class="form-label" for="form3Examplev5">Confirm Password</label>
+                                <input type="password" id="cpass"name="confirm_password" class="form-control form-control-lg" /><br>
+                                <span id="cpasserror"></span>
+                              </div>
+      
+                          </div>
+                        
+      
+                      </div>
+                    </div>
+                    <div class="col-lg-6 bg-indigo text-white">
+                      <div class="p-5">
+                        <h3 class="fw-normal mb-5">Contact Details</h3>
+                        <div class="form-outline form-white">
+                          <label for="state">Select State:</label>
+<select id="state" name="state">
+    <option value="Andhra Pradesh">Andhra Pradesh</option>
+    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+    <option value="Assam">Assam</option>
+    <option value="Bihar">Bihar</option>
+    <option value="Chhattisgarh">Chhattisgarh</option>
+    <option value="Goa">Goa</option>
+    <option value="Gujarat">Gujarat</option>
+    <option value="Haryana">Haryana</option>
+    <option value="Himachal Pradesh">Himachal Pradesh</option>
+    <option value="Jharkhand">Jharkhand</option>
+    <option value="Karnataka">Karnataka</option>
+    <option value="Kerala">Kerala</option>
+    <option value="Madhya Pradesh">Madhya Pradesh</option>
+    <option value="Maharashtra">Maharashtra</option>
+    <option value="Manipur">Manipur</option>
+    <option value="Meghalaya">Meghalaya</option>
+    <option value="Mizoram">Mizoram</option>
+    <option value="Nagaland">Nagaland</option>
+    <option value="Odisha">Odisha</option>
+    <option value="Punjab">Punjab</option>
+    <option value="Rajasthan">Rajasthan</option>
+    <option value="Sikkim">Sikkim</option>
+    <option value="Tamil Nadu">Tamil Nadu</option>
+    <option value="Telangana">Telangana</option>
+    <option value="Tripura">Tripura</option>
+    <option value="Uttar Pradesh">Uttar Pradesh</option>
+    <option value="Uttarakhand">Uttarakhand</option>
+    <option value="West Bengal">West Bengal</option>
+    <!-- Add more states as needed -->
+</select>
+                        </div><br>
+                        <div class="mb-4 pb-2">
+                          <div class="form-outline form-white">
+                            <label for="district">Select District:</label>
+                            <select id="district" name="district">
+                            </select>
+                            <script>
+                              const stateDropdown = document.getElementById('state');
+                              const districtDropdown = document.getElementById('district');
+                      
+                              // Define an object that maps states to their corresponding districts
+                              const stateDistricts = {
+                                  'Andhra Pradesh': ['Anantapur', 'Chittoor', 'Guntur', 'Kadapa', 'Krishna', 'Kurnool', 'Nellore', 'Prakasam', 'Srikakulam', 'Visakhapatnam', 'Vizianagaram', 'West Godavari'],
+                                  'Arunachal Pradesh': ['Anjaw', 'Changlang', 'Dibang Valley', 'East Kameng', 'East Siang', 'Kamle', 'Kra Daadi', 'Kurung Kumey', 'Lepa Rada', 'Lohit', 'Longding', 'Lower Dibang Valley', 'Lower Siang', 'Lower Subansiri', 'Namsai', 'Pakke Kessang', 'Papum Pare', 'Shi Yomi', 'Siang', 'Tawang', 'Tirap', 'Upper Siang', 'Upper Subansiri', 'West Kameng', 'West Siang'],
+                                  'Assam': ['Baksa', 'Barpeta', 'Biswanath', 'Bongaigaon', 'Cachar', 'Charaideo', 'Chirang', 'Darrang', 'Dhemaji', 'Dhubri', 'Dibrugarh', 'Dima Hasao', 'Goalpara', 'Golaghat', 'Hailakandi', 'Hojai', 'Jorhat', 'Kamrup', 'Kamrup Metropolitan', 'Karbi Anglong', 'Karimganj', 'Kokrajhar', 'Lakhimpur', 'Majuli', 'Morigaon', 'Nagaon', 'Nalbari', 'Sivasagar', 'Sonitpur', 'South Salmara-Mankachar', 'Tinsukia', 'Udalguri', 'West Karbi Anglong'],
+                                  'Bihar': ['Araria', 'Arwal', 'Aurangabad', 'Banka', 'Begusarai', 'Bhagalpur', 'Bhojpur', 'Buxar', 'Darbhanga', 'East Champaran', 'Gaya', 'Gopalganj', 'Jamui', 'Jehanabad', 'Kaimur', 'Katihar', 'Khagaria', 'Kishanganj', 'Lakhisarai', 'Madhepura', 'Madhubani', 'Munger', 'Muzaffarpur', 'Nalanda', 'Nawada', 'Patna', 'Purnia', 'Rohtas', 'Saharsa', 'Samastipur', 'Saran', 'Sheikhpura', 'Sheohar', 'Sitamarhi', 'Siwan', 'Supaul', 'Vaishali', 'West Champaran'],
+                                  'Chhattisgarh': ['Balod', 'Baloda Bazar', 'Balrampur', 'Bastar', 'Bemetara', 'Bijapur', 'Bilaspur', 'Dantewada', 'Dhamtari', 'Durg', 'Gariaband', 'Gaurela-Pendra-Marwahi', 'Janjgir-Champa', 'Jashpur', 'Kabirdham', 'Kanker', 'Kondagaon', 'Korba', 'Koriya', 'Mahasamund', 'Mungeli', 'Narayanpur', 'Raigarh', 'Raipur', 'Rajnandgaon', 'Sukma', 'Surajpur', 'Surguja'],
+                                  'Goa': ['North Goa', 'South Goa'],
+                                  'Gujarat': ['Ahmedabad', 'Amreli', 'Anand', 'Aravalli', 'Banaskantha', 'Bharuch', 'Bhavnagar', 'Botad', 'Chhota Udaipur', 'Dahod', 'Dang', 'Devbhoomi Dwarka', 'Gandhinagar', 'Gir Somnath', 'Jamnagar', 'Junagadh', 'Kheda', 'Kutch', 'Mahisagar', 'Mehsana', 'Morbi', 'Narmada', 'Navsari', 'Panchmahal', 'Patan', 'Porbandar', 'Rajkot', 'Sabarkantha', 'Surat', 'Surendranagar', 'Tapi', 'Vadodara', 'Valsad'],
+                                  'Haryana': ['Ambala', 'Bhiwani', 'Charkhi Dadri', 'Faridabad', 'Fatehabad', 'Gurugram', 'Hisar', 'Jhajjar', 'Jind', 'Kaithal', 'Karnal', 'Kurukshetra', 'Mahendragarh', 'Nuh', 'Palwal', 'Panchkula', 'Panipat', 'Rewari', 'Rohtak', 'Sirsa', 'Sonipat', 'Yamunanagar'],
+                                  'Himachal Pradesh': ['Bilaspur', 'Chamba', 'Hamirpur', 'Kangra', 'Kinnaur', 'Kullu', 'Lahaul and Spiti', 'Mandi', 'Shimla', 'Sirmaur', 'Solan', 'Una'],
+                                  'Jharkhand': ['Bokaro', 'Chatra', 'Deoghar', 'Dhanbad', 'Dumka', 'East Singhbhum', 'Garhwa', 'Giridih', 'Godda', 'Gumla', 'Hazaribagh', 'Jamtara', 'Khunti', 'Koderma', 'Latehar', 'Lohardaga', 'Pakur', 'Palamu', 'Ramgarh', 'Ranchi', 'Sahebganj', 'Seraikela-Kharsawan', 'Simdega', 'West Singhbhum'],
+                                  'Karnataka': ['Bagalkot', 'Ballari', 'Belagavi', 'Bengaluru Rural', 'Bengaluru Urban', 'Bidar', 'Chamarajanagar', 'Chikkaballapur', 'Chikkamagaluru', 'Chitradurga', 'Dakshina Kannada', 'Davanagere', 'Dharwad', 'Gadag', 'Hassan', 'Haveri', 'Kalaburagi', 'Kodagu', 'Kolar', 'Koppal', 'Mandya', 'Mysuru', 'Raichur', 'Ramanagara', 'Shivamogga', 'Tumakuru', 'Udupi', 'Uttara Kannada', 'Vijayapura', 'Yadgir'],
+                                  'Kerala': ['Alappuzha', 'Ernakulam', 'Idukki', 'Kannur', 'Kasaragod', 'Kollam', 'Kottayam', 'Kozhikode', 'Malappuram', 'Palakkad', 'Pathanamthitta', 'Thiruvananthapuram', 'Thrissur', 'Wayanad'],
+                                  'Madhya Pradesh': ['Agar Malwa', 'Alirajpur', 'Anuppur', 'Ashoknagar', 'Balaghat', 'Barwani', 'Betul', 'Bhind', 'Bhopal', 'Burhanpur', 'Chhatarpur', 'Chhindwara', 'Damoh', 'Datia', 'Dewas', 'Dhar', 'Dindori', 'Guna', 'Gwalior', 'Harda', 'Hoshangabad', 'Indore', 'Jabalpur', 'Jhabua', 'Katni', 'Khandwa', 'Khargone', 'Mandla', 'Mandsaur', 'Morena', 'Narsinghpur', 'Neemuch', 'Panna', 'Raisen', 'Rajgarh', 'Ratlam', 'Rewa', 'Sagar', 'Satna', 'Sehore', 'Seoni', 'Shahdol', 'Shajapur', 'Sheopur', 'Shivpuri', 'Sidhi', 'Singrauli', 'Tikamgarh', 'Ujjain', 'Umaria', 'Vidisha'],
+                                  'Maharashtra': ['Ahmednagar', 'Akola', 'Amravati', 'Aurangabad', 'Beed', 'Bhandara', 'Buldhana', 'Chandrapur', 'Dhule', 'Gadchiroli', 'Gondia', 'Hingoli', 'Jalgaon', 'Jalna', 'Kolhapur', 'Latur', 'Mumbai City', 'Mumbai Suburban', 'Nagpur', 'Nanded', 'Nandurbar', 'Nashik', 'Osmanabad', 'Palghar', 'Parbhani', 'Pune', 'Raigad', 'Ratnagiri', 'Sangli', 'Satara', 'Sindhudurg', 'Solapur', 'Thane', 'Wardha', 'Washim', 'Yavatmal'],
+                                  'Manipur': ['Bishnupur', 'Chandel', 'Churachandpur', 'Imphal East', 'Imphal West', 'Jiribam', 'Kakching', 'Kamjong', 'Kangpokpi', 'Noney', 'Pherzawl', 'Senapati', 'Tamenglong', 'Tengnoupal', 'Thoubal', 'Ukhrul'],
+                                  'Meghalaya': ['East Garo Hills', 'East Jaintia Hills', 'East Khasi Hills', 'North Garo Hills', 'Ri-Bhoi', 'South Garo Hills', 'South West Garo Hills', 'South West Khasi Hills', 'West Garo Hills', 'West Jaintia Hills', 'West Khasi Hills'],
+                                  'Mizoram': ['Aizawl', 'Champhai', 'Hnahthial', 'Khawzawl', 'Kolasib', 'Lawngtlai', 'Lunglei', 'Mamit', 'Saiha', 'Saitual', 'Serchhip'],
+                                  'Nagaland': ['Dimapur', 'Kiphire', 'Kohima', 'Longleng', 'Mokokchung', 'Mon', 'Peren', 'Phek', 'Tuensang', 'Wokha', 'Zunheboto'],
+                                  'Odisha': ['Angul', 'Balangir', 'Balasore', 'Bargarh', 'Bhadrak', 'Boudh', 'Cuttack', 'Deogarh', 'Dhenkanal', 'Gajapati', 'Ganjam', 'Jagatsinghpur', 'Jajpur', 'Jharsuguda', 'Kalahandi', 'Kandhamal', 'Kendrapara', 'Kendujhar', 'Khordha', 'Koraput', 'Malkangiri', 'Mayurbhanj', 'Nabarangpur', 'Nayagarh', 'Nuapada', 'Puri', 'Rayagada', 'Sambalpur', 'Subarnapur', 'Sundargarh'],
+                                  'Punjab': ['Amritsar', 'Barnala', 'Bathinda', 'Faridkot', 'Fatehgarh Sahib', 'Fazilka', 'Ferozepur', 'Gurdaspur', 'Hoshiarpur', 'Jalandhar', 'Kapurthala', 'Ludhiana', 'Mansa', 'Moga', 'Muktsar', 'Pathankot', 'Patiala', 'Rupnagar', 'Sahibzada Ajit Singh Nagar', 'Sangrur', 'Tarn Taran'],
+                                  'Rajasthan': ['Ajmer', 'Alwar', 'Banswara', 'Baran', 'Barmer', 'Bharatpur', 'Bhilwara', 'Bikaner', 'Bundi', 'Chittorgarh', 'Churu', 'Dausa', 'Dholpur', 'Dungarpur', 'Hanumangarh', 'Jaipur', 'Jaisalmer', 'Jalore', 'Jhalawar', 'Jhunjhunu', 'Jodhpur', 'Karauli', 'Kota', 'Nagaur', 'Pali', 'Pratapgarh', 'Rajsamand', 'Sawai Madhopur', 'Sikar', 'Sirohi', 'Sri Ganganagar', 'Tonk', 'Udaipur'],
+                                  'Sikkim': ['East Sikkim', 'North Sikkim', 'South Sikkim', 'West Sikkim'],
+                                  'Tamil Nadu': ['Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore', 'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kanchipuram', 'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Mayiladuthurai', 'Nagapattinam', 'Namakkal', 'Nilgiris', 'Perambalur', 'Pudukkottai', 'Ramanathapuram', 'Ranipet', 'Salem', 'Sivaganga', 'Tenkasi', 'Thanjavur', 'Theni', 'Thoothukudi', 'Tiruchirappalli', 'Tirunelveli', 'Tirupathur', 'Tiruppur', 'Tiruvallur', 'Tiruvannamalai', 'Tiruvarur', 'Vellore', 'Viluppuram', 'Virudhunagar'],
+                                  'Telangana': ['Adilabad', 'Bhadradri Kothagudem', 'Hyderabad', 'Jagtial', 'Jangaon', 'Jayashankar Bhupalapally', 'Jogulamba Gadwal', 'Kamareddy', 'Karimnagar', 'Khammam', 'Komaram Bheem Asifabad', 'Mahabubabad', 'Mahabubnagar', 'Mancherial', 'Medak', 'Medchal-Malkajgiri', 'Nagarkurnool', 'Nalgonda', 'Narayanpet', 'Nirmal', 'Nizamabad', 'Peddapalli', 'Rajanna Sircilla', 'Rangareddy', 'Sangareddy', 'Siddipet', 'Suryapet', 'Vikarabad', 'Wanaparthy', 'Warangal Rural', 'Warangal Urban', 'Yadadri Bhuvanagiri'],
+                                  'Tripura': ['Dhalai', 'Gomati', 'Khowai', 'North Tripura', 'Sipahijala', 'South Tripura', 'Unakoti', 'West Tripura'],
+                                  'Uttar Pradesh': ['Agra', 'Aligarh', 'Ambedkar Nagar', 'Amethi', 'Amroha', 'Auraiya', 'Azamgarh', 'Baghpat', 'Bahraich', 'Ballia', 'Balrampur', 'Banda', 'Barabanki', 'Bareilly', 'Basti', 'Bhadohi', 'Bijnor', 'Budaun', 'Bulandshahr', 'Chandauli', 'Chitrakoot', 'Deoria', 'Etah', 'Etawah', 'Faizabad', 'Farrukhabad', 'Fatehpur', 'Firozabad', 'Gautam Buddha Nagar', 'Ghaziabad', 'Ghazipur', 'Gonda', 'Gorakhpur', 'Hamirpur', 'Hapur', 'Hardoi', 'Hathras', 'Jalaun', 'Jaunpur', 'Jhansi', 'Kannauj', 'Kanpur Dehat', 'Kanpur Nagar', 'Kasganj', 'Kaushambi', 'Kushinagar', 'Lakhimpur Kheri', 'Lalitpur', 'Lucknow', 'Maharajganj', 'Mahoba', 'Mainpuri', 'Mathura', 'Mau', 'Meerut', 'Mirzapur', 'Moradabad', 'Muzaffarnagar', 'Pilibhit', 'Pratapgarh', 'Prayagraj', 'Rae Bareli', 'Rampur', 'Saharanpur', 'Sambhal', 'Sant Kabir Nagar', 'Shahjahanpur', 'Shamli', 'Shravasti', 'Siddharthnagar', 'Sitapur', 'Sonbhadra', 'Sultanpur', 'Unnao', 'Varanasi'],
+                                  'Uttarakhand': ['Almora', 'Bageshwar', 'Chamoli', 'Champawat', 'Dehradun', 'Haridwar', 'Nainital', 'Pauri Garhwal', 'Pithoragarh', 'Rudraprayag', 'Tehri Garhwal', 'Udham Singh Nagar', 'Uttarkashi'],
+                                  'West Bengal': ['Alipurduar', 'Bankura', 'Birbhum', 'Cooch Behar', 'Dakshin Dinajpur', 'Darjeeling', 'Hooghly', 'Howrah', 'Jalpaiguri', 'Jhargram', 'Kalimpong', 'Kolkata', 'Malda', 'Murshidabad', 'Nadia', 'North 24 Parganas', 'Paschim Bardhaman', 'Paschim Medinipur', 'Purba Bardhaman', 'Purba Medinipur', 'Purulia', 'South 24 Parganas', 'Uttar Dinajpur']
+                              };
+                      
+                              // Event listener to populate districts when a state is selected
+                              stateDropdown.addEventListener('change', function() {
+                                  const selectedState = stateDropdown.value;
+                                  const districts = stateDistricts[selectedState];
+                                  populateDistrictsDropdown(districts);
+                              });
+                      
+                              // Function to populate the district dropdown
+                              function populateDistrictsDropdown(districts) {
+                                  // Clear existing options
+                                  districtDropdown.innerHTML = '';
+                      
+                                  // Add default option
+                                  const defaultOption = document.createElement('option');
+                                  defaultOption.text = 'Select District';
+                                  defaultOption.value = '';
+                                  districtDropdown.appendChild(defaultOption);
+                      
+                                  // Add district options
+                                  if (districts) {
+                                      for (const district of districts) {
+                                          const option = document.createElement('option');
+                                          option.text = district;
+                                          option.value = district;
+                                          districtDropdown.appendChild(option);
+                                      }
+                                  }
+                              }
+                          </script>
+                          </div>
+                        </div>
+      
+                        <div class="row">
+                          <div class="col-md-7 mb-4 pb-2">
+      
+                            <div class="form-outline form-white">
+                              <label class="form-label" for="form3Examplea8">Phone Number</label>
+                              <input type="text" id="mobile" name="mobile_no" class="form-control form-control-lg" />
+                              <span id="mobileerror"></span>
+                            </div>
+      
+                          </div>
+                        </div>
+      
+                        <div class="mb-4">
+                          <div class="form-outline form-white">
+                            <label class="form-label" for="form3Examplea9">Your Email</label>
+                            <input type="text" id="email" name="email" class="form-control form-control-lg" />
+                            <span id="email-error"></span>
+                          </div>
+                        </div>
+      
+                        <div class="form-check d-flex justify-content-start mb-4 pb-3">
+                          <input class="form-check-input me-3" type="checkbox" value="" id="form2Example3c" />
+                          <label class="form-check-label text-white" for="form2Example3">
+                            I do accept the <a href="#!" class="text-white"><u>Terms and Conditions</u></a> of your
+                            site.
+                          </label>
+                        </div>
+      
+                        <a href="/login"></a><button type="submit" id="submit" class="btn btn-light btn-lg"
+                          data-mdb-ripple-color="dark">Register</button></a>
+      
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </form>
+    <script src="{% static 'js/registration.js' %}"></script>
+    <script src="{% static 'js/reg.js' %}"></script>
+    <script>
+      // Function to validate the form fields
+      function validateForm() {
+          // Get references to all the form fields
+          const firstname = document.getElementById('firstname');
+          const lastname = document.getElementById('lastname');
+          const dob = document.getElementById('dob');
+          const username = document.getElementById('username');
+          const password = document.getElementById('password');
+          const cpass = document.getElementById('cpass');
+          const state = document.getElementById('state');
+          const district = document.getElementById('district');
+          const mobile = document.getElementById('mobile');
+          const email = document.getElementById('email');
+  
+          // Get references to the error spans
+          const firstnameError = document.getElementById('firstnameError');
+          const lastnameError = document.getElementById('lastnameError');
+          const dobError = document.getElementById('dobError');
+          const usernameError = document.getElementById('usernameError');
+          const passwordError = document.getElementById('passwordError');
+          const cpasserror = document.getElementById('cpasserror');
+          const stateError = document.getElementById('stateError');
+          const districtError = document.getElementById('districtError');
+          const mobileerror = document.getElementById('mobileerror');
+          const emailError = document.getElementById('email-error');
+  
+          // Flag to track if the form is valid
+          let isValid = true;
+  
+          // Reset previous error messages
+          firstnameError.textContent = '';
+          lastnameError.textContent = '';
+          dobError.textContent = '';
+          usernameError.textContent = '';
+          passwordError.textContent = '';
+          cpasserror.textContent = '';
+          stateError.textContent = '';
+          districtError.textContent = '';
+          mobileerror.textContent = '';
+          emailError.textContent = '';
+  
+          // Validate each field
+          if (firstname.value.trim() === '') {
+              firstnameError.textContent = 'First name cannot be empty.';
+              isValid = false;
+          }
+  
+          if (lastname.value.trim() === '') {
+              lastnameError.textContent = 'Last name cannot be empty.';
+              isValid = false;
+          }
+  
+          if (dob.value.trim() === '') {
+              dobError.textContent = 'Date of Birth cannot be empty.';
+              isValid = false;
+          }
+  
+          if (username.value.trim() === '') {
+              usernameError.textContent = 'Username cannot be empty.';
+              isValid = false;
+          }
+  
+          if (password.value.trim() === '') {
+              passwordError.textContent = 'Password cannot be empty.';
+              isValid = false;
+          }
+  
+          if (cpass.value.trim() === '') {
+              cpasserror.textContent = 'Confirm Password cannot be empty.';
+              isValid = false;
+          }
+  
+          if (state.value === '') {
+              stateError.textContent = 'Please select a state.';
+              isValid = false;
+          }
+  
+          if (district.value === '') {
+              districtError.textContent = 'Please select a district.';
+              isValid = false;
+          }
+  
+          if (mobile.value.trim() === '') {
+              mobileerror.textContent = 'Phone number cannot be empty.';
+              isValid = false;
+          }
+  
+          if (email.value.trim() === '') {
+              emailError.textContent = 'Email cannot be empty.';
+              isValid = false;
+          }
+  
+          // Return the validity status
+          return isValid;
+      }
+  </script>
+  <script>
+    // Get references to HTML elements
+    const usernameInput = document.getElementById('username');
+    const usernameError = document.getElementById('UsernameError');
+
+    // Function to validate the username
+    function validateUsername() {
+      const username = usernameInput.value.trim();
+  
+      if (username === '') {
+          usernameError.textContent = 'Username is required';
+          usernameError.style.color = 'red'; // Set text color to red
+          return false;
+      } else if (username.length < 5 || username.length > 16) {
+          usernameError.textContent = 'Username must be between 5 and 16 characters';
+          usernameError.style.color = 'red'; // Set text color to red
+          return false;
+      } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(username)) {
+          usernameError.textContent = 'Username can only contain alphabets, numbers, and underscores. It must start with an alphabet or underscore.';
+          usernameError.style.color = 'red'; // Set text color to red
+          return false;
+      } else if (!/[a-zA-Z]/.test(username)) {
+          usernameError.textContent = 'Username must contain at least one alphabet character.';
+          usernameError.style.color = 'red'; // Set text color to red
+          return false;
+      }
+  
+      usernameError.textContent = 'Good'; // Clear any previous error message
+      usernameError.style.color = 'green'; // Reset text color
+      return true;
+  }
+  
+
+    // Event listener for real-time validation as the user types
+    usernameInput.addEventListener('input', validateUsername);
+</script>
+    </body>
+</html>

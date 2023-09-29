@@ -1,0 +1,126 @@
+@media (min-width: 1025px) {
+    .h-custom {
+    height: 1180px !important;
+    }
+    }
+    .card-registration .select-input.form-control[readonly]:not([disabled]) {
+    font-size: 1rem;
+    line-height: 2.15;
+    padding-left: .75em;
+    padding-right: .75em;
+    }
+    .card-registration .select-arrow {
+    top: 13px;
+    }
+    
+    .gradient-custom-2 {
+    background: #a1c4fd;
+    background: -webkit-linear-gradient(to right, rgba(161, 196, 253, 1), rgba(194, 233, 251, 1));
+    background: linear-gradient(to right, rgba(161, 196, 253, 1), rgba(194, 233, 251, 1))
+    }
+    
+    .bg-indigo {
+    background-color: #4835d4;
+    }
+    @media (min-width: 992px) {
+    .card-registration-2 .bg-indigo {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    }
+    }
+    @media (max-width: 991px) {
+    .card-registration-2 .bg-indigo {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    }
+    }
+    .navbar-light .navbar-nav .nav-link {
+        color: #f8f9fa;
+    }
+    .navbar {
+        background: linear-gradient(to right, rgba(161, 196, 253, 1), rgba(194, 233, 251, 1));
+      }
+      
+      /* Style the navigation links */
+      .navbar a.nav-link {
+          color: white;  /* Change to your desired link text color */
+          font-weight: bold; /* Optionally, make the links bold */
+      }
+      .nav-link {
+        color: white !important;
+        font-size:26px;
+        margin-left: 0px;
+      }
+      
+      
+      /* Style the navbar brand (text heading) */
+      .navbar-brand {
+          color: white !important ; /* Change to your desired brand text color */
+          font-weight: bold; /* Optionally, make the brand text bold */
+          font-size: 34px !important ;
+      }
+      /* Add a hover effect to the links */
+      .navbar a.nav-link:hover {
+          text-decoration: underline; /* Underline the links on hover (optional) */
+      }
+      
+      /* Center the brand and links in the navbar */
+      .navbar .container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      .navbar-nav {
+          --bs-nav-link-padding-x: 0;
+          --bs-nav-link-padding-y: 0.5rem;
+          --bs-nav-link-font-weight: ;
+          --bs-nav-link-color: var(--bs-navbar-color);
+          --bs-nav-link-hover-color: var(--bs-navbar-hover-color);
+          --bs-nav-link-disabled-color: var(--bs-navbar-disabled-color);
+          display: flex;
+          flex-direction: column;
+          padding-left: 570px;
+          margin-bottom: 0;
+          list-style: none;
+          color: white !important ;
+      }
+      
+      /* Optionally, add a box shadow to the navbar for a subtle shadow effect */
+      .navbar {
+          background-color: #fff; /* Background color for the navbar */
+          box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Box shadow for a subtle effect */
+          padding-left: 500px; /* Left padding to push content away from the left edge */
+        
+          /* Optional: Adjust the height, font, and text color */
+          height: 60px;
+          font-family: Arial, sans-serif;
+          color: #333;
+        }
+        
+        /* Optional: Style the navbar links */
+        .navbar a {
+          text-decoration: none;
+          color: #333; /* Link color */
+          margin-right: 20px; /* Add some spacing between links */
+        }
+        
+        /* Optional: Style the navbar links on hover */
+        .navbar a:hover {
+          color: #555; /* Change link color on hover */
+        }
+        
+        /* Optional: Style the active link */
+        .navbar .active a {
+          font-weight: bold; /* Make the active link bold */
+          color: #FF5733; /* Change the color of the active link */
+        }
+        
+      /* CSS for aligning navbar contents to the right */
+      .navbar-nav.ml-auto {
+        margin-left: auto; /* This pushes the content to the right */
+      }
+      /* Optional: You can also add some spacing between navbar items */
+      .navbar-nav.ml-auto .nav-item {
+        margin-left: 20px; /* Adjust the spacing as needed */
+      }
+      

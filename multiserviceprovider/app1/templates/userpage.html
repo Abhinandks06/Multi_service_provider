@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #495057;
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #495057;
+        background-image: url("../assets/img/bg.jpg");
+    }
+    }
+    
+    .navbar {
+        background-color: #45aaf2;
+    }
+    
+    .navbar-brand {
+        color: #ffffff;
+        font-weight: bold;
+    }
+    
+    .navbar-nav .nav-link {
+        color: #ffffff;
+    }
+    
+    .container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-top: 20px;
+    }
+    
+    h2 {
+        color: #45aaf2;
+        margin-top: 20px;
+    }
+    
+    p {
+        color: #6c757d;
+    }
+    
+    .navbar-toggler-icon {
+        background-color: #ffffff;
+    }
+    
+</style>    
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Multi-Service Provider</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#serviceProviders">Service Providers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#services">List of Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#booking">Booking</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#profile">User Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#notifications">Notifications</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mt-5">
+        <h2 id="serviceProviders">Service Providers</h2>
+        <p>Here you can find a list of service providers available in your area. Choose the one that fits your needs.</p>
+
+        <h2 id="services">List of Services</h2>
+        <p>Explore various services offered, such as cleaning, plumbing, electrical work, and more. Select a service to learn more details.</p>
+
+        <h2 id="booking">Booking</h2>
+        <p>Make a booking for the service you need. Select a service provider, choose a date and time, and confirm your booking.</p>
+
+        <h2 id="profile">User Profile</h2>
+        <p>Manage your profile information here. Update your contact details, change your password, and view your booking history.</p>
+
+        <h2 id="notifications">Notifications</h2>
+        <p>Stay informed about your bookings, service provider updates, and special offers through notifications.</p>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
