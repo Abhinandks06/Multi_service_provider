@@ -1,0 +1,513 @@
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="en">
+    
+<!-- Mirrored from htmldemo.net/naturecircle/naturecircle/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Oct 2023 11:40:36 GMT -->
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Multiservice provider</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'userassets/img/icon.png' %}">
+
+        <!-- All css here -->
+        <link rel="stylesheet" href="{% static 'userassets/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/ie7.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/plugins.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
+        <script src="{% static 'userassets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+    </head>
+    <style>
+        /* Apply standard font and add space */
+        a.logo-text {
+            font-family: Arial, sans-serif; /* Use Arial or any standard sans-serif font */
+            font-size: 30px; /* Set the font size */
+            font-weight: bold; /* Make the text bold */
+            text-decoration: none; /* Remove underline from the link */
+            color: white; /* Set a standard text color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Apply text shadow for a cool effect */
+            margin-bottom: 35px;
+        }
+        
+        /* Style the provider text separately */
+        span.provider-text {
+            padding-top: 30px !important;
+        }
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('path/to/font.woff');
+        }
+
+        .icon-Notification:before {
+            font-family: 'CustomFont';
+            content: "\e123"; /* Replace with the correct Unicode character for your notification icon */
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <body>
+        
+        <!-- Header Area Start -->
+        <header class="header-area header-sticky">
+            <div class="header-container">
+                <div class="row">
+                    <div class="col-lg-5 display-none-md display-none-xs">
+                        <div class="ht-main-menu">
+                            <nav>
+                                <ul>
+                                    <li class="active"><a href="userhome">HOME </a>
+                                    </li>
+                                    <li><a href="">Services <i class="fa fa-angle-down"></i></a>
+                                        <ul class="ht-mega-menu">
+                                            <li>
+                                                <ul>
+                                                    <li><a href="">House cleaning</a></li>
+                                                    <li><a href="">Laundry</a></li>
+                                                    <li><a href="">Painting</a></li>
+                                                    <li><a href="">Gardening</a></li>
+                                                    
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <ul>
+                                                    <li><a href="">Pest control</a></li>
+                                                    <li><a href="">Plumbing</a></li>
+                                                    <li><a href="">Repair</a></li>
+                                                    <li><a href="">Electrical</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#bookings">Bookings</a></li>
+                                    <li><a href="#userprofile">User Profile</a></li>
+                                    <li><a href="{% url 'userlogout' %}s">Logout</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-4">
+                        <div class="logo text-center">
+                            <a href="index-2.html" class="logo-text">MULTISERVICE <span class="provider-text" style="padding-top: 30px;">PROVIDER</span></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-sm-8">
+                        <div class="header-content d-flex justify-content-end">
+                            <div class="search-wrapper">
+                                <a href="#"><span class="icon icon-Search"></span></a>
+                                <form action="#" class="search-form">
+                                    <input type="text" placeholder="Search entire store here ...">
+                                    <button type="button">Search</button>
+                                </form>
+                            </div>
+                            <div class="settings-wrapper">
+                                <a href="#"><i class="fas fa-bell"></i></a>
+                            </div>
+                            <div class="cart-wrapper">
+                                <a href="#"><i class="fas fa-user"></i></a>  
+                                <span>{{request.user}}</span>         
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Header Area End -->
+            <!-- Mobile Menu Area Start -->
+            <div class="mobile-menu-area">
+                <div class="mobile-menu container">
+                    <nav id="mobile-menu-active">
+                        <ul class="menu-overflow">
+                            <li><a href="index-2.html">HOME</a>
+                              
+                            </li>
+                            <li><a href="#">Services <i class="fa fa-angle-down"></i></a>
+                                <ul class="ht-mega-menu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="">House cleaning</a></li>
+                                            <li><a href="">Laundry</a></li>
+                                            <li><a href="">Painting</a></li>
+                                            <li><a href="">Gardening</a></li>
+                                            
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <ul>
+                                            <li><a href="">Pest control</a></li>
+                                            <li><a href="">Plumbing</a></li>
+                                            <li><a href="">Repair</a></li>
+                                            <li><a href="">Electrical</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                </ul>
+                            </li>
+                            <li><a href="#bookings">Bookings</a></li>
+                            <li><a href="#userprofile">User Profile</a></li>
+                            <li><a href="#notifications">Notifications</a></li>
+                        </ul>
+                    </nav>							
+                </div>
+            </div>
+            <!-- Mobile Menu Area End -->
+            <!--Start of Login Form-->
+            <div class="modal fade" id="login_box" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-pop-up-content">
+								<h2>Login to your account</h2>
+								<form action="#" method="post">
+									<div class="form-box">
+										<input type="text" placeholder="User Name" name="username">
+										<input type="password" placeholder="Password" name="pass">
+									</div>
+									<div class="checkobx-link">
+									    <div class="left-col">
+								            <input type="checkbox" id="remember_me"><label for="remember_me">Remember Me</label>
+									    </div>
+									    <div class="right-col"><a href="#">Forget Password?</a></div>
+									</div>
+								    <button type="submit">Sign In</button>
+								</form>
+							</div>
+                        </div>	
+                    </div>	
+                </div>
+            </div>
+            <!--End of Login Form-->
+            <!--Start of Register Form-->
+            <div class="modal fade" id="register_box" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-pop-up-content">
+								<h2>Sign Up</h2>
+								<form action="#" method="post">
+									<div class="form-box">
+										<input type="text" placeholder="Full Name" name="fullname">
+										<input type="text" placeholder="User Name" name="username">
+										<input type="email" placeholder="Email" name="email">
+										<input type="password" placeholder="Password" name="pass">
+										<input type="password" placeholder="Confirm Password" name="re_pass">
+									</div>
+									<div class="checkobx-link">
+									    <div class="left-col">
+								            <input type="checkbox" id="remember_reg"><label for="remember_reg">Remember Me</label>
+									    </div>
+									</div>
+								    <button class="text-uppercase" type="submit">Register</button>
+								</form>
+							</div>
+                        </div>	
+                    </div>	
+                </div>
+            </div>
+            <!--End of Register Form-->
+        </header>
+        <!-- Header Area End -->
+        <!-- Hero Area Start -->
+        <div class="ht-hero-section fix">
+            <div class="ht-hero-slider">
+                <!-- Single Slide Start -->
+                <div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
+                    <div class="ht-hero-content-one container">
+                        <h1 class="cssanimation leDoorCloseLeft sequence">We are here to serve</h1>
+                        <p>"Your Trusted Partner for Every Household Need: Where Quality Meets Convenience!"</p>
+                        <a href="" class="default-btn large circle blue hover-blue uppercase">Book now</a>
+                    </div>
+                </div>
+                <!-- Single Slide End --><div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/mainlast.jpg' %}')">
+                <!-- Single Slide Start -->
+                
+                <div class="ht-hero-content-one container">
+                    <h3>Convenience at Your Doorstep</h3>
+                    <h2 class="cssanimation leDoorCloseLeft sequence">Your Trusted Multiservice Provider</h2>
+                    <p>Get reliable and professional services at the click of a button. From cleaning to repairs, we have you covered.</p>
+                    <a href="#" class="default-btn">Explore Services</a>
+                </div>                
+                </div>
+                <!-- Single Slide End -->
+            </div>
+        </div>
+        <!-- Hero Area End -->
+        <!-- Food Categry Area Start -->
+        <div class="food-category-area pt-105 pb-70">
+            <div class="container text-center">
+                <div class="section-title-img">
+                    <img src="userassets/img/banner/text.png" alt="">
+                    <p>"Discover the expertise you need for a seamless home experience."</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="ht-food-slider row">
+                    <div class="col text-center">
+                        <div class="single-food-category">
+                            <a href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
+                            <img src="userassets/img/icon/border.png" alt="">
+                            <h4><a href="">Cleaning</a></h4>
+                            <span>(13 providers)</span>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="single-food-category">
+                            <a href="" class="food-cat-img"><img src="userassets/img/icon/burger.png" alt=""></a>
+                            <img src="userassets/img/icon/border.png" alt="">
+                            <h4><a href="">Laundry</a></h4>
+                            <span>(14 providers)</span>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="single-food-category">
+                            <a href="" class="food-cat-img"><img src="userassets/img/icon/fruit.png" alt=""></a>
+                            <img src="userassets/img/icon/border.png" alt="">
+                            <h4><a href="">Plumbing</a></h4>
+                            <span>(8 providers)</span>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="single-food-category">
+                            <a href="" class="food-cat-img"><img src="userassets/img/icon/drinks.png" alt=""></a>
+                            <img src="userassets/img/icon/border.png" alt="">
+                            <h4><a href="">Repair</a></h4>
+                            <span>(11 providers)</span>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="single-food-category">
+                            <a href="" class="food-cat-img"><img src="userassets/img/icon/vegetable.png" alt=""></a>
+                            <img src="userassets/img/icon/border.png" alt="">
+                            <h4><a href="">Pest control</a></h4>
+                            <span>(11 providers)</span>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="single-food-category">
+                            <a href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
+                            <img src="userassets/img/icon/border.png" alt="">
+                            <h4><a href="">Electrical</a></h4>
+                            <span>(13 providers)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>   
+     
+                <!-- Service Area Start -->
+                <!-- Specialties and Features Area Start -->
+<!-- Specialties and Features Area Start -->
+<div class="specialties-area pt-50">
+    <div class="container">
+        <div class="specialties-container">
+            <div class="specialties-content">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <div class="single-specialty">
+                            <div class="specialty-icon">
+                                <img src="" >
+                            </div>
+                            <div class="specialty-text">
+                                <h3>Quick & Efficient</h3>
+                                <p>Get fast and efficient services right when you need them.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="single-specialty">
+                            <div class="specialty-icon">
+                                <img src="" >
+                            </div>
+                            <div class="specialty-text">
+                                <h3>Expert Technicians</h3>
+                                <p>Skilled and experienced technicians for high-quality services.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="single-specialty">
+                            <div class="specialty-icon">
+                                <img src="" >
+                            </div>
+                            <div class="specialty-text">
+                                <h3>24/7 Support</h3>
+                                <p>Round-the-clock customer support for all your queries and issues.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Specialties and Features Area End -->
+
+<!-- Specialties and Features Area End -->
+
+<!-- Footer Widget Area Start -->
+<div class="footer-widget-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="single-footer-widget">
+                    <div class="footer-logo">
+                        <a href="#"><img src="" ></a>
+                    </div>
+                    <p>Your reliable partner for all your home service needs.</p>
+                    <div class="footer-text">
+                        <span><i class="icon icon-Pointer"></i>Address : 123 Service Lane, Your City, Your State, ZIP</span>
+                        <span><i class="icon icon-Phone"></i>Phone : +(123) 456-7890</span>
+                        <span><i class="icon icon-Mail"></i>Email : info@multiserviceprovider.com</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-3">
+                <!-- Add more footer widgets as needed -->
+            </div>
+            <div class="col-lg-4">
+                <!-- Add Instagram feed or other social media content if desired -->
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- Footer Widget Area End -->
+            </div>
+            <!-- Footer Top Area End -->
+            <!-- Footer Bottom Area Start -->
+            <div class="footer-bottom-area pt-15 pb-30">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 d-flex col-md-6">
+                            <div class="footer-text-bottom">
+                                <p>Copyright &copy; <a href="#">Naturecircle</a>. All Rights Reserved</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="payment-img d-flex justify-content-end">
+                                <img src="" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Bottom Area End -->
+        </footer>
+        <!-- Footer Area End -->
+        
+        <!-- QUICKVIEW PRODUCT -->
+        <div class="modal fade" id="productModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></button>
+                    <div class="quick-view-container">
+                        <div class="column-left">
+                            <div class="tab-content product-details-large" id="myTabContent">
+                                <div class="tab-pane fade show active" id="single-slide1" role="tabpanel" aria-labelledby="single-slide-tab-1">
+                                    <div class="single-product-img">
+                                        <img src="userassets/img/product/1.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="single-slide2" role="tabpanel" aria-labelledby="single-slide-tab-2">
+                                    <div class="single-product-img">
+                                        <img src="userassets/img/product/2.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="single-slide3" role="tabpanel" aria-labelledby="single-slide-tab-3">
+                                    <div class="single-product-img">
+                                        <img src="userassets/img/product/3.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="single-slide4" role="tabpanel" aria-labelledby="single-slide-tab-4">
+                                    <div class="single-product-img">
+                                        <img src="userassets/img/product/4.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="single-slide5" role="tabpanel" aria-labelledby="single-slide-tab-5">
+                                    <div class="single-product-img">
+                                        <img src="userassets/img/product/5.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="single-slide6" role="tabpanel" aria-labelledby="single-slide-tab-6">
+                                    <div class="single-product-img">
+                                        <img src="userassets/img/product/6.jpg" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="single-product-menu">
+                                <div class="nav single-slide-menu" role="tablist">
+                                    <div class="single-tab-menu">
+                                        <a class="active" data-bs-toggle="tab" id="single-slide-tab-1" href="#single-slide1"><img src="userassets/img/product/1.jpg" alt=""></a>
+                                    </div>
+                                    <div class="single-tab-menu">
+                                        <a data-bs-toggle="tab" id="single-slide-tab-2" href="#single-slide2"><img src="userassets/img/product/2.jpg" alt=""></a>
+                                    </div>
+                                    <div class="single-tab-menu">
+                                        <a data-bs-toggle="tab" id="single-slide-tab-3" href="#single-slide3"><img src="userassets/img/product/3.jpg" alt=""></a>
+                                    </div>
+                                    <div class="single-tab-menu">
+                                        <a data-bs-toggle="tab" id="single-slide-tab-4" href="#single-slide4"><img src="userassets/img/product/4.jpg" alt=""></a>
+                                    </div>
+                                    <div class="single-tab-menu">
+                                        <a data-bs-toggle="tab" id="single-slide-tab-5" href="#single-slide5"><img src="userassets/img/product/5.jpg" alt=""></a>
+                                    </div>
+                                    <div class="single-tab-menu">
+                                        <a data-bs-toggle="tab" id="single-slide-tab-6" href="#single-slide6"><img src="userassets/img/product/6.jpg" alt=""></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
+                        <div class="column-right">
+                            <div class="quick-view-text">
+                                <h2>Curabitur a purus</h2>
+                                <h3 class="q-product-price">$34.00<span class="old-price">$37.00</span></h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco,Proin lectus ipsum, gravida et mattis vulputate, tristique ut lectus</p>
+                                <div class="input-cart">
+                                    <input value="1" type="number">
+                                    <button class="default-btn">Add to cart</button>
+                                </div>
+                                <div class="share-product">
+                                    <h4>Share this product</h4>
+                                    <div class="social-link">
+                                        <a href="#" target="_blank" class="facebook">
+                                            <i class="fa fa-facebook"></i>
+                                        </a>
+                                        <a href="#" target="_blank" class="twitter">
+                                            <i class="fa fa-twitter"></i>
+                                        </a>
+                                        <a href="#" target="_blank" class="pinterest">
+                                            <i class="fa fa-pinterest"></i>
+                                        </a>
+                                        <a href="#" target="_blank" class="google">
+                                            <i class="fa fa-google-plus"></i>
+                                        </a>
+                                        <a href="#" target="_blank" class="linkedin">
+                                            <i class="fa fa-linkedin"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END QUICKVIEW PRODUCT -->
+        
+        <!-- All js here -->
+        <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+        <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
+        <script src="{% static 'userassets/js/plugins.js' %}"></script>
+        <script src="{% static 'userassets/js/ajax-mail.js' %}"></script>
+        <script src="{% static "userassets/js/main.js" %}"></script>
+    </body>
+</html>

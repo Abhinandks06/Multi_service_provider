@@ -7,3 +7,4 @@ class MyUser(AbstractUser):
     phone = models.CharField(max_length=12, default="", unique=True)  # Set as unique
     district = models.TextField(max_length=100, default="")
     state = models.TextField(max_length=100, default="")
+    role = models.CharField(max_length=15, default='')

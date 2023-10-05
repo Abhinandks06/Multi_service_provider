@@ -5,6 +5,16 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
+      <script>
+        // Display alert message if it exists in the session
+        {% if messages %}
+            window.onload = function() {
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
+            };
+        {% endif %}
+          </script>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <!-- Left Side: Text Heading -->
@@ -35,11 +45,6 @@
                     <div class="col-lg-6">
                       <div class="p-5">
                         <h3 class="fw-normal mb-4" style="color: #4835d4;">Registration form</h3>
-      
-                        <div class="mb-1 pb-1">
-                          <h4>Name</h4>
-                        </div>
-      
                         <div class="row">
                           <div class="col-md-6 mb-4 pb-2">
       
@@ -85,8 +90,7 @@
                                 <span id="cpasserror"></span>
                               </div>
       
-                          </div>
-                        
+                            </div>
       
                       </div>
                     </div>
@@ -244,101 +248,79 @@
     <script src="{% static 'js/registration.js' %}"></script>
     <script src="{% static 'js/reg.js' %}"></script>
     <script>
-      // Function to validate the form fields
       function validateForm() {
-          // Get references to all the form fields
-          const firstname = document.getElementById('firstname');
-          const lastname = document.getElementById('lastname');
-          const dob = document.getElementById('dob');
-          const username = document.getElementById('username');
-          const password = document.getElementById('password');
-          const cpass = document.getElementById('cpass');
-          const state = document.getElementById('state');
-          const district = document.getElementById('district');
-          const mobile = document.getElementById('mobile');
-          const email = document.getElementById('email');
-  
-          // Get references to the error spans
-          const firstnameError = document.getElementById('firstnameError');
-          const lastnameError = document.getElementById('lastnameError');
-          const dobError = document.getElementById('dobError');
-          const usernameError = document.getElementById('usernameError');
-          const passwordError = document.getElementById('passwordError');
-          const cpasserror = document.getElementById('cpasserror');
-          const stateError = document.getElementById('stateError');
-          const districtError = document.getElementById('districtError');
-          const mobileerror = document.getElementById('mobileerror');
-          const emailError = document.getElementById('email-error');
-  
-          // Flag to track if the form is valid
-          let isValid = true;
-  
-          // Reset previous error messages
-          firstnameError.textContent = '';
-          lastnameError.textContent = '';
-          dobError.textContent = '';
-          usernameError.textContent = '';
-          passwordError.textContent = '';
-          cpasserror.textContent = '';
-          stateError.textContent = '';
-          districtError.textContent = '';
-          mobileerror.textContent = '';
-          emailError.textContent = '';
-  
-          // Validate each field
-          if (firstname.value.trim() === '') {
-              firstnameError.textContent = 'First name cannot be empty.';
-              isValid = false;
-          }
-  
-          if (lastname.value.trim() === '') {
-              lastnameError.textContent = 'Last name cannot be empty.';
-              isValid = false;
-          }
-  
-          if (dob.value.trim() === '') {
-              dobError.textContent = 'Date of Birth cannot be empty.';
-              isValid = false;
-          }
-  
-          if (username.value.trim() === '') {
-              usernameError.textContent = 'Username cannot be empty.';
-              isValid = false;
-          }
-  
-          if (password.value.trim() === '') {
-              passwordError.textContent = 'Password cannot be empty.';
-              isValid = false;
-          }
-  
-          if (cpass.value.trim() === '') {
-              cpasserror.textContent = 'Confirm Password cannot be empty.';
-              isValid = false;
-          }
-  
-          if (state.value === '') {
-              stateError.textContent = 'Please select a state.';
-              isValid = false;
-          }
-  
-          if (district.value === '') {
-              districtError.textContent = 'Please select a district.';
-              isValid = false;
-          }
-  
-          if (mobile.value.trim() === '') {
-              mobileerror.textContent = 'Phone number cannot be empty.';
-              isValid = false;
-          }
-  
-          if (email.value.trim() === '') {
-              emailError.textContent = 'Email cannot be empty.';
-              isValid = false;
-          }
-  
-          // Return the validity status
-          return isValid;
-      }
+        // Get form elements
+        const firstName = document.getElementById("firstname").value;
+        const lastName = document.getElementById("lastname").value;
+        const dob = document.getElementById("dob").value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("cpass").value;
+        const state = document.getElementById("state").value;
+        const district = document.getElementById("district").value;
+        const mobile = document.getElementById("mobile").value;
+        const email = document.getElementById("email").value;
+        const termsCheckbox = document.getElementById("form2Example3c").checked;
+    
+        // Check individual fields and display separate alerts for empty or unselected fields
+        if (firstName === "") {
+            alert("First name cannot be empty");
+            return false;
+        }
+    
+        if (lastName === "") {
+            alert("Last name cannot be empty");
+            return false;
+        }
+    
+        if (dob === "") {
+            alert("Date of Birth cannot be empty");
+            return false;
+        }
+    
+        if (username === "") {
+            alert("Username cannot be empty");
+            return false;
+        }
+    
+        if (password === "") {
+            alert("Password cannot be empty");
+            return false;
+        }
+    
+        if (confirmPassword === "") {
+            alert("Confirm Password cannot be empty");
+            return false;
+        }
+    
+        if (state === "") {
+            alert("Please select a state");
+            return false;
+        }
+    
+        if (district === "") {
+            alert("Please select a district");
+            return false;
+        }
+    
+        if (mobile === "") {
+            alert("Mobile number cannot be empty");
+            return false;
+        }
+    
+        if (email === "") {
+            alert("Email address cannot be empty");
+            return false;
+        }
+    
+        if (!termsCheckbox) {
+            alert("Please accept the terms and conditions");
+            return false;
+        }
+    
+        return true; // If all fields are filled, the form will be submitted
+    }
+    
   </script>
   <script>
     // Get references to HTML elements

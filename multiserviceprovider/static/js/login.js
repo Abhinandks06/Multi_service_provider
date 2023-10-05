@@ -55,7 +55,7 @@ function validateForm() {
     const passwordValue = passwordInput.value.trim();
 
     if (usernameValue === '') {
-        alert('Email cannot be empty');
+        alert('Username cannot be empty');
         return false;
     } else if (passwordValue === '') {
         alert('Password cannot be empty.');
