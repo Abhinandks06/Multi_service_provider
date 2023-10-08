@@ -6,6 +6,7 @@ from .models import MyUser
 from django.views.decorators.cache import cache_control
 # Signin View
 def signin(request):
+    request.session.flush() 
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -77,8 +78,6 @@ def register(request):
             messages.error(request, f'Error: {e}')
 
     return render(request, 'signup.html')
-
-    return render(request, 'signup.html')
 def user_logout(request):
     try:
         del request.session['username']
@@ -111,6 +110,7 @@ def admin_logout(request):
         pass
     return redirect('index')
 def index(request):
+    request.session.flush() 
     return render(request, "index.html")
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
@@ -184,7 +184,6 @@ def custom_admin_page(request):
             messages.error(request, "User does not exist.")
     else:
         messages.error(request, "Login failed. Please check your credentials.")
-    messages.error(request, "You dont have permission to access this page.")
     return redirect('signin')
 
     
