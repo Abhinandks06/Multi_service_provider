@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM is ready');
-    const form = document.getElementById('your-form-id');
     const passwordInput = document.getElementById('password');
     const cpassInput = document.getElementById('cpass');
     const mobInput = document.getElementById('mobile');

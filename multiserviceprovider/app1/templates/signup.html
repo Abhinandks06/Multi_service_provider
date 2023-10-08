@@ -89,6 +89,15 @@
                                 <input type="password" id="cpass"name="confirm_password" class="form-control form-control-lg" /><br>
                                 <span id="cpasserror"></span>
                               </div>
+                              <div class="form-outline2">
+                                <label class="form-label" for="roleSelect">Select Role</label>
+                                <select id="roleSelect" name="role" class="form-control form-control-lg">
+                                    <option value="client">Client</option>
+                                    <option value="provider">Provider</option>
+                                    <option value="worker">Worker</option>
+                                </select>
+                            </div>
+                            
       
                             </div>
       
@@ -220,7 +229,7 @@
                           <div class="form-outline form-white">
                             <label class="form-label" for="form3Examplea9">Your Email</label>
                             <input type="text" id="email" name="email" class="form-control form-control-lg" />
-                            <span id="email-error"></span>
+                            <span id="EmailError"></span>
                           </div>
                         </div>
       
@@ -249,83 +258,92 @@
     <script src="{% static 'js/reg.js' %}"></script>
     <script>
       function validateForm() {
-        // Get form elements
-        const firstName = document.getElementById("firstname").value;
-        const lastName = document.getElementById("lastname").value;
-        const dob = document.getElementById("dob").value;
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("cpass").value;
-        const state = document.getElementById("state").value;
-        const district = document.getElementById("district").value;
-        const mobile = document.getElementById("mobile").value;
-        const email = document.getElementById("email").value;
-        const termsCheckbox = document.getElementById("form2Example3c").checked;
-    
-        // Check individual fields and display separate alerts for empty or unselected fields
-        if (firstName === "") {
-            alert("First name cannot be empty");
-            return false;
-        }
-    
-        if (lastName === "") {
-            alert("Last name cannot be empty");
-            return false;
-        }
-    
-        if (dob === "") {
-            alert("Date of Birth cannot be empty");
-            return false;
-        }
-    
-        if (username === "") {
-            alert("Username cannot be empty");
-            return false;
-        }
-    
-        if (password === "") {
-            alert("Password cannot be empty");
-            return false;
-        }
-    
-        if (confirmPassword === "") {
-            alert("Confirm Password cannot be empty");
-            return false;
-        }
-    
-        if (state === "") {
-            alert("Please select a state");
-            return false;
-        }
-    
-        if (district === "") {
-            alert("Please select a district");
-            return false;
-        }
-    
-        if (mobile === "") {
-            alert("Mobile number cannot be empty");
-            return false;
-        }
-    
-        if (email === "") {
-            alert("Email address cannot be empty");
-            return false;
-        }
-    
-        if (!termsCheckbox) {
-            alert("Please accept the terms and conditions");
-            return false;
-        }
-    
-        return true; // If all fields are filled, the form will be submitted
-    }
-    
+          // Get form elements
+          const firstName = document.getElementById("firstname").value;
+          const lastName = document.getElementById("lastname").value;
+          const dob = document.getElementById("dob").value;
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+          const confirmPassword = document.getElementById("cpass").value;
+          const state = document.getElementById("state").value;
+          const district = document.getElementById("district").value;
+          const mobile = document.getElementById("mobile").value;
+          const email = document.getElementById("email").value;
+          const termsCheckbox = document.getElementById("form2Example3c").checked;
+          const role = document.getElementById("roleSelect").value; // Get selected role
+  
+          // Check individual fields and display separate alerts for empty or unselected fields
+          if (firstName === "") {
+              alert("First name cannot be empty");
+              return false;
+          }
+  
+          if (lastName === "") {
+              alert("Last name cannot be empty");
+              return false;
+          }
+  
+          if (dob === "") {
+              alert("Date of Birth cannot be empty");
+              return false;
+          }
+  
+          if (username === "") {
+              alert("Username cannot be empty");
+              return false;
+          }
+  
+          if (password === "") {
+              alert("Password cannot be empty");
+              return false;
+          }
+  
+          if (confirmPassword === "") {
+              alert("Confirm Password cannot be empty");
+              return false;
+          }
+  
+          if (state === "") {
+              alert("Please select a state");
+              return false;
+          }
+  
+          if (district === "") {
+              alert("Please select a district");
+              return false;
+          }
+  
+          if (mobile === "") {
+              alert("Mobile number cannot be empty");
+              return false;
+          }
+  
+          if (email === "") {
+              alert("Email address cannot be empty");
+              return false;
+          }
+  
+          if (role === "") {
+              alert("Please select a role");
+              return false;
+          }
+  
+          if (!termsCheckbox) {
+              alert("Please accept the terms and conditions");
+              return false;
+          }
+  
+          return true; // If all fields are filled, the form will be submitted
+      }
   </script>
+  
+  
   <script>
     // Get references to HTML elements
     const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
     const usernameError = document.getElementById('UsernameError');
+    const emailError = document.getElementById('EmailError');
 
     // Function to validate the username
     function validateUsername() {
@@ -353,10 +371,33 @@
       usernameError.style.color = 'green'; // Reset text color
       return true;
   }
-  
+  function validateEmail() {
+    const email = emailInput.value.trim();
+    const emailRegex = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/;
+
+    if (email === '') {
+        emailError.textContent = 'Email address is required';
+        emailError.style.color = 'red';
+        return false;
+    } else if (email.length > 254) {
+        emailError.textContent = 'Email address is too long';
+        emailError.style.color = 'red';
+        return false;
+    } else if (!emailRegex.test(email)) {
+        emailError.textContent = 'Invalid email address';
+        emailError.style.color = 'red';
+        return false;
+    }
+
+    emailError.textContent = 'Good';
+    emailError.style.color = 'white';
+    return true;
+}
+
 
     // Event listener for real-time validation as the user types
     usernameInput.addEventListener('input', validateUsername);
+    emailInput.addEventListener('input', validateEmail);
 </script>
     </body>
 </html>

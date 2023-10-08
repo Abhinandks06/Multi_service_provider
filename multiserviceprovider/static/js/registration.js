@@ -3,7 +3,7 @@ regForm.addEventListener("submit", handleEventListener);
 
 // Initailising Input field VIA id
 //const usernameInput = document.getElementById("username");
-const emailInput = document.getElementById("email");
+// const emailInput = document.getElementById("email");
 const dobInput = document.getElementById('dob');
 const dobError = document.getElementById('dobError');
 const firstnameInput = document.getElementById("firstname");
@@ -14,7 +14,7 @@ firstnameInput.addEventListener("blur", validateFirstname);
 lastnameInput.addEventListener("blur", validateLastname);W
 dobInput.addEventListener("blur", validateDob);
 //usernameInput.addEventListener("blur", validateusername);
-emailInput.addEventListener("blur", validateEmail);
+// emailInput.addEventListener("blur", validateEmail);
 firstnameInput.addEventListener('input', function (event) {
    validateFirstname();
 });
@@ -30,13 +30,13 @@ lastnameInput.addEventListener('input', function (event)
 // passwordInput.addEventListener('input', function (event) {
 //   validatepassword1();
 // });
-emailInput.addEventListener("input", function(event){
-  validateEmail();
+// emailInput.addEventListener("input", function(event){
+//   validateEmail();
     
-});
-addressInput.addEventListener("input", function(event){
-    validateAddress();
-});
+// });
+// addressInput.addEventListener("input", function(event){
+//     validateAddress();
+// });
 // Function to Handle Form Submission
 function validateFirstname() {
     const firstnameInput = document.getElementById('firstname');
@@ -196,22 +196,22 @@ function validateDob() {
 // }
 
 // E-Mail Validation
-function validateEmail() {
-    const emailError = document.getElementById("email-error");
-    const email = emailInput.value.trim();
-    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!regex.test(email) || email.length == 0) {
-        emailError.style.color = "red";
-        if (email.length == 0){
-            emailError.textContent = "This Field Cannot be empty";
-        }else{
-            emailError.textContent = "Invalid email address.";
-        }
-        return false;
-    } else {
-        emailError.style.color = "White";
-        emailError.textContent = "Good";
+// function validateEmail() {
+//     const emailError = document.getElementById("email-error");
+//     const email = emailInput.value.trim();
+//     const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+//     if (!regex.test(email) || email.length == 0) {
+//         emailError.style.color = "red";
+//         if (email.length == 0){
+//             emailError.textContent = "This Field Cannot be empty";
+//         }else{
+//             emailError.textContent = "Invalid email address.";
+//         }
+//         return false;
+//     } else {
+//         emailError.style.color = "White";
+//         emailError.textContent = "Good";
         
-        return true;
-    }
-}
+//         return true;
+//     }
+// }
