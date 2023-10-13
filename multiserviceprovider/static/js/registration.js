@@ -92,6 +92,7 @@ function validateLastname() {
     const lastname = lastnameInput.value.trim();
     const minLength = 1;
     const maxLength = 15;
+    const maxSpaces = 1; // Maximum number of blank spaces allowed
     
     if (lastname.trim() === "") {
         lastnameError.textContent = "This Field Cannot be empty";
@@ -99,11 +100,15 @@ function validateLastname() {
         return false;
     } else if (lastname.length < minLength) {
         lastnameError.style.color = 'red';
-        lastnameError.textContent = `Last name must be at least ${minLength} characters.`;
+        lastnameError.textContent = `Last name must be at least ${minLength} character(s).`;
         return false;
     } else if (lastname.length > maxLength) {
         lastnameError.style.color = 'red';
         lastnameError.textContent = `Last name cannot exceed ${maxLength} characters.`;
+        return false;
+    } else if ((lastname.match(/\s/g) || []).length > maxSpaces) {
+        lastnameError.style.color = 'red';
+        lastnameError.textContent = `Last name cannot contain more than ${maxSpaces+1} blank spaces.`;
         return false;
     } else if (lastname.charAt(0).match(/[A-Za-z]/) === null) {
         lastnameError.style.color = 'red';
@@ -119,6 +124,7 @@ function validateLastname() {
         return true;
     }
 }
+
 
 function validateDob() {
     const dobInput = document.getElementById('dob');
@@ -155,6 +161,11 @@ function validateDob() {
     if (age < 16) {
         dobError.style.color = 'red';
         dobError.textContent = 'You must be at least 16 years old to register.';
+        return false;
+    }
+    else if (age > 120) {
+        dobError.style.color = 'red';
+        dobError.textContent = 'Select a valid age.';
         return false;
     }
 

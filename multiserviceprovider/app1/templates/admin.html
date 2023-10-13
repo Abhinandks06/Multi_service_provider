@@ -11,7 +11,7 @@
             background-color: #f5f5f5; /* Light Gray */
             margin: 0;
             padding: 0;
-            background-image: url('https://wallpapercrafter.com/sizes/3840x2160/245590-which-way-are-you-heading.jpg'); 
+            background-image: url('{% static "assets/img/admin.jpg" %}'); 
             background-size: cover; 
             background-repeat: no-repeat;
         }
@@ -41,7 +41,7 @@
         }
 
         .content {
-            margin-left: 220px;
+            margin-left: 120px;
             padding: 20px;
         }
 
@@ -59,7 +59,7 @@
             width: 100%;
             border-collapse: collapse;
             background-color: #ffffff; /* White */
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         th, td {
@@ -103,6 +103,22 @@
         .navbar {
             animation: fadeIn 1s; /* Apply the fadeIn animation to the navbar */
         }
+        h3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 48px!important;
+            color: white !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            height: 80vh; /* This ensures the content takes the full height of the viewport */
+            margin: 0; /* Remove default margin */
+        }
+        
+
+        span {
+            font-weight: bold;
+        }
         
     </style>
     <script>
@@ -145,11 +161,12 @@
                     <a class="nav-link" href="{% url 'admin_logout' %}">Logout</a>
                 </li>
             </ul>
+            
         </div>
     </div>
     
-    <h1 >Multi-Service Provider</h1>
-
+    <h1 >Multi-Service Provider </h1>
+    {% comment %} <h3> Welcome back,<span>{{request.user}}</span>  </h3> {% endcomment %}
     <div class="content">
         <table id="clientTable" style="display: none;">
             <thead>

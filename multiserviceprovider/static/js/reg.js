@@ -42,7 +42,7 @@ function validatePhone() {
     const mobileValue = mobileInput.value.trim();
 
     // Regular expression pattern for a valid 10-digit mobile phone number
-    const mobilePattern = /^[0-9]{10}$/;
+    const mobilePattern = /^[789]\d{9}$/;
 
     if (mobileValue === '') {
         mobileError.textContent = 'Mobile number cannot be empty.';
@@ -51,7 +51,7 @@ function validatePhone() {
         mobileError.textContent = 'Please enter a valid 10-digit numeric mobile number.';
         mobileError.style.color = 'red';
     } else if (!mobilePattern.test(mobileValue)) {
-        mobileError.textContent = 'Please enter a valid 10-digit mobile number.';
+        mobileError.textContent = 'Please enter a valid 10-digit mobile number starting with 7, 8, or 9.';
         mobileError.style.color = 'red';
     } else {
         mobileError.textContent = 'Good';

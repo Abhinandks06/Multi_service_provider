@@ -238,6 +238,16 @@
 .navbar-nav.ml-auto .nav-item {
   margin-left: 20px; /* Adjust the spacing as needed */
 }
+.parent {
+    position: relative;
+    height: 100px; /* Set a fixed height for the parent element */
+}
+
+.parent p {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
 
 
 
@@ -293,18 +303,22 @@
 			<br><br>	
 		<div class="remember-me--forget-password" align="right">
 
-			<p><a href="{% url 'password_reset' %}">forget password?</a></p>
+			<p><a href="{% url 'resetpassword' %}">forget password?</a></p>
 		</div>
 			<br>
-			<center><button type="submit" id="submit">Login</button></center><br><br>
-			<p>Don't have an account? <a href="signup">Creat Your Account</a> </p>
+			<center><button type="submit" id="submit">Login</button></center><br><br><br>
+			
+			<br><br><br>
+			<div class="parent">
+				<p>Don't have an account? <a href="signup">Create Your Account</a></p>
+			</div>
 	</div></form>
 </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="{% static 'js/login.js' %}" ></script>
-	<script>
+	{% comment %} <script src="{% static 'js/login.js' %}" ></script> {% endcomment %}
+	{% comment %} <script>
 		// Get references to HTML elements
 		const usernameInput = document.getElementById('username');
 		const usernameError = document.getElementById('UsernameError');
@@ -339,6 +353,6 @@
 	
 		// Event listener for real-time validation as the user types
 		usernameInput.addEventListener('input', validateUsername);
-	</script>
+	</script> {% endcomment %}
 </body>
 </html>

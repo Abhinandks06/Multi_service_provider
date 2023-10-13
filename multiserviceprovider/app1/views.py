@@ -3,7 +3,22 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
 from .models import MyUser
+from .views import *
 from django.views.decorators.cache import cache_control
+from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetDoneView,PasswordResetCompleteView
+from django.urls import reverse_lazy
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'password_reset_form.html'  # Your template for the password reset form
+    email_template_name = 'password_reset_email.html'  # Your email template for the password reset email
+    success_url = reverse_lazy('resetpassworddone')  # URL to redirect after successful form submission
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'password_reset_confirm.html'  # Your template for password reset confirmation form
+    success_url = reverse_lazy('passwordresetcomplete')  # URL to redirect after successful password reset
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'password_reset_done.html'  # Your template for password reset done page
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'password_reset_complete.html'  # Your template for password reset complete page
 # Signin View
 def signin(request):
     request.session.flush() 
@@ -58,6 +73,8 @@ def register(request):
                 messages.error(request, 'Username already taken.')
             elif MyUser.objects.filter(email=email).exists():
                 messages.error(request, 'Email already taken.')
+            # elif MyUser.objects.filter(phone=phoneno).exists():
+            #     messages.error(request, 'Phone number already taken.')
             else:
                 # Create user with the selected role
                 user = MyUser.objects.create_user(
@@ -75,6 +92,8 @@ def register(request):
                 messages.success(request, 'Account successfully registered.')
                 return redirect('signin')  # Redirect to signin page after successful registration
         except Exception as e:
+            if MyUser.objects.filter(phoneno=phoneno).exists():
+                messages.error(request, 'Phone Number already taken.')
             messages.error(request, f'Error: {e}')
 
     return render(request, 'signup.html')
