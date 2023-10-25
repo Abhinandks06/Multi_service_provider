@@ -131,6 +131,9 @@ def admin_logout(request):
 def index(request):
     request.session.flush() 
     return render(request, "index.html")
+def services(request):
+    request.session.flush() 
+    return render(request, "servicelist.html")
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
 def userpage(request):
@@ -204,6 +207,36 @@ def custom_admin_page(request):
     else:
         messages.error(request, "Login failed. Please check your credentials.")
     return redirect('signin')
-
-    
-    
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from .models import MyUser
+def deactivate_client(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id, role='client')  # Assuming 'client' is the role you're interested in
+    user.is_active = False
+    user.save()
+    return JsonResponse({"message": "Client deactivated successfully"})
+def activate_client(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id, role='client')  # Assuming 'client' is the role you're interested in
+    user.is_active = True
+    user.save()
+    return JsonResponse({"message": "Client activated successfully"})
+def deactivate_provider(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id, role='provider')  # Assuming 'client' is the role you're interested in
+    user.is_active = False
+    user.save()
+    return JsonResponse({"message": "Provider deactivated successfully"})
+def activate_provider(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id, role='provider')  # Assuming 'client' is the role you're interested in
+    user.is_active = True
+    user.save()
+    return JsonResponse({"message": "Provider activated successfully"})
+def deactivate_worker(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id, role='worker')  # Assuming 'client' is the role you're interested in
+    user.is_active = False
+    user.save()
+    return JsonResponse({"message": "Worker deactivated successfully"})
+def activate_worker(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id, role='worker')  # Assuming 'client' is the role you're interested in
+    user.is_active = True
+    user.save()
+    return JsonResponse({"message": "Worker activated successfully"})
