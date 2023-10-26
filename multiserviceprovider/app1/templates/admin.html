@@ -193,10 +193,16 @@
                             <td>{{ user_profile.email }}</td>
                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
                             <td>
-                                {% if user_profile.is_active == 1 %}
-                                    <button onclick="deactivate_client({{ user_profile.id }})">Deactivate</button>
+                                {% if user_profile.is_active %}
+                                    <form method="post" action="{% url 'deactivate_user' user_profile.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">Deactivate</button>
+                                    </form>
                                 {% else %}
-                                    <button onclick="activate_client({{ user_profile.id }})">Activate</button>
+                                    <form method="post" action="{% url 'activate_user' user_profile.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">Activate</button>
+                                    </form>
                                 {% endif %}
                             </td>
                         </tr>
@@ -233,10 +239,16 @@
                             <td>{{ user_profile.email }}</td>
                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
                             <td>
-                                {% if user_profile.is_active == 1 %}
-                                    <button onclick="deactivate_provider({{ user_profile.id }})">Deactivate</button>
+                                {% if user_profile.is_active %}
+                                    <form method="post" action="{% url 'deactivate_user' user_profile.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">Deactivate</button>
+                                    </form>
                                 {% else %}
-                                    <button onclick="activate_provider({{ user_profile.id }})">Activate</button>
+                                    <form method="post" action="{% url 'activate_user' user_profile.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">Activate</button>
+                                    </form>
                                 {% endif %}
                             </td>
                         </tr>
@@ -270,10 +282,16 @@
                             <td>{{ user_profile.email }}</td>
                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
                             <td>
-                                {% if user_profile.is_active == 1 %}
-                                    <button onclick="deactivate_worker({{ user_profile.id }})">Deactivate</button>
+                                {% if user_profile.is_active %}
+                                    <form method="post" action="{% url 'deactivate_user' user_profile.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">Deactivate</button>
+                                    </form>
                                 {% else %}
-                                    <button onclick="activate_worker({{ user_profile.id }})">Activate</button>
+                                    <form method="post" action="{% url 'activate_user' user_profile.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">Activate</button>
+                                    </form>
                                 {% endif %}
                             </td>
                         </tr>
@@ -282,216 +300,6 @@
             </tbody>
         </table>
     </div>
-    <script>
-        function showAlert(message, textColor = '#ffffff') {
-    // Create a new element for displaying the message
-    var messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
 
-    // Apply styles to the message div
-    messageDiv.style.backgroundColor = '#000000'; // Set background color to black
-    messageDiv.style.color = textColor; // Set text color to white
-    messageDiv.style.position = 'fixed';
-    messageDiv.style.left = '50%';
-    messageDiv.style.transform = 'translateX(-50%)';
-    messageDiv.style.padding = '10px 20px';
-    messageDiv.style.borderRadius = '5px';
-    messageDiv.style.zIndex = '9999';
-
-    // Determine the position of the alert (top or bottom)
-    messageDiv.style.bottom = '20px';
-
-    document.body.appendChild(messageDiv);
-
-    // Automatically remove the message after 3 seconds
-    setTimeout(function() {
-        messageDiv.remove();
-    }, 3000); // Message will be removed after 3 seconds (3000 milliseconds)
-}
-        
-        function deactivate_client(userId) {
-            fetch(`/deactivate_client/${userId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                if (data.success) {
-                    // Show message and reload the page after deactivating the user
-                    showAlert('Client deactivated successfully!');
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000); // Reload the page after 3 seconds
-                } else {
-                    // Handle error case if needed
-                    showAlert('Client deactivated');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error occurred during deactivation.');
-            });
-        }
-        
-        function activate_client(userId) {
-            fetch(`/activate_client/${userId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                if (data.success) {
-                    // Show message and reload the page after activating the user
-                    showAlert('Client activated successfully!');
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000); // Reload the page after 3 seconds
-                } else {
-                    // Handle error case if needed
-                    showAlert('Client activated.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error occurred during activation.');
-            });
-        }
-        function deactivate_provider(userId) {
-            fetch(`/deactivate_provider/${userId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                if (data.success) {
-                    // Show message and reload the page after deactivating the user
-                    showAlert('Provider deactivated successfully!');
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000); // Reload the page after 3 seconds
-                } else {
-                    // Handle error case if needed
-                    showAlert('Provider deactivated');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error occurred during deactivation.');
-            });
-        }
-        
-        function activate_provider(userId) {
-            fetch(`/activate_provider/${userId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                if (data.success) {
-                    // Show message and reload the page after activating the user
-                    showAlert('Provider activated successfully!');
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000); // Reload the page after 3 seconds
-                } else {
-                    // Handle error case if needed
-                    showAlert('Provider activated.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error occurred during activation.');
-            });
-        }
-        function deactivate_worker(userId) {
-            fetch(`/deactivate_worker/${userId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                if (data.success) {
-                    // Show message and reload the page after deactivating the user
-                    showAlert('Worker deactivated successfully!');
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000); // Reload the page after 3 seconds
-                } else {
-                    // Handle error case if needed
-                    showAlert('Worker deactivated');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error occurred during deactivation.');
-            });
-        }
-        
-        function activate_worker(userId) {
-            fetch(`/activate_worker/${userId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                if (data.success) {
-                    // Show message and reload the page after activating the user
-                    showAlert('Worker activated successfully!');
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000); // Reload the page after 3 seconds
-                } else {
-                    // Handle error case if needed
-                    showAlert('Worker activated.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error occurred during activation.');
-            });
-        }
-</script>
 </body>
 </html>

@@ -207,36 +207,43 @@ def custom_admin_page(request):
     else:
         messages.error(request, "Login failed. Please check your credentials.")
     return redirect('signin')
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
 from .models import MyUser
-def deactivate_client(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id, role='client')  # Assuming 'client' is the role you're interested in
-    user.is_active = False
-    user.save()
-    return JsonResponse({"message": "Client deactivated successfully"})
-def activate_client(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id, role='client')  # Assuming 'client' is the role you're interested in
-    user.is_active = True
-    user.save()
-    return JsonResponse({"message": "Client activated successfully"})
-def deactivate_provider(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id, role='provider')  # Assuming 'client' is the role you're interested in
-    user.is_active = False
-    user.save()
-    return JsonResponse({"message": "Provider deactivated successfully"})
-def activate_provider(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id, role='provider')  # Assuming 'client' is the role you're interested in
-    user.is_active = True
-    user.save()
-    return JsonResponse({"message": "Provider activated successfully"})
-def deactivate_worker(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id, role='worker')  # Assuming 'client' is the role you're interested in
-    user.is_active = False
-    user.save()
-    return JsonResponse({"message": "Worker deactivated successfully"})
-def activate_worker(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id, role='worker')  # Assuming 'client' is the role you're interested in
-    user.is_active = True
-    user.save()
-    return JsonResponse({"message": "Worker activated successfully"})
+from django.template.loader import render_to_string
+def deactivate_user(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id)
+    if user.is_active:
+        user.is_active = False
+        user.save()
+         # Send deactivation email
+        subject = 'Account Deactivation'
+        message = 'Your account has been deactivated by the admin.'
+        from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
+        recipient_list = [user.email]
+        html_message = render_to_string('deactivation_email.html', {'user': user})
+
+        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+
+        messages.success(request, f"User '{user.username}' has been deactivated, and an email has been sent.")
+    else:
+        messages.warning(request, f"User '{user.username}' is already deactivated.")
+    return redirect('custom_admin_page')
+
+def activate_user(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id)
+    if not user.is_active:
+        user.is_active = True
+        user.save()
+        subject = 'Account activated'
+        message = 'Your account has been activated.'
+        from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
+        recipient_list = [user.email]
+        html_message = render_to_string('activation_email.html', {'user': user})
+
+        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+    else:
+        messages.warning(request, f"User '{user.username}' is already active.")
+    return redirect('custom_admin_page')

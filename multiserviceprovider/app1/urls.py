@@ -32,10 +32,7 @@ urlpatterns = [
     path('resetpassword/<uidb64>/<token>/',CustomPasswordResetConfirmView.as_view(),name='resetpasswordconfirm'),
     path('resetpassword/complete',CustomPasswordResetCompleteView.as_view(),name='passwordresetcomplete'),
     path('custom_admin_page/', views.custom_admin_page, name='custom_admin_page'),
-    path('activate_client/<int:user_id>/', views.activate_client, name='activate_client'),
-    path('deactivate_client/<int:user_id>/', views.deactivate_client, name='deactivate_client'),
-    path('activate_provider/<int:user_id>/', views.activate_provider, name='activate_provider'),
-    path('deactivate_provider/<int:user_id>/', views.deactivate_provider, name='deactivate_provider'),
-    path('activate_worker/<int:user_id>/', views.activate_worker, name='activate_worker'),
-    path('deactivate_worker/<int:user_id>/', views.deactivate_worker, name='deactivate_worker')
+    path('activate_user/<int:user_id>/', views.activate_user, name='activate_user'),
+    path('deactivate_user/<int:user_id>/', views.deactivate_user, name='deactivate_user'),
+    
 ]
