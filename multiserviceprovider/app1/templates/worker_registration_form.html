@@ -1,0 +1,118 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Registration</title>
+    <style>
+        /* Style the background image */
+        body {
+            background-image: url('{% static 'userassets/img/bg/bg.jpg' %}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: blue;
+            animation: fadeIn 1s ease-in-out; /* Fade-in animation on loading */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .content {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 80px;
+            transition: box-shadow 0.3s ease; /* Smooth transition for box-shadow */
+        }
+
+        .content:hover {
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4); /* Glow effect on hover */
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #007BFF;
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #0056b3; /* Change border color on focus */
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Change background color on hover */
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease; /* Smooth transition for color */
+        }
+
+        a:hover {
+            color: #0056b3; /* Change color on hover */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>MULTISERVICEPROVIDER</h1>
+    <div class="content">
+        <!-- worker_registration_form.html -->
+        <h1>Worker Registration</h1>\
+        
+        <form method="post" action="{% url 'worker_registration' %}">
+    {% csrf_token %}
+            <label for="workername">Worker Name:</label>
+            <input type="text" id="workername" name="workername" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+        <a href="{% url 'providerpage' %}">Go Back</a>
+    </div>
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 {% load static %}
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en" >
 <head>
@@ -296,21 +297,29 @@
 		<div class="inputs">
 			<input type="text" placeholder="Username " id="username" name="username"  >
 			<span id="usernameerror"></span>
-			<br>
+			
 			<input type="password" placeholder="password" name="password" id="password">
 			<span id="passworderror"></span>
 		</div>	
-			<br><br>	
+			<br>	
 		<div class="remember-me--forget-password" align="right">
 
 			<p><a href="{% url 'resetpassword' %}">forget password?</a></p>
 		</div>
 			<br>
-			<center><button type="submit" id="submit">Login</button></center><br><br><br>
+			<center><button type="submit" id="submit">Login</button></center><br><br>
+			<div style="background-color: white; border-radius: 10px; box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1); display: inline-block; padding: 10px; width: 400px; text-align: center;">
+				<center>
+					{% block content %}
+					 <a href="{% comment %}{% provider_login_url 'google'%}{% endcomment %}"><img src="https://developers.google.com/identity/images/g-logo.png" alt="Sign in with Google" style="width: 50px; height: 50px;"> 
+					Sign in with Google</a>
+					{% endblock content %}
+				</center>
+			</div>
 			
-			<br><br><br>
-			<div class="parent">
-				<p>Don't have an account? <a href="signup">Create Your Account</a></p>
+			<br><br>
+			<div class="parent" style="text-align: center; background-color: #FFFFFF; padding: 10px; border-radius: 5px;">
+				<p style="font-weight: bold; font-size: 18px; margin: 0;">Don't have an account? <a href="signup" style="color: #3498db; text-decoration: none;">Create Your Account</a></p>
 			</div>
 	</div></form>
 </div>

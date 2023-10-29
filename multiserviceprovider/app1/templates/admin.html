@@ -121,27 +121,13 @@
         }
         
     </style>
-    <script>
-        function showTable(role) {
-            document.getElementById('clientTable').style.display = 'none';
-            document.getElementById('providerTable').style.display = 'none';
-            document.getElementById('workerTable').style.display = 'none';
-
-            if (role === 'client') {
-                document.getElementById('clientTable').style.display = 'table'; /* Display client table */
-            } else if (role === 'provider') {
-                document.getElementById('providerTable').style.display = 'table'; /* Display provider table */
-            } else if (role === 'worker') {
-                document.getElementById('workerTable').style.display = 'table'; /* Display worker table */
-            }
-        }
-    </script>
     <link rel="stylesheet" href="{% static 'admin.css' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
 </head>
 <body>
+
     <div class="navbar navbar-expand-lg navbar-dark bg-dark flex-column align-items-start">
         <button class="navbar-toggler mb-3" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -152,8 +138,14 @@
                     <a class="nav-link" href="#" onclick="showTable('client')">Clients</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showTable('provider')">Providers</a>
+                    <a class="nav-link" href="#" onclick="showProviderOptions()">Providers</a>
+                    <div id="providerOptions" style="display: none;">
+                        <button class="btn btn-primary mb-3" onclick="showProviderTable()">View Providers</button>
+                        <button class="btn btn-success mb-3" onclick="redirectToProviderRegistration()">Add New Provider</button>
+                    </div>
+                    
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="showTable('worker')">Workers</a>
                 </li>
@@ -215,10 +207,9 @@
             <thead>
                 <tr>
                     <th>Username</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-             
-                    <th>DOB</th>
+                    <th>Provider Name</th>
+                    <th>Owner Name</th>
+                    <th>Service type </th>
                     <th>District</th>
                     <th>Email</th>
                     <th>Status</th>
@@ -231,10 +222,9 @@
                     {% if user_profile.role == 'provider' %}
                         <tr>
                             <td>{{ user_profile.username }}</td>
-                            <td>{{ user_profile.first_name }}</td>
-                            <td>{{ user_profile.last_name }}</td>
-                
-                            <td>{{ user_profile.dob }}</td>
+                            <td>{{ user_profile.providername }}</td>
+                            <td>{{ user_profile.ownername }}</td>
+                            <td>{{ user_profile.ownername }}</td>
                             <td>{{ user_profile.district }}</td>
                             <td>{{ user_profile.email }}</td>
                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
@@ -300,6 +290,78 @@
             </tbody>
         </table>
     </div>
+<script>
+    function redirectToProviderRegistration() {
+        window.location.href = "{% url 'provider_registration' %}";
+    }
+    function showTable(tableType) {
+        // Hide all tables by default
+        document.getElementById('clientTable').style.display = 'none';
+        document.getElementById('providerTable').style.display = 'none';
+        document.getElementById('workerTable').style.display = 'none';
+    
+        // Show the selected table based on the tableType parameter
+        if (tableType === 'client') {
+            document.getElementById('clientTable').style.display = 'table';
+        } else if (tableType === 'worker') {
+            document.getElementById('workerTable').style.display = 'table';
+        }
+    }
+    
+    function showProviderOptions() {
+        document.getElementById('providerOptions').style.display = 'block';
+        document.getElementById('providerForm').style.display = 'none';
+        document.getElementById('clientTable').style.display = 'none';
+        document.getElementById('providerTable').style.display = 'none';
+        document.getElementById('workerTable').style.display = 'none';
+    }
+    
+    function showProviderTable() {
+        document.getElementById('providerTable').style.display = 'table';
+        document.getElementById('clientTable').style.display = 'none';
+        document.getElementById('workerTable').style.display = 'none';
+        document.getElementById('providerForm').style.display = 'none';
+    }
+    
+    function showProviderForm() {
+        document.getElementById('providerForm').style.display = 'block';
+        document.getElementById('clientTable').style.display = 'none';
+        document.getElementById('providerTable').style.display = 'none';
+        document.getElementById('workerTable').style.display = 'none';
+    }
+    
+    async function addProvider() {
+        const name = document.getElementById('providerName').value;
+        const serviceType = document.getElementById('serviceType').value;
+        const email = document.getElementById('providerEmail').value;
+    
+        // Perform input validation here if needed
+    
+        try {
+            const response = await fetch('/path/to/add/provider/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token,  // Include the CSRF token in the headers
+                },
+                body: JSON.stringify({ name, serviceType, email }),
+            });
+    
+            if (response.ok) {
+                // Provider added successfully, you can handle the response accordingly
+                // For example, show a success message and update the provider table
+                showProviderTable();
+            } else {
+                // Handle errors from the server, if any
+                console.error('Error adding provider');
+            }
+        } catch (error) {
+            // Handle network errors or other exceptions
+            console.error('Error:', error);
+        }
+    }
+    
 
+</script>    
 </body>
 </html>

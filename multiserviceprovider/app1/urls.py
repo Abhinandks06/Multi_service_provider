@@ -1,13 +1,17 @@
-from django.urls import path
+from django.urls import path , include
 from .views import *
 from . import views
 from .views import CustomPasswordResetView,CustomPasswordResetDoneView,CustomPasswordResetConfirmView,CustomPasswordResetCompleteView
 urlpatterns = [
     path('', index, name="index"),
+    path('provider_reg/', provider_reg, name="provider_reg"),
+    path('worker_reg/', worker_reg, name="worker_reg"),
     path('signin/', signin, name="signin"),
     path('signup/', register, name="signup"),
+    path('providersignup/', providerregister, name="providersignup"),
+    path('workersignup/', workerregister, name="workersignup"),
     path('userpage/',userpage, name='userpage'),
-    path('userpage/services',services, name='services'),
+    path('userpage/providerlist',providerlist, name='providerlist'),
     path('workerpage/',workerpage, name='workerpage'),
     path('providerpage/',providerpage, name='providerpage'),
     path('accounts/login/signin',signin),
@@ -34,5 +38,18 @@ urlpatterns = [
     path('custom_admin_page/', views.custom_admin_page, name='custom_admin_page'),
     path('activate_user/<int:user_id>/', views.activate_user, name='activate_user'),
     path('deactivate_user/<int:user_id>/', views.deactivate_user, name='deactivate_user'),
+    path('accounts/', include('allauth.urls')),
+    path('custom_admin_page/provider_registration/', views.provider_registration, name='provider_registration'),
+    path('providerpage/worker_registration/', views.worker_registration, name='worker_registration'),
+    #here google starts
+    path('auth/', include('social_django.urls', namespace='social')),
+    path("", include("allauth.urls")),
+    #here google ends
+    path('social/signup/', views.signup_redirect, name='signup_redirect'),
+    path('worker_registration/', views.worker_registration, name='worker_registration'),
+    path('providerpage/worker_registration/', views.worker_registration, name='worker_registration'),
+    path('worker_reg/register/', views.worker_registration, name='worker_registration'),
+     path('service/<str:category>/', views.service_providers_by_category, name='service_providers_by_category'),
+     path('update_profile/', views.update_profile, name='update_profile'),
     
 ]

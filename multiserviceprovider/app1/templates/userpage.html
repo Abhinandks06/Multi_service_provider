@@ -85,7 +85,7 @@
                                     </li>
                                     {% if user.is_authenticated %}
                                     <li><a href="#bookings">Bookings</a></li>
-                                    <li><a href="#userprofile">Status</a></li>
+                                    <li><a href="{% url 'update_profile' %}">Profile</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                     {% endif %}
                                 </ul>
@@ -111,7 +111,7 @@
                             </div>
                             <div class="cart-wrapper">
                                 
-                                <a href="#"><i class="fas fa-user"></i></a>  
+                                <a href="clickient_profile"><i class="fas fa-user"></i></a>  
                                 <span>{{request.user}}</span>         
                             </div>
                         </div>
@@ -258,48 +258,43 @@
                         <div class="single-food-category">
                             <a href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="">Cleaning</a></h4>
-                            <span>(13 providers)</span>
+                            <h4><a href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
                             <a href="" class="food-cat-img"><img src="userassets/img/icon/burger.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="">Laundry</a></h4>
-                            <span>(14 providers)</span>
+                            <h4><a href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
                             <a href="" class="food-cat-img"><img src="userassets/img/icon/fruit.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="">Plumbing</a></h4>
-                            <span>(8 providers)</span>
+                            <h4><a href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></h4>
+
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
                             <a href="" class="food-cat-img"><img src="userassets/img/icon/drinks.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="">Repair</a></h4>
-                            <span>(11 providers)</span>
+                            <h4><a href="{% url 'service_providers_by_category' category='Repair' %}">Repair</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
                             <a href="" class="food-cat-img"><img src="userassets/img/icon/vegetable.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="">Pest control</a></h4>
-                            <span>(11 providers)</span>
+                            <h4><a href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
                             <a href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="">Electrical</a></h4>
-                            <span>(13 providers)</span>
+                            <h4><a href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</a></h4>
                         </div>
                     </div>
                 </div>

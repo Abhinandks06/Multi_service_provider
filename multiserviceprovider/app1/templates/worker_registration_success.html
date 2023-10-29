@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset Complete</title>
+    <style>
+        /* Style the background image */
+        body {
+            background-image: url('https://images.pexels.com/photos/5418830/pexels-photo-5418830.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            animation: fadeIn 1s ease-in-out; /* Fade-in animation on loading */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .content {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 80px;
+            transition: box-shadow 0.3s ease; /* Smooth transition for box-shadow */
+        }
+
+        .content:hover {
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4); /* Glow effect on hover */
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease; /* Smooth transition for color */
+        }
+
+        a:hover {
+            color: #0056b3; /* Change color on hover */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h2>Registration link send successfully</h2>
+        <p>Worker has been given a link to register <a href="{% url 'providerpage' %}">Return</a></p>
+    </div>
+</body>
+
+</html>

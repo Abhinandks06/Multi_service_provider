@@ -21,19 +21,9 @@
             <a class="navbar-brand" href="#">MULTI-SERVICE PROVIDER</a>
     
             <!-- Right Side: Home and Sign In Links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="signin">Login</a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
-    <form id="regForm" action="{% url 'signup' %}" method='POST' onsubmit='return validateForm();'>
+    <form id="providerregForm" action="{% url 'providersignup' %}" method='POST' onsubmit='return validateForm();'>
       {% csrf_token %}
       <section class="h-custom gradient-custom-2 mb-0">
         <div class="container py-5 h-100">
@@ -44,13 +34,12 @@
                   <div class="row g-0">
                     <div class="col-lg-6">
                       <div class="p-5">
-                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Registration form</h3>
+                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Provider information</h3>
                         <div class="row">
                           <div class="col-md-6 mb-4 pb-2">
-      
                             <div class="form-outline">
-                              <label class="form-label" for="form3Examplev2">First name</label>
-                              <input type="text" id="firstname"  name="firstname" class="form-control form-control-lg" />
+                              <label class="form-label" for="form3Examplev2">Provider name</label>
+                              <input type="text" id="providername"  name="providername" class="form-control form-control-lg" />
                               <span id="firstnameError"></span>
                             </div>
       
@@ -58,19 +47,13 @@
                           <div class="col-md-6 mb-4 pb-2">
       
                             <div class="form-outline">
-                             <label class="form-label" for="form3Examplev3">Last name</label>
-                              <input type="text" id="lastname" name="lastname" class="form-control form-control-lg" />
+                             <label class="form-label" for="form3Examplev3">Owner name</label>
+                              <input type="text" id="ownername" name="ownername" class="form-control form-control-lg" />
                              <span id="lastnameError"></span></div>
       
                           </div>
                         </div>
-                        <div class="mb-4 pb-2">
-                          <div class="form-outline">
-                           <label class="form-label" for="form3Examplev4">Date of Birth</label>
-                            <input type="date" id="dob" name="dob" class="form-control form-control-lg" />
-                             <span id="dobError"></span>
-                          </div>
-                        </div>
+          
       
         
                           <div class="col-md-8 mb-4 pb-2 mb-md-0 pb-md-0">
@@ -89,6 +72,8 @@
                                 <input type="password" id="cpass"name="confirm_password" class="form-control form-control-lg" /><br>
                                 <span id="cpasserror"></span>
                               </div>
+                            
+      
                             </div>
       
                       </div>
@@ -202,13 +187,24 @@
                           </script>
                           </div>
                         </div>
-      
+                        <div class="form-outline form-white">
+                          <label for="service-type">Select Service Type:</label>
+                          <select id="service-type" name="service_type">
+                              <option value="Cleaning">Cleaning</option>
+                              <option value="Plumbing">Plumbing</option>
+                              <option value="Laundry">Laundry</option>
+                              <option value="Electrical Work">Electrical Work</option>
+                              <option value="Pest Control">Pest Control</option>
+                              <option value="Gardening">Gardening</option>
+                              <!-- Add more service types as needed -->
+                          </select>
+                      </div><br>
                         <div class="row">
                           <div class="col-md-7 mb-4 pb-2">
       
                             <div class="form-outline form-white">
-                              <label class="form-label" for="form3Examplea8">Phone Number</label>
-                              <input type="text" id="mobile" name="mobile_no" class="form-control form-control-lg" />
+                              <label class="form-label" for="form3Examplea8">Contact Number</label>
+                              <input type="text" id="mobile" name="contact_no" class="form-control form-control-lg" />
                               <span id="mobileerror"></span>
                             </div>
       
@@ -217,7 +213,7 @@
       
                         <div class="mb-4">
                           <div class="form-outline form-white">
-                            <label class="form-label" for="form3Examplea9">Your Email</label>
+                            <label class="form-label" for="form3Examplea9">Provider Email</label>
                             <input type="text" id="email" name="email" class="form-control form-control-lg" />
                             <span id="EmailError"></span>
                           </div>
@@ -244,8 +240,8 @@
         </div>
       </section>
     </form>
-    <script src="{% static 'js/registration.js' %}"></script>
-    <script src="{% static 'js/reg.js' %}"></script>
+    {% comment %} <script src="{% static 'js/registration.js' %}"></script>
+    <script src="{% static 'js/reg.js' %}"></script> {% endcomment %}
     <script>
       function validateForm() {
           // Get form elements

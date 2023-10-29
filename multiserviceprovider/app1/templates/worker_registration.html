@@ -33,7 +33,7 @@
             </div>
         </div>
     </nav>
-    <form id="regForm" action="{% url 'signup' %}" method='POST' onsubmit='return validateForm();'>
+    <form id="porkerregForm" action="{% url 'workersignup' %}" method='POST' onsubmit='return validateForm();'>
       {% csrf_token %}
       <section class="h-custom gradient-custom-2 mb-0">
         <div class="container py-5 h-100">
@@ -44,7 +44,7 @@
                   <div class="row g-0">
                     <div class="col-lg-6">
                       <div class="p-5">
-                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Registration form</h3>
+                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Worker Registration form</h3>
                         <div class="row">
                           <div class="col-md-6 mb-4 pb-2">
       
