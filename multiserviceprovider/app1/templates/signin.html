@@ -311,8 +311,8 @@
 			<div style="background-color: white; border-radius: 10px; box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1); display: inline-block; padding: 10px; width: 400px; text-align: center;">
 				<center>
 					{% block content %}
-					 <a href="{% comment %}{% provider_login_url 'google'%}{% endcomment %}"><img src="https://developers.google.com/identity/images/g-logo.png" alt="Sign in with Google" style="width: 50px; height: 50px;"> 
-					Sign in with Google</a>
+					<a class="google-signin" href="{% url 'social:begin' 'google-oauth2' %}">Google Signin</a>
+					 {% comment %} <a href=""><img src="https://developers.google.com/identity/images/g-logo.png" alt="Sign in with Google" style="width: 50px; height: 50px;">  {% endcomment %}
 					{% endblock content %}
 				</center>
 			</div>

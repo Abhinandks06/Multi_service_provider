@@ -50,6 +50,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body>
+        <script>
+            // Display alert message if it exists in the session
+            {% if messages %}
+            <div class="alert alert-success">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </script>
         
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
@@ -85,8 +95,14 @@
                                     </li>
                                     {% if user.is_authenticated %}
                                     <li><a href="#bookings">Bookings</a></li>
-                                    <li><a href="{% url 'update_profile' %}">Profile</a></li>
-                                    <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                                    <li><a href="#bookings">Profile</a>
+                                        <ul>
+                                            <li><a href="{% url 'view_profile' %}">View Profile</a></li>
+                                            <li><a href="{% url 'update_profile' %}">Update Profile</a></li>
+                                        </ul>
+                                    </li>
+                                    {% comment %} <li><a href="{% url 'client_profile' client.username %}">Update Profile</a></li> {% endcomment %}
+                                    <li><a href="user_logout">Logout</a></li> 
                                     {% endif %}
                                 </ul>
                             </nav>

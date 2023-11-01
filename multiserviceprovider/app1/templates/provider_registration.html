@@ -40,7 +40,7 @@
                             <div class="form-outline">
                               <label class="form-label" for="form3Examplev2">Provider name</label>
                               <input type="text" id="providername"  name="providername" class="form-control form-control-lg" />
-                              <span id="firstnameError"></span>
+                              <span id="providernameError"></span>
                             </div>
       
                           </div>
@@ -49,7 +49,7 @@
                             <div class="form-outline">
                              <label class="form-label" for="form3Examplev3">Owner name</label>
                               <input type="text" id="ownername" name="ownername" class="form-control form-control-lg" />
-                             <span id="lastnameError"></span></div>
+                             <span id="ownernameError"></span></div>
       
                           </div>
                         </div>
@@ -193,9 +193,8 @@
                               <option value="Cleaning">Cleaning</option>
                               <option value="Plumbing">Plumbing</option>
                               <option value="Laundry">Laundry</option>
-                              <option value="Electrical Work">Electrical Work</option>
-                              <option value="Pest Control">Pest Control</option>
-                              <option value="Gardening">Gardening</option>
+                              <option value="Electrical">ElectricalWork</option>
+                              <option value="Pestcontrol">PestControl</option>
                               <!-- Add more service types as needed -->
                           </select>
                       </div><br>
@@ -240,13 +239,13 @@
         </div>
       </section>
     </form>
-    {% comment %} <script src="{% static 'js/registration.js' %}"></script>
-    <script src="{% static 'js/reg.js' %}"></script> {% endcomment %}
+    <script src="{% static 'js/proregistration.js' %}"></script>
+    <script src="{% static 'js/proreg.js' %}"></script> 
     <script>
       function validateForm() {
           // Get form elements
-          const firstName = document.getElementById("firstname").value;
-          const lastName = document.getElementById("lastname").value;
+          const providername = document.getElementById("providername").value;
+          const ownername = document.getElementById("ownername").value;
           const dob = document.getElementById("dob").value;
           const username = document.getElementById("username").value;
           const password = document.getElementById("password").value;
@@ -259,12 +258,12 @@
           const role = document.getElementById("roleSelect").value; // Get selected role
   
           // Check individual fields and display separate alerts for empty or unselected fields
-          if (firstName === "") {
+          if (providername === "") {
               alert("First name cannot be empty");
               return false;
           }
   
-          if (lastName === "") {
+          if (ownername === "") {
               alert("Last name cannot be empty");
               return false;
           }

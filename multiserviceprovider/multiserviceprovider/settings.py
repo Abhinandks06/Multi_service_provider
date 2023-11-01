@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'social_django'
 
 
 ]
@@ -56,7 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware'
+    'allauth.account.middleware.AccountMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'multiserviceprovider.urls'
@@ -72,7 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request'
+                'django.template.context_processors.request',
+                'social_django.context_processors.backends',
 
             ],
         },
@@ -148,16 +151,20 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abhinandks2024a@mca.ajce.in'
 EMAIL_HOST_PASSWORD = 'Saltpot@006'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '194823522532-38u3jnj1mnb2di3tc6c1g10ahjiopc5s.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY =  '194823522532-38u3jnj1mnb2di3tc6c1g10ahjiopc5s.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 SITE_ID = 1
 SOCIALACCOUNT_LOGIN_ON_GET=True
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
     # `allauth` specific authentication methods, such as login by email
-     'allauth.account.auth_backends.AuthenticationBackend'
+    #  'allauth.account.auth_backends.AuthenticationBackend',
+     'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+      # ...
+    'social_core.backends.google.GoogleOAuth2',
+    # ...
+    'django.contrib.auth.backends.ModelBackend',
 ]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -171,5 +178,5 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'userpage'
 LOGOUT_REDIRECT_URL = '/'

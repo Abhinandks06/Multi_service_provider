@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class MyUser(AbstractUser):
-    email = models.EmailField(unique=True)  # Add email field with unique constraint
+    email = models.EmailField(unique=True)
     password = models.CharField(max_length=128, default="")
-    role = models.CharField(max_length=15, default='')
+    role = models.CharField(max_length=15, default='client')
+    userid = models.AutoField(primary_key=True) 
 class ServiceProvider(models.Model):
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
     providername = models.CharField(max_length=100)
     ownername = models.CharField(max_length=100)
     username = models.CharField(max_length=50, unique=True)
@@ -17,6 +19,7 @@ class ServiceProvider(models.Model):
     role = models.CharField(max_length=50)
     service_type = models.CharField(max_length=100)
 class Client(models.Model):
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
     first_name=models.TextField(max_length=100)
     last_name=models.TextField(max_length=100)
     username = models.CharField(max_length=50, unique=True)
@@ -28,6 +31,7 @@ class Client(models.Model):
     state = models.TextField(max_length=100)
     role = models.CharField(max_length=15, default='')
 class Worker(models.Model):
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
     first_name=models.TextField(max_length=100)
     last_name=models.TextField(max_length=100)
     username = models.CharField(max_length=50, unique=True)
@@ -39,5 +43,6 @@ class Worker(models.Model):
     state = models.TextField(max_length=100)
     role = models.CharField(max_length=15, default='')
     provider= models.CharField(max_length=50)
+   
 
     

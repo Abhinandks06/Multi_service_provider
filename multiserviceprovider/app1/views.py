@@ -3,11 +3,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
 from .models import MyUser,Client,Worker
+from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetDoneView,PasswordResetCompleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.hashers import make_password
+from social_django.models import UserSocialAuth
+from django.contrib.auth.hashers import check_password
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'password_reset_form.html'  # Your template for the password reset form
     email_template_name = 'password_reset_email.html'  # Your email template for the password reset email
@@ -20,6 +23,9 @@ class CustomPasswordResetDoneView(PasswordResetDoneView):
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'password_reset_complete.html'  # Your template for password reset complete page
 # Signin View
+from django.contrib.auth import authenticate, login
+from .models import Client, ServiceProvider, Worker
+
 def signin(request):
     request.session.flush() 
     if request.method == 'POST':
@@ -29,21 +35,26 @@ def signin(request):
         if myuser is not None:
             request.session['username'] = username
             login(request, myuser)
+        
+            # Redirect to the corresponding user page and pass the user_instance as context
             if myuser.role == "client":
-                return redirect('userpage')
+                return render(request, 'userpage.html')
+            elif myuser.role == "provider":
+                return render(request, 'providerpage.html')
+            elif myuser.role == "worker":
+                return render(request, 'workerpage.html')
             elif myuser.role == "admin":
                 return redirect('custom_admin_page')
-            elif myuser.role == "provider":
-                return redirect('providerpage')
-            elif myuser.role == "worker":
-                return redirect('workerpage')
         else:
             messages.error(request, "Incorrect Login. Please check your credentials.")
             return redirect('signin')
+
     return render(request, 'signin.html')
+
 
 # Register View
 def register(request):
+    user = None  # Initialize user variable outside the if block
     if request.method == 'POST':
         # Get form data
         firstname = request.POST.get('firstname')
@@ -77,30 +88,34 @@ def register(request):
                 messages.error(request, 'Phone number already taken.')
             else:
                 # Create MyUser instance
-                user = MyUser.objects.create_user(
+                hashed_password = make_password(password)
+                User = get_user_model()
+                user = User.objects.create(
                     username=username,
                     email=email,
-                    password=password,
+                    password=hashed_password,
                     role=role
                 )
-                
-                # Create Client instance
+
+                # Create Client instance associated with the created MyUser instance
                 client = Client.objects.create(
                     first_name=firstname,
                     last_name=lastname,
                     username=username,
                     email=email,
                     dob=dob,
-                    password=password,
+                    password=hashed_password,
                     phone=phoneno,
                     district=district,
                     state=state,
-                    role=role
+                    role=role,
+                    user=user
                 )
-                
+
                 messages.success(request, 'Account successfully registered.')
                 return redirect('signin')  # Redirect to signin page after successful registration
-        except Exception as e:
+
+        except ValidationError as e:
             messages.error(request, f'Error: {e}')
 
     return render(request, 'signup.html')
@@ -156,8 +171,8 @@ def userpage(request):
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
-        messages.error(request, "Login failed. Please check your credentials.")
-        return redirect('signin')
+        return render(request, 'userpage.html')
+        
 
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
@@ -205,12 +220,8 @@ def custom_admin_page(request):
         try:
             user = User.objects.get(username=username)
             if user.role == 'admin':
-                client_profiles = Client.objects.all()
-                worker_profiles = Worker.objects.all()
-                provider_profiles = ServiceProvider.objects.all()
-                myuser_profiles = MyUser.objects.all()
+                user_profiles=MyUser.objects.select_related('serviceprovider', 'client', 'worker').all()
                 
-                user_profiles = list(chain(client_profiles, worker_profiles, provider_profiles,myuser_profiles))
                 
                 context = {'user_profiles': user_profiles}
                 return render(request, 'admin.html', context)
@@ -227,8 +238,8 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from .models import MyUser
 from django.template.loader import render_to_string
-def deactivate_user(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id)
+def deactivate_user(request, userid):
+    user = get_object_or_404(MyUser, userid=userid)
     if user.is_active:
         user.is_active = False
         user.save()
@@ -243,8 +254,8 @@ def deactivate_user(request, user_id):
 
     return redirect('custom_admin_page')
 
-def activate_user(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id)
+def activate_user(request, userid):
+    user = get_object_or_404(MyUser, userid=userid)
     if not user.is_active:
         user.is_active = True
         user.save()
@@ -255,7 +266,6 @@ def activate_user(request, user_id):
         html_message = render_to_string('activation_email.html', {'user': user})
         send_mail(subject, message, from_email, recipient_list, html_message=html_message)
     return redirect('custom_admin_page')
-
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -359,41 +369,37 @@ def providerregister(request):
             messages.error(request, 'All fields are required.')
             return render(request, 'provider_registration.html')
         try:
-            if MyUser.objects.filter(username=username).exists():
-                messages.error(request, 'Username already taken.')
-            elif MyUser.objects.filter(email=email).exists():
-                messages.error(request, 'Email already taken.')
-            elif ServiceProvider.objects.filter(contact_number=contact_number).exists():
-                messages.error(request, 'Contact Number already taken.')
-            else:
-                # Hash the password
-                hashed_password = make_password(password)
-                
-                # Create MyUser instance
-                user = MyUser.objects.create(
-                    username=username,
-                    email=email,
-                    password=hashed_password,  # Store the hashed password
-                    role=role
-                )
+            if not email:
+                raise ValidationError("Email is required.")
+            # Create MyUser instance
+            User = get_user_model()
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,  # Store the password (it will be hashed internally)
+                role=role
+            )
 
-                # Create ServiceProvider instance
-                service_provider = ServiceProvider.objects.create(
-                    providername=providername,
-                    ownername=ownername,
-                    username=username,
-                    password=hashed_password,  # Store the hashed password
-                    state=state,
-                    district=district,
-                    contact_number=contact_number,
-                    email=email,
-                    role=role,
-                    service_type=service_type
-                )
+            # Create ServiceProvider instance associated with the created MyUser instance
+            service_provider = ServiceProvider.objects.create(
+                user=user,  # Assign the MyUser instance to the user field of ServiceProvider
+                providername=providername,
+                ownername=ownername,
+                password=make_password(password),  # Store the hashed password
+                state=state,
+                username=username,
+                email=email,
+                district=district,
+                contact_number=contact_number,
+                service_type=service_type,
+                role=role
 
-                messages.success(request, 'Account successfully registered.')
-                return redirect('signin')  # Redirect to signin page after successful registration
-        except Exception as e:
+            )
+
+            messages.success(request, 'Account successfully registered.')
+            return redirect('signin')  # Redirect to signin page after successful registration
+
+        except ValidationError as e:
             messages.error(request, f'Error: {e}')
 
     return render(request, 'provider_registration.html')
@@ -423,39 +429,36 @@ def workerregister(request):
             return render(request, 'signup.html')
 
         try:
-            if MyUser.objects.filter(username=username).exists():
-                messages.error(request, 'Username already taken.')
-            elif MyUser.objects.filter(email=email).exists():
-                messages.error(request, 'Email already taken.')
-            elif Client.objects.filter(phone=phoneno).exists():
-                messages.error(request, 'Phone number already taken.')
-            else:
-                # Create MyUser instance
-                hashed_password = make_password(password)
-                user = MyUser.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=hashed_password,
-                    role=role
-                )
-                
-                # Create Client instance
-                worker = Worker.objects.create(
-                    first_name=firstname,
-                    last_name=lastname,
-                    username=username,
-                    email=email,
-                    dob=dob,
-                    password=hashed_password,
-                    phone=phoneno,
-                    district=district,
-                    state=state,
-                    role=role,
-                )
-                
-                messages.success(request, 'Account successfully registered.')
-                return redirect('signin')  # Redirect to signin page after successful registration
-        except Exception as e:
+            if not email:
+                raise ValidationError("Email is required.")
+            # Create MyUser instance
+            User = get_user_model()
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,  # Store the password (it will be hashed internally)
+                role=role
+            )
+
+            # Create Worker instance associated with the created MyUser instance
+            worker = Worker.objects.create(
+                user=user,  # Assign the MyUser instance to the user field of Worker
+                first_name=firstname,
+                last_name=lastname,
+                dob=dob,
+                email=email,
+                password=make_password(password),  # Store the hashed password
+                phone=phoneno,
+                username=username,
+                district=district,
+                state=state,
+                role=role,
+            )
+
+            messages.success(request, 'Account successfully registered.')
+            return redirect('signin')  # Redirect to signin page after successful registration
+
+        except ValidationError as e:
             messages.error(request, f'Error: {e}')
 
     return render(request, 'signup.html')
@@ -470,27 +473,62 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-
+from django.shortcuts import get_object_or_404
 @login_required
 def update_profile(request):
-    user = request.user  # Get the logged-in user object
-    
+    client = Client.objects.get(user=request.user)
     if request.method == 'POST':
-        # Get form data
-        user.first_name = request.POST['first_name']
-        user.last_name = request.POST['last_name']
-        user.email = request.POST['email']
-        user.phone = request.POST['phone']
-        
-        # Check if password field is not empty, update password if provided
-        password = request.POST.get('password')
-        if password:
-            hashed_password = make_password(password)
-            user.password = hashed_password
+        # Get data from the POST request
+        username = request.POST.get('username')  # Assuming username is unique
+        email = request.POST.get('email')  # Note: Email field is read-only in the form, no need to process it here
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone = request.POST.get('phone')
 
-        # Save the updated user object
+        try:
+            # Retrieve the Client object based on the username
+            client = Client.objects.get(username=username)
+
+            # Update Client model fields
+            client.first_name = first_name
+            client.last_name = last_name
+            client.phone = phone
+            client = client  # Get the related User object
+            client.username = username
+            client.email = email
+            client.save()
+
+            # Update User model fields (assuming User is your custom User model)
+            user = client.user  # Get the related User object
+            user.username = username
+            user.email = email  # Update email field if needed
+            user.save()
+
+            messages.success(request, 'Profile updated successfully')
+            return redirect('update_profile')  # Replace 'login' with your desired redirect URL
+
+        except Client.DoesNotExist:
+            messages.error(request, 'Client not found')
+            # Handle the error, redirect to an error page or show an error message as needed
+
+    return render(request, 'update_profile.html',{'client': client})
+def profile_view(request):
+    client = Client.objects.get(user=request.user)  # Assuming you have a Client model related to the User model
+    return render(request, 'profile_view.html', {'client': client})
+from django.contrib.auth.hashers import make_password
+def google_authenticate(request):
+    # Handle the Google OAuth2 authentication process
+    # ...
+
+    # After successful authentication, create or get the user
+    try:
+        user_social = UserSocialAuth.objects.get(provider='google-oauth2', user=request.user)
+        user = user_social.user
+    except UserSocialAuth.DoesNotExist:
+        user = request.user
+        user.role = 'client'
         user.save()
-        messages.success(request, 'Profile updated successfully.')
-        return redirect('userpage')  # Redirect to the user's profile page after update
-        
-    return render(request, 'update_profile.html', {'user': user})
+    # Set the user's is_patient field to True
+
+    # Redirect to the desired page (phome.html for Patient role)
+    return redirect('userpage')  # Make sure you have a URL named 'phome

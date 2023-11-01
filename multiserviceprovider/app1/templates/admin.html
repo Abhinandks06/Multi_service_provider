@@ -158,9 +158,17 @@
     </div>
     
     <h1 >Multi-Service Provider </h1>
-    {% comment %} <h3> Welcome back,<span>{{request.user}}</span>  </h3> {% endcomment %}
     <div class="content">
-        <table id="clientTable" style="display: none;">
+        <!-- Filter Option -->
+        <label for="userRole" style="color: white;" >Filter by Role:</label>
+        <select id="userRole" onchange="filterTable()">
+            <option value="all">All</option>
+            <option value="client">Client</option>
+            <option value="provider">Provider</option>
+            <option value="worker">Worker</option>
+        </select>
+    <div class="content">
+        <table id="clientTable">
             <thead>
                 <tr>
                     <th>Username</th>
@@ -178,25 +186,23 @@
                     {% if user_profile.role == 'client' %}
                         <tr>
                             <td>{{ user_profile.username }}</td>
-                            <td>{{ user_profile.first_name }}</td>
-                            <td>{{ user_profile.last_name }}</td>
-                            <td>{{ user_profile.dob }}</td>
-                            <td>{{ user_profile.district }}</td>
+                            <td>{{ user_profile.client.first_name }}</td>
+                            <td>{{ user_profile.client.last_name }}</td>
+                            <td>{{ user_profile.client.dob }}</td>
+                            <td>{{ user_profile.client.district }}</td>
                             <td>{{ user_profile.email }}</td>
                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
-                            <td>
-                                {% if user_profile.is_active %}
-                                    <form method="post" action="{% url 'deactivate_user' user_profile.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit">Deactivate</button>
-                                    </form>
-                                {% else %}
-                                    <form method="post" action="{% url 'activate_user' user_profile.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit">Activate</button>
-                                    </form>
-                                {% endif %}
-                            </td>
+                            <td>{% if user_profile.is_active %}
+                                <form method="post" action="{% url 'deactivate_user' user_profile.userid %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Deactivate</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'activate_user' user_profile.userid %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Activate</button>
+                                </form>
+                            {% endif %}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -222,25 +228,23 @@
                     {% if user_profile.role == 'provider' %}
                         <tr>
                             <td>{{ user_profile.username }}</td>
-                            <td>{{ user_profile.providername }}</td>
-                            <td>{{ user_profile.ownername }}</td>
-                            <td>{{ user_profile.ownername }}</td>
-                            <td>{{ user_profile.district }}</td>
+                            <td>{{ user_profile.serviceprovider.providername }}</td>
+                            <td>{{ user_profile.serviceprovider.ownername }}</td>
+                            <td>{{ user_profile.serviceprovider.service_type }}</td>
+                            <td>{{ user_profile.serviceprovider.district }}</td>
                             <td>{{ user_profile.email }}</td>
-                            <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
-                            <td>
-                                {% if user_profile.is_active %}
-                                    <form method="post" action="{% url 'deactivate_user' user_profile.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit">Deactivate</button>
-                                    </form>
-                                {% else %}
-                                    <form method="post" action="{% url 'activate_user' user_profile.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit">Activate</button>
-                                    </form>
-                                {% endif %}
-                            </td>
+                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
+                             <td>{% if user_profile.is_active %}
+                                <form method="post" action="{% url 'deactivate_user' user_profile.userid %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Deactivate</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'activate_user' user_profile.userid %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Activate</button>
+                                </form>
+                            {% endif %}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -264,32 +268,57 @@
                     {% if user_profile.role == 'worker' %}
                         <tr>
                             <td>{{ user_profile.username }}</td>
-                            <td>{{ user_profile.first_name }}</td>
-                            <td>{{ user_profile.last_name }}</td>
+                            <td>{{ user_profile.worker.first_name }}</td>
+                            <td>{{ user_profile.worker.last_name }}</td>
                          
-                            <td>{{ user_profile.dob }}</td>
-                            <td>{{ user_profile.district }}</td>
+                            <td>{{ user_profile.worker.dob }}</td>
+                            <td>{{ user_profile.worker.district }}</td>
                             <td>{{ user_profile.email }}</td>
                             <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
-                            <td>
-                                {% if user_profile.is_active %}
-                                    <form method="post" action="{% url 'deactivate_user' user_profile.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit">Deactivate</button>
-                                    </form>
-                                {% else %}
-                                    <form method="post" action="{% url 'activate_user' user_profile.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit">Activate</button>
-                                    </form>
-                                {% endif %}
-                            </td>
+                            <td>{% if user_profile.is_active %}
+                                <form method="post" action="{% url 'deactivate_user' user_profile.userid %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Deactivate</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'activate_user' user_profile.userid %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Activate</button>
+                                </form>
+                            {% endif %}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    <script>
+        function filterTable() {
+            var selectedRole = document.getElementById("userRole").value;
+            var clientTable = document.getElementById("clientTable");
+            var providerTable = document.getElementById("providerTable");
+            var workerTable = document.getElementById("workerTable");
+
+            // Hide all tables by default
+            clientTable.style.display = "none";
+            providerTable.style.display = "none";
+            workerTable.style.display = "none";
+
+            // Show the selected table based on the filter option
+            if (selectedRole === "client") {
+                clientTable.style.display = "table";
+            } else if (selectedRole === "provider") {
+                providerTable.style.display = "table";
+            } else if (selectedRole === "worker") {
+                workerTable.style.display = "table";
+            } else if (selectedRole === "all") {
+                // Show all tables when "All" is selected
+                clientTable.style.display = "table";
+                providerTable.style.display = "table";
+                workerTable.style.display = "table";
+            }
+        }
+    </script>
 <script>
     function redirectToProviderRegistration() {
         window.location.href = "{% url 'provider_registration' %}";
