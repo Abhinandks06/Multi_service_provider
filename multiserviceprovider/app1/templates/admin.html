@@ -17,7 +17,7 @@
         }
 
         .navbar {
-            width: 100px;
+            width: 120px;
             float: left;
             background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiMbo-LIeBCqS7XpJEVKNRkycmPwTcMvqii1YWJ97sckWQjiyazRQr75oZt3x_dD-37jY&usqp=CAU');
             height: 100vh;
@@ -141,7 +141,8 @@
                     <a class="nav-link" href="#" onclick="showProviderOptions()">Providers</a>
                     <div id="providerOptions" style="display: none;">
                         <button class="btn btn-primary mb-3" onclick="showProviderTable()">View Providers</button>
-                        <button class="btn btn-success mb-3" onclick="redirectToProviderRegistration()">Add New Provider</button>
+                       <button class="btn btn-success mb-3" ><a href="{% url 'provider_registration'  %}">Add New Provider</a></button>
+                       <button class="btn btn-info mb-3"><a href="{% url 'admin_requests' %}" class="btn btn-primary">View Provider Requests</a></button>
                     </div>
                     
                 </li>

@@ -33,7 +33,7 @@
             </div>
         </div>
     </nav>
-    <form id="porkerregForm" action="{% url 'workersignup' %}" method='POST' onsubmit='return validateForm();'>
+    <form id="regForm" action="{% url 'signup' %}" method='POST' onsubmit='return validateForm();'>
       {% csrf_token %}
       <section class="h-custom gradient-custom-2 mb-0">
         <div class="container py-5 h-100">
@@ -44,7 +44,7 @@
                   <div class="row g-0">
                     <div class="col-lg-6">
                       <div class="p-5">
-                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Worker Registration form</h3>
+                        <h3 class="fw-normal mb-4" style="color: #4835d4;">Update Info</h3>
                         <div class="row">
                           <div class="col-md-6 mb-4 pb-2">
       
@@ -71,26 +71,6 @@
                              <span id="dobError"></span>
                           </div>
                         </div>
-      
-        
-                          <div class="col-md-8 mb-4 pb-2 mb-md-0 pb-md-0">
-                            <div class="form-outline">
-                              <label class="form-label" for="form3Examplev3">Username</label>
-                               <input type="text" id="username" name="username" class="form-control form-control-lg" />
-                              <span id="UsernameError"></span></div>
-       
-                            <div class="form-outline1">
-                             <label class="form-label" for="form3Examplev5">Password</label>
-                                <input type="password" id="password" name="password" class="form-control form-control-lg" /><br>
-                                 <span id="passwordError"></span>
-                              </div>
-                              <div class="form-outline2">
-                                <label class="form-label" for="form3Examplev5">Confirm Password</label>
-                                <input type="password" id="cpass"name="confirm_password" class="form-control form-control-lg" /><br>
-                                <span id="cpasserror"></span>
-                              </div>
-                            </div>
-      
                       </div>
                     </div>
                     <div class="col-lg-6 bg-indigo text-white">
@@ -211,24 +191,9 @@
                               <input type="text" id="mobile" name="mobile_no" class="form-control form-control-lg" />
                               <span id="mobileerror"></span>
                             </div>
-      
                           </div>
                         </div>
       
-                        <div class="mb-4">
-                          <div class="form-outline form-white">
-                            <label class="form-label" for="form3Examplea9">Your Email</label>
-                            <input type="text" id="email" name="email" class="form-control form-control-lg" />
-                            <span id="EmailError"></span>
-                          </div>
-                        </div>
-                        <div class="mb-4">
-                          <div class="form-outline form-white">
-                              <label class="form-label" for="providername">Provider Name</label>
-                              <input type="text" id="providername" name="providername" class="form-control form-control-lg" />
-                              <span id="ProviderNameError"></span>
-                          </div>
-                      </div>
                         <div class="form-check d-flex justify-content-start mb-4 pb-3">
                           <input class="form-check-input me-3" type="checkbox" value="" id="form2Example3c" />
                           <label class="form-check-label text-white" for="form2Example3">
@@ -238,8 +203,7 @@
                         </div>
       
                         <a href="/login"></a><button type="submit" id="submit" class="btn btn-light btn-lg"
-                          data-mdb-ripple-color="dark">Register</button></a>
-      
+                          data-mdb-ripple-color="dark">Update</button></a>
                       </div>
                     </div>
                   </div>
@@ -283,22 +247,7 @@
               alert("Date of Birth cannot be empty");
               return false;
           }
-  
-          if (username === "") {
-              alert("Username cannot be empty");
-              return false;
-          }
-  
-          if (password === "") {
-              alert("Password cannot be empty");
-              return false;
-          }
-  
-          if (confirmPassword === "") {
-              alert("Confirm Password cannot be empty");
-              return false;
-          }
-  
+
           if (state === "") {
               alert("Please select a state");
               return false;
@@ -311,16 +260,6 @@
   
           if (mobile === "") {
               alert("Mobile number cannot be empty");
-              return false;
-          }
-  
-          if (email === "") {
-              alert("Email address cannot be empty");
-              return false;
-          }
-  
-          if (role === "") {
-              alert("Please select a role");
               return false;
           }
   

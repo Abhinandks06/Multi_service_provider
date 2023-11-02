@@ -64,7 +64,7 @@
                                     <li><a href="#payment">Bookings</a></li>
                                     <li><a href="#payment">Manage Worker</a></li>
                                     <li><a href="{% url 'worker_registration' %}">Add worker</a></li>
-                                    <li><a href="#payment">History</a></li>
+                                    <li><a href="{% url 'provider_requests' %}">Worker request</a></li>
                                     {% if user.is_authenticated %}
                                     <li><a href="#status"></a></li>
                                     <li><a href="#userprofile">Profile</a></li>

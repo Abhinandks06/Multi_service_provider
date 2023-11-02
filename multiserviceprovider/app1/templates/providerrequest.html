@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Requests</title>
+    <style>
+        body {
+            background-image: url('path/to/background/image.jpg'); /* Add path to your background image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: right;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .content {
+            margin: 20px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .request-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+        }
+        
+        .btn-success:hover {
+            background-color: white;
+            color: black;
+        }
+        
+ 
+        
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'admin_logout' %}">Logout</a>
+        <a href="custom_admin_page">Home</a>
+        
+        <h1>MULTISERVICEPROVIDER</h1>
+    </div>
+
+    <div class="content">
+        <h1>Provider Registration Requests</h1>
+        <ul>
+            {% for request in provider_requests %}
+            <li class="request-box">
+                <strong>{{ request.providername }}</strong> - {{ request.email }}
+                <ul>
+                    <li>Owner Name: {{ request.ownername }}</li>
+                    <li>Username: {{ request.username }}</li>
+                    <li>District: {{ request.district }}</li>
+                    <li>Contact Number: {{ request.contact_number }}</li>
+                    <li>Service Type: {{ request.service_type }}</li>
+                </ul>
+                <form method="post" action="{% url 'activate_provider' request.user_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-success">Approve</button>
+                </form>
+            </li>
+            {% empty %}
+            <li>No registration requests.</li>
+            {% endfor %}
+        </ul>
+</div>
+</body>
+</html>

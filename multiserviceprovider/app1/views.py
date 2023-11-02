@@ -164,16 +164,57 @@ def userpage(request):
         try:
             user = MyUser.objects.get(username=username)
             if user.role == 'client':
-                return render(request, 'userpage.html')
+                # Check if the user exists in the Client model
+                try:
+                    client = Client.objects.get(user=user)
+                    return render(request, 'userpage.html')
+                except Client.DoesNotExist:
+                    messages.warning(request, "User profile not found. Please update your profile.")
+                    # Pass username and email to google_profile_update view
+                    email = user.email
+                    return redirect('google_profile_update', username=username, email=email,user=user)  
             else:
-                messages.error(request, "You dont have permission to access this page.")
+                messages.error(request, "You don't have permission to access this page.")
                 return redirect('signin')
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
+            return redirect('signin')  # Redirect to signin page if user does not exist
     else:
-        return render(request, 'userpage.html')
-        
+        return render(request, 'userpage.html')  
+def google_profile_update(request, username, email,user):
+    if request.method == 'POST':
+        # Get form data from the POST request
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        username = request.POST.get('username', '')
+        phoneno = request.POST.get('mobile_no')
+        state = request.POST.get('state')
+        dob = request.POST.get('dob')
+        district = request.POST.get('district')
+        email = request.POST.get('email')
+        role = "client"
 
+        # Retrieve the user object from the database based on the username
+        try:
+            client = Client.objects.get(user__username=username, user__email=email)
+        except MyUser.DoesNotExist:
+            client = Client.objects.create(
+                    first_name=firstname,
+                    last_name=lastname,
+                    username=username,
+                    email=email,
+                    dob=dob,
+                    phone=phoneno,
+                    district=district,
+                    state=state,
+                    role= role,
+                    user=user
+                )
+            return redirect('userpage')
+        return redirect('userpage')
+
+    # Render the template for the Google profile update form
+    return render(request, 'google_profile_update.html', {'username': username, 'email': email})
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
 def workerpage(request):
@@ -238,6 +279,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from .models import MyUser
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 def deactivate_user(request, userid):
     user = get_object_or_404(MyUser, userid=userid)
     if user.is_active:
@@ -270,39 +312,48 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 from .forms import ClientProfileForm
+from django.http import HttpResponseForbidden
+@login_required
 def provider_registration(request):
-    if request.method == 'POST':
-        provider_name = request.POST.get('providername')
-        provider_email = request.POST.get('email')
+    if request.user.role == 'admin':  # Assuming 'role' is the attribute in your User model indicating the user's role
+        if request.method == 'POST':
+            provider_name = request.POST.get('providername')
+            provider_email = request.POST.get('email')
         
         # Validate the input fields here if necessary
         
         # Replace 'YOUR_BASE_URL' with the actual base URL of your website
-        base_url = 'http://127.0.0.1:8000/provider_reg'
+            base_url = 'http://127.0.0.1:8000/provider_reg'
         
         # Create a registration link
-        registration_path = "register"  # Relative path for registration
-        registration_link = f"{base_url}/{register}"
+            registration_path = "register"  # Relative path for registration
+            registration_link = f"{base_url}/{register}"
         
         # Render HTML content for the email
-        html_message = render_to_string('provider_registration_email.html', {
-            'provider_name': provider_name,
-            'registration_link': registration_link
-        })
+            html_message = render_to_string('provider_registration_email.html', {
+                'provider_name': provider_name,
+                'registration_link': registration_link
+            })
         
         # Send HTML email to the provider's email
-        subject = 'Provider Registration Link'
-        plain_message = f"Click the following link to complete your registration: {registration_link}"
-        from_email = settings.DEFAULT_FROM_EMAIL
+            subject = 'Provider Registration Link'
+            plain_message = f"Click the following link to complete your registration: {registration_link}"
+            from_email = settings.DEFAULT_FROM_EMAIL
         
-        email = EmailMessage(subject, plain_message, from_email, [provider_email])
-        email.content_subtype = "html"
-        email.send(fail_silently=False)
+            email = EmailMessage(subject, plain_message, from_email, [provider_email])
+            email.content_subtype = "html"
+            email.send(fail_silently=False)
         
         # Redirect to a success page or display a success message
-        return render(request, 'provider_registration_success.html')
-    
-    return render(request, 'provider_registration_form.html')
+           
+            return render(request, 'provider_registration_success.html')
+        else:
+            messages.error(request, "Login failed. Please check your credentials.")
+        
+        return render(request, 'provider_registration_form.html')
+    else:
+        return render(request, 'signin.html')
+        
 def provider_reg(request):
     request.session.flush() 
     return render(request, "provider_registration.html")
@@ -377,7 +428,8 @@ def providerregister(request):
                 username=username,
                 email=email,
                 password=password,  # Store the password (it will be hashed internally)
-                role=role
+                role=role,
+                is_active=False
             )
 
             # Create ServiceProvider instance associated with the created MyUser instance
@@ -392,11 +444,12 @@ def providerregister(request):
                 district=district,
                 contact_number=contact_number,
                 service_type=service_type,
-                role=role
+                role=role,
+                
 
             )
 
-            messages.success(request, 'Account successfully registered.')
+            messages.success(request, 'Registration request sent to admin for approval.')
             return redirect('signin')  # Redirect to signin page after successful registration
 
         except ValidationError as e:
@@ -417,9 +470,9 @@ def workerregister(request):
         password = request.POST.get('password')
         confirmpassword = request.POST.get('confirm_password')
         role = "worker"  # Get selected role from the dropdown
-        
+        providername = request.POST.get('providername')  # Get providername from the form
         # Check for empty fields
-        if not firstname or not lastname or not username or not phoneno or not state or not dob or not district or not email or not password or not confirmpassword or not role: 
+        if not firstname or not lastname or not username or not phoneno or not state or not dob or not district or not email or not password or not confirmpassword or not role or not providername: 
             messages.error(request, 'All fields are required.')
             return render(request, 'signup.html')
 
@@ -431,28 +484,34 @@ def workerregister(request):
         try:
             if not email:
                 raise ValidationError("Email is required.")
+            
+            # Get provider based on providername
+            try:
+                provider = ServiceProvider.objects.get(providername=providername)
+            except ServiceProvider.DoesNotExist:
+                messages.error(request, 'Invalid provider name.')
+                return render(request, 'signup.html')
+
             # Create MyUser instance
             User = get_user_model()
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password,  # Store the password (it will be hashed internally)
-                role=role
+                role=role,
             )
 
-            # Create Worker instance associated with the created MyUser instance
+            # Create Worker instance associated with the created MyUser instance and provider
             worker = Worker.objects.create(
-                user=user,  # Assign the MyUser instance to the user field of Worker
                 first_name=firstname,
                 last_name=lastname,
                 dob=dob,
                 email=email,
-                password=make_password(password),  # Store the hashed password
                 phone=phoneno,
-                username=username,
                 district=district,
                 state=state,
-                role=role,
+                role="worker",
+                provider=provider  # Assign the provider to the worker
             )
 
             messages.success(request, 'Account successfully registered.')
@@ -517,10 +576,6 @@ def profile_view(request):
     return render(request, 'profile_view.html', {'client': client})
 from django.contrib.auth.hashers import make_password
 def google_authenticate(request):
-    # Handle the Google OAuth2 authentication process
-    # ...
-
-    # After successful authentication, create or get the user
     try:
         user_social = UserSocialAuth.objects.get(provider='google-oauth2', user=request.user)
         user = user_social.user
@@ -528,7 +583,48 @@ def google_authenticate(request):
         user = request.user
         user.role = 'client'
         user.save()
-    # Set the user's is_patient field to True
 
-    # Redirect to the desired page (phome.html for Patient role)
-    return redirect('userpage')  # Make sure you have a URL named 'phome
+    return redirect('userpage')  
+from django.shortcuts import get_object_or_404
+from .models import ServiceProvider
+
+@login_required
+def admin_requests(request):
+    provider_requests = ServiceProvider.objects.filter(user__is_active=False)
+    return render(request, 'providerrequest.html', {'provider_requests': provider_requests})
+@login_required
+def provider_requests(request):
+    worker_requests = Worker.objects.filter(user__is_active=False)
+    return render(request, 'workerrequest.html', {'worker_requests': worker_requests})
+def activate_provider(request, user_id):
+    # Retrieve the ServiceProvider instance associated with the request ID
+    provider_request = get_object_or_404(ServiceProvider, user_id=user_id, user__is_active=False)
+
+    # Set is_active to True and save the user
+    provider_request.user.is_active = True
+    provider_request.user.save()
+    subject = 'Account approved'
+    message = 'Your account has been approved .'
+    from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
+    recipient_list = [provider_request.user.email]
+    html_message = render_to_string('activation_email.html', {'user': provider_request.user})
+    send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+    return redirect('admin_requests') 
+
+    # Return a success response (you can customize the response as needed)
+def activate_worker(request, user_id):
+    # Retrieve the ServiceProvider instance associated with the request ID
+    worker_request = get_object_or_404(Worker, user_id=user_id, user__is_active=False)
+
+    # Set is_active to True and save the user
+    worker_request.user.is_active = True
+    worker_request.user.save()
+    subject = 'Account approved'
+    message = 'Your account has been approved .'
+    from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
+    recipient_list = [worker_request.user.email]
+    html_message = render_to_string('activation_email.html', {'user': worker_request.user})
+    send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+    return redirect('admin_requests') 
+
+    

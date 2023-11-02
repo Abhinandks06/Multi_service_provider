@@ -77,6 +77,15 @@ urlpatterns = [
      path('view_profile/userpage.html',userpage, name='userpage'), 
      path('view_profile/userpage.html',userpage, name='userpage'), 
      path('social-auth/', include('social_django.urls', namespace='social-auth')),
+     path('google-profile-update/<str:username>/<str:email>/', views.google_profile_update, name='google_profile_update'),
+     path('userpage/google-profile-update/<str:username>/<str:email>/', views.google_profile_update, name='google_profile_update'),
+     path('custom_admin_page/requests/', views.admin_requests, name='admin_requests'),
+     path('custom_admin_page/requests/custom_admin_page', views.custom_admin_page, name='custom_admin_page'),
+     path('custom_admin_page/activate_provider/<int:user_id>/', views.activate_provider, name='activate_provider'),
+     path('providerpage/providerrequests/', views.provider_requests, name='provider_requests'),
+     path('providerpage/providerrequests/providerpage', views.providerpage, name='providerpage'),
+     path('providerpage/providerrequests/activate_worker/<int:user_id>/', views.activate_worker, name='activate_worker'),
+     path('providerpage/providerrequests/workerpage', views.providerpage, name='providerpage'),
 
 
 ]
