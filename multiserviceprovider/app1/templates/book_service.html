@@ -485,7 +485,46 @@
             margin: 10px;
             padding: 15px;
         }
-  
+        .booking-form-box {
+            background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    opacity: 0.9;
+    text-align: left;
+    max-width: 700px;
+    margin: 0 auto; /* Center the box horizontally */
+    margin-top: 0%; /
+        }
+        
+        .booking-form-box label,
+        .booking-form-box input,
+        .booking-form-box textarea {
+            display: block;
+            margin-bottom: 10px;
+            width: 600px;
+        }
+        
+        .booking-form-box textarea {
+            resize: vertical;
+        }
+        
+        .booking-form-box button {
+            background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    text-align: center; /* Align the button text in the center */
+    display: block; /* Make the button a block element */
+    margin: 0 auto; /* Center the button horizontally */
+        }
+        
+        .booking-form-box button:hover {
+            background-color: #0056b3;
+        }
       
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -538,13 +577,6 @@
                     </div>
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
-                            <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
-                                </form>
-                            </div>
                             <div class="settings-wrapper">
                                 <a href="#"><i class="fas fa-bell"></i></a>
                             </div>
@@ -592,18 +624,24 @@
                             <br> <br> <br> <br> <br> <br>
                             
                             <div class="container">
-                              <ul>
-                                {% for provider in providers %}
-                                <div class="provider-card">
-                                    <h3>{{ provider.providername }}</h3>
-                                    <p><strong>Service Type:</strong> {{ provider.service_type }}</p>
-                                    <p><strong>Email:</strong> {{ provider.email }}</p>
-                                    <a href="{% url 'render_booking_form' provider.user.userid %}" class="btn btn-primary">Book Service</a>
-                                </div>
-                                {% empty %}
-                                <p>No providers found for {{ category }}.</p>
-                                {% endfor %}
-                            </ul>
+                                <div class="booking-form-box">
+                                  <form method="post" action="{% url 'create_booking' %}" onsubmit="return validateForm()">
+                                    {% csrf_token %}
+                                    <!-- Hidden input fields for providerid and userid -->
+                                    <input type="hidden" id="providerid" name="providerid" value="{{ provider_id }}">
+                                    <input type="hidden" id="userid" name="userid" value="{{ client_id }}">
+                                    <input type="hidden" id="clientphone" name="clientphone" value="{{ client_phone }}">
+                                    <label for="name">Your Name:</label>
+                                    <input type="text" id="name" name="name" required><br>                    
+                                    <label for="service_date">Preferred Service Date:</label>
+                                    <input type="date" id="service_date" name="service_date" required><br>
+                                    
+                                    <label for="service_time">Preferred Service Time:</label>
+                                    <input type="time" id="service_time" name="service_time" required><br>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                          </div>
 
                         </div>
                     </div>
@@ -615,6 +653,46 @@
         <!-- Hero Area End -->
         <!-- Food Categry Area Start -->
         <!-- All js here -->
+        <script>
+            function validateForm() {
+                var name = document.getElementById("name").value;
+
+                var serviceDate = document.getElementById("service_date").value;
+                var serviceTime = document.getElementById("service_time").value;
+            
+                // Validate name (should contain only alphabets)
+                if (!/^[A-Za-z]+$/.test(name)) {
+                    alert("Please enter a valid name containing only alphabets.");
+                    return false;
+                }
+            
+                // Validate phone number (should start with 7, 8, or 9 and be 10 digits long)
+
+                // Validate service date (should not be empty and within a month from current date)
+                var currentDate = new Date();
+                var selectedDate = new Date(serviceDate);
+                var oneMonthLater = new Date();
+                oneMonthLater.setMonth(currentDate.getMonth() + 1);
+            
+                if (serviceDate.trim() === "" || selectedDate < currentDate || selectedDate > oneMonthLater) {
+                    alert("Please select a valid service date within the next month.");
+                    return false;
+                }
+            
+                // Validate service time (should not be empty and between 8am and 6pm)
+                var selectedTime = new Date("1970-01-01T" + serviceTime);
+                var startTime = new Date("1970-01-01T08:00");
+                var endTime = new Date("1970-01-01T18:00");
+            
+                if (serviceTime.trim() === "" || selectedTime < startTime || selectedTime > endTime) {
+                    alert("Please select a valid service time between 8am and 6pm.");
+                    return false;
+                }
+            
+                
+                return true;
+            }
+        </script>
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>

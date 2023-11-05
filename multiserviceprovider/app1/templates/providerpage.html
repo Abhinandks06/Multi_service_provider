@@ -61,10 +61,10 @@
                                 <ul>
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
-                                    <li><a href="#payment">Bookings</a></li>
-                                    <li><a href="#payment">Manage Worker</a></li>
+                                    <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
+                                    <li><a href="{% url 'worker_requests' %}?user_id={{ provider_id }}">Worker Requests</a></li>
                                     <li><a href="{% url 'worker_registration' %}">Add worker</a></li>
-                                    <li><a href="{% url 'provider_requests' %}">Worker request</a></li>
+                                    <li><a href="{% url 'bookinghistory' %}">History</a></li>
                                     {% if user.is_authenticated %}
                                     <li><a href="#status"></a></li>
                                     <li><a href="#userprofile">Profile</a></li>

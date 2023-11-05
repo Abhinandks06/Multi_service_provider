@@ -265,31 +265,32 @@
                 </tr>
             </thead>
             <tbody>
-                {% for user_profile in user_profiles %}
-                    {% if user_profile.role == 'worker' %}
-                        <tr>
-                            <td>{{ user_profile.username }}</td>
-                            <td>{{ user_profile.worker.first_name }}</td>
-                            <td>{{ user_profile.worker.last_name }}</td>
-                         
-                            <td>{{ user_profile.worker.dob }}</td>
-                            <td>{{ user_profile.worker.district }}</td>
-                            <td>{{ user_profile.email }}</td>
-                            <td>{% if user_profile.is_active == 1 %}Active{% else %}Inactive{% endif %}</td>
-                            <td>{% if user_profile.is_active %}
-                                <form method="post" action="{% url 'deactivate_user' user_profile.userid %}">
-                                    {% csrf_token %}
-                                    <button type="submit">Deactivate</button>
-                                </form>
-                            {% else %}
-                                <form method="post" action="{% url 'activate_user' user_profile.userid %}">
-                                    {% csrf_token %}
-                                    <button type="submit">Activate</button>
-                                </form>
-                            {% endif %}</td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
+                {% for userprofile in user_profiles %}
+                {% if userprofile.role == 'worker' %}
+                <tr>
+                    <td>{{ userprofile.username }}</td>
+                    <td>{{ userprofile.worker.first_name }}</td>
+                    <td>{{ userprofile.worker.last_name }}</td>
+                    <td>{{ userprofile.worker.dob }}</td>
+                    <td>{{ userprofile.worker.district }}</td>
+                    <td>{{ userprofile.email }}</td>
+                    <td>{% if userprofile.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    <td>
+                        {% if userprofile.is_active %}
+                            <form method="post" action="{% url 'deactivate_user' userprofile.userid %}">
+                                {% csrf_token %}
+                                <button type="submit">Deactivate</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'activate_user' userprofile.userid %}">
+                                {% csrf_token %}
+                                <button type="submit">Activate</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
             </tbody>
         </table>
     </div>

@@ -485,7 +485,20 @@
             margin: 10px;
             padding: 15px;
         }
-  
+        /* styles.css */
+        /* styles.css */
+.booking-box {
+    margin-top: 20px;
+}
+
+.booking-item {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8); /* Set opacity to 0.8 */
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
       
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -592,18 +605,36 @@
                             <br> <br> <br> <br> <br> <br>
                             
                             <div class="container">
-                              <ul>
-                                {% for provider in providers %}
-                                <div class="provider-card">
-                                    <h3>{{ provider.providername }}</h3>
-                                    <p><strong>Service Type:</strong> {{ provider.service_type }}</p>
-                                    <p><strong>Email:</strong> {{ provider.email }}</p>
-                                    <a href="{% url 'render_booking_form' provider.user.userid %}" class="btn btn-primary">Book Service</a>
-                                </div>
-                                {% empty %}
-                                <p>No providers found for {{ category }}.</p>
-                                {% endfor %}
-                            </ul>
+                              
+                   <!-- your_template.html -->
+<!-- your_template.html -->
+<div class="booking-box">
+  {% for booking in bookings %}
+  <div class="booking-item">
+    <ul>
+      <p>
+          Client Name: {{ booking.name }}<br>
+          Client Phone: {{ booking.phone }}<br>
+          Date: {{ booking.date }}<br>
+          Time: {{ booking.time }}<br>
+          Status: {{ booking.status }}<br>
+
+          {% if booking.status == 'pending' %}
+          <form method="post" action="{% url 'approve_booking' booking.bookingid %}">
+              {% csrf_token %}
+              <button type="submit">Approve Booking</button>
+          </form>
+          {% endif %}
+      </p>
+    </ul>
+  </div>
+  {% empty %}
+  <p>No bookings available.</p>
+  {% endfor %}
+</div>
+
+
+                            
 
                         </div>
                     </div>

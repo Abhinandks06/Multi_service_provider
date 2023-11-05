@@ -77,7 +77,7 @@
 <body>
     <div class="navbar">
         <a href="{% url 'worker_logout' %}">Logout</a>
-        <a href="workerpage">Home</a>
+        <a href="{% url 'providerpage' %}">Home</a>
         
         <h1>MULTISERVICEPROVIDER</h1>
     </div>
@@ -85,17 +85,15 @@
     <div class="content">
         <h1>Worker Registration Requests</h1>
         <ul>
-            {% for request in worker_requests %}
+            {% for request in workers %}
             <li class="request-box">
-                <strong>{{ request.first_name }}</strong> - {{ request.email }}
                 <ul>
-                    <li>Owner Name: {{ request.last_name }}</li>
-                    <li>Username: {{ request.username }}</li>
+                    <li>Name: {{ request.first_name }}</li>
+                    <li>Email: {{ request.email }}</li>
+                    <li>Phone: {{ request.phone }}</li>
                     <li>District: {{ request.district }}</li>
-                    <li>Contact Number: {{ request.contact_number }}</li>
-                    <li>DOB: {{ request.dob }}</li>
                 </ul>
-                <form method="post" action="{% url 'activate_worker' request.user_id %}">
+                <form method="post" action="{% url 'approve_worker' request.user_id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn-success">Approve</button>
                 </form>

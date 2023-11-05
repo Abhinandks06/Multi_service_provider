@@ -6,6 +6,7 @@ class MyUser(AbstractUser):
     password = models.CharField(max_length=128, default="")
     role = models.CharField(max_length=15, default='client')
     userid = models.AutoField(primary_key=True) 
+    
 class ServiceProvider(models.Model):
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
     providername = models.CharField(max_length=100, unique=True)
@@ -32,7 +33,7 @@ class Client(models.Model):
     role = models.CharField(max_length=15, default='')
 class Worker(models.Model):
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
-    provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, related_name='worker')
+    provider = models.TextField(max_length=100)
     # Additional fields specific to workers can be added here
     first_name = models.TextField(max_length=100)
     last_name = models.TextField(max_length=100)
@@ -42,6 +43,23 @@ class Worker(models.Model):
     district = models.TextField(max_length=100)
     state = models.TextField(max_length=100)
     role = models.CharField(max_length=15)
-   
+class ClientBooking(models.Model):
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    CANCELED = 'canceled'
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (APPROVED, 'Approved'),
+        (CANCELED, 'Canceled'),
+    ]
+    bookingid = models.AutoField(primary_key=True)
+    clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
+    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=15)
+    date = models.DateField()
+    time = models.TimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+
 
     

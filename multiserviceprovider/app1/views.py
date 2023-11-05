@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import MyUser,Client,Worker
+from .models import MyUser,Client,Worker,ClientBooking
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -38,11 +38,11 @@ def signin(request):
         
             # Redirect to the corresponding user page and pass the user_instance as context
             if myuser.role == "client":
-                return render(request, 'userpage.html')
+                return redirect('userpage')
             elif myuser.role == "provider":
-                return render(request, 'providerpage.html')
+                return redirect('providerpage')
             elif myuser.role == "worker":
-                return render(request, 'workerpage.html')
+                return redirect('workerpage')
             elif myuser.role == "admin":
                 return redirect('custom_admin_page')
         else:
@@ -156,8 +156,6 @@ def index(request):
 def services(request):
     request.session.flush() 
     return render(request, "servicelist.html")
-@login_required
-@cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
 def userpage(request):
     if 'username' in request.session:
         username = request.session['username']
@@ -181,6 +179,7 @@ def userpage(request):
             return redirect('signin')  # Redirect to signin page if user does not exist
     else:
         return render(request, 'userpage.html')  
+@login_required
 def google_profile_update(request, username, email,user):
     if request.method == 'POST':
         # Get form data from the POST request
@@ -241,16 +240,18 @@ def providerpage(request):
         try:
             user = MyUser.objects.get(username=username)
             if user.role == 'provider':
-                return render(request, 'providerpage.html')
+                context = {
+                    'user': user,
+                    'provider_id': user.userid  # Pass the provider's ID to the template context
+                }
+                return render(request, 'providerpage.html', context)
             else:
-                messages.error(request, "You dont have permission to access this page.")
+                messages.error(request, "You don't have permission to access this page.")
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
         messages.error(request, "Login failed. Please check your credentials.")
-    messages.error(request, "You dont have permission to access this page.")
-    return redirect('signin')
-
+        return redirect('signin')  # Redirect should be here if the user is not logged in or doesn't have permission
 from itertools import chain
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
@@ -261,7 +262,7 @@ def custom_admin_page(request):
         try:
             user = User.objects.get(username=username)
             if user.role == 'admin':
-                user_profiles=MyUser.objects.select_related('serviceprovider', 'client', 'worker').all()
+                user_profiles=MyUser.objects.select_related('serviceprovider', 'client','worker').all()
                 
                 
                 context = {'user_profiles': user_profiles}
@@ -392,9 +393,13 @@ def worker_reg(request):
 def providerlist(request):
     request.session.flush() 
     return render(request, "providerlist.html")
+
 def signup_redirect(request):
     messages.error(request, "Something wrong here, it may be that you already have account!")
     return redirect("signin")
+@login_required
+def book_service(request):
+    return render(request, "book_service.html")
 
 
 from django.shortcuts import render, redirect
@@ -480,50 +485,44 @@ def workerregister(request):
         if password != confirmpassword:
             messages.error(request, 'Password does not match the confirm password.')
             return render(request, 'signup.html')
-
-        try:
-            if not email:
-                raise ValidationError("Email is required.")
-            
             # Get provider based on providername
-            try:
-                provider = ServiceProvider.objects.get(providername=providername)
-            except ServiceProvider.DoesNotExist:
-                messages.error(request, 'Invalid provider name.')
-                return render(request, 'signup.html')
-
-            # Create MyUser instance
+        try:
+            provider = ServiceProvider.objects.get(providername=providername)
             User = get_user_model()
             user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password,  # Store the password (it will be hashed internally)
-                role=role,
+            username=username,
+            email=email,
+            password=password,  # Store the password (it will be hashed internally)
+            role=role,
+            is_active=False
             )
 
             # Create Worker instance associated with the created MyUser instance and provider
             worker = Worker.objects.create(
-                first_name=firstname,
-                last_name=lastname,
-                dob=dob,
-                email=email,
-                phone=phoneno,
-                district=district,
-                state=state,
-                role="worker",
-                provider=provider  # Assign the provider to the worker
+            user=user,
+            first_name=firstname,
+            last_name=lastname,
+            dob=dob,
+            email=email,
+            phone=phoneno,
+            district=district,
+            state=state,
+            role="worker",
+            provider=provider.user_id   # Assign the provider to the worker
             )
-
-            messages.success(request, 'Account successfully registered.')
+            messages.success(request, 'Registration request sent to provider for approval.')
             return redirect('signin')  # Redirect to signin page after successful registration
+        except ServiceProvider.DoesNotExist:
+            messages.error(request, 'Invalid provider name.')
+            return render(request, 'signup.html')
 
-        except ValidationError as e:
-            messages.error(request, f'Error: {e}')
-
+            # Create MyUser instance
+        
     return render(request, 'signup.html')
 
+@login_required
 def service_providers_by_category(request, category):
-    providers = ServiceProvider.objects.filter(service_type=category)
+    providers = ServiceProvider.objects.filter(user__is_active=True, service_type=category)
     context = {'providers': providers, 'category': category}
     return render(request, 'providerlist.html', context)
 
@@ -571,6 +570,7 @@ def update_profile(request):
             # Handle the error, redirect to an error page or show an error message as needed
 
     return render(request, 'update_profile.html',{'client': client})
+@login_required
 def profile_view(request):
     client = Client.objects.get(user=request.user)  # Assuming you have a Client model related to the User model
     return render(request, 'profile_view.html', {'client': client})
@@ -592,10 +592,6 @@ from .models import ServiceProvider
 def admin_requests(request):
     provider_requests = ServiceProvider.objects.filter(user__is_active=False)
     return render(request, 'providerrequest.html', {'provider_requests': provider_requests})
-@login_required
-def provider_requests(request):
-    worker_requests = Worker.objects.filter(user__is_active=False)
-    return render(request, 'workerrequest.html', {'worker_requests': worker_requests})
 def activate_provider(request, user_id):
     # Retrieve the ServiceProvider instance associated with the request ID
     provider_request = get_object_or_404(ServiceProvider, user_id=user_id, user__is_active=False)
@@ -626,5 +622,97 @@ def activate_worker(request, user_id):
     html_message = render_to_string('activation_email.html', {'user': worker_request.user})
     send_mail(subject, message, from_email, recipient_list, html_message=html_message)
     return redirect('admin_requests') 
+@login_required
+def render_booking_form(request, userid=None):
+    # Get the current logged-in user
+    current_user = request.user
+    # Fetch client ID based on user role
+    client_id = None
+    client_phone = None
+    if current_user.role == 'client':
+        client_id = current_user.userid
+        client_phone = current_user.client.phone
 
+    # Process the provider ID from the URL parameters
+    if userid is not None:
+        try:
+            provider_id = int(userid)
+        except ValueError:
+            # Handle the case where provider_id is not a valid integer
+            # You can raise an error, redirect, or handle it as per your requirement
+            pass
+    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone, 'provider_id': provider_id})
+def create_booking(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        service_date = request.POST.get('service_date')
+        service_time = request.POST.get('service_time')
+        provider_id = request.POST.get('providerid')  # Get providerid from the form data
+        client_id = request.POST.get('userid')
+        client_phone = request.POST.get('clientphone')  # Get userid from the form data
+        new_booking = ClientBooking(
+            name=name,
+            phone=client_phone,
+            date=service_date,
+            time=service_time,
+            providerid_id=provider_id,  # Save providerid in the ClientBooking object
+            clientid_id=client_id,
+            status="pending" # Save userid in the ClientBooking object
+        )
+        new_booking.save()
+        return redirect('userpage')
+    else:
+        # Handle GET request (if needed)
+        # ...
+        return render(request, 'signup')
+@login_required
+def search_providers(request):
+    query = request.GET.get('query', '')  # Get the query parameter from the request, default to empty string if not present
+    providers = ServiceProvider.objects.filter(providername__icontains=query)
+    context = {
+        'query': query,  # Pass the query back to the template to display in the search results
+        'providers': providers,
+    }
+    return render(request, 'search_results.html', context)
+
+def provider_bookings(request):
+    provider_id = request.user.userid
+    bookings = ClientBooking.objects.filter(providerid=provider_id, status='pending')
+
+    context = {
+        'bookings': bookings
+    }
+
+    return render(request, 'provider_bookings.html', context)
+
+def bookinghistory(request):
+    # Get the logged-in provider's user ID
+    provider_id = request.user.userid
+
+    # Filter bookings based on the provider's providerid and status is 'pending'
+    bookings = ClientBooking.objects.filter(providerid=provider_id, status='approved')
+    context = {
+        'bookings': bookings
+    }
+
+    return render(request, 'bookinghistory.html', context)
+
+def approve_booking(request, booking_id):
+    booking = get_object_or_404(ClientBooking, bookingid=booking_id)
+    booking.status = 'approved'
+    booking.save()
+    return redirect('provider_bookings')
     
+def worker_requests(request, user_id):
+    # Filter workers based on the user_id
+    workers = Worker.objects.filter(role='worker', provider=user_id)
+    return render(request, 'workerrequest.html', {'workers': workers})
+
+
+def approve_worker(request, user_id):
+    worker = get_object_or_404(Worker, user_id=user_id)
+    # Assuming you have an is_active field in your MyUser model
+    worker.user.is_active = True
+    worker.user.save()
+    # Additional logic if needed, e.g., sending notifications, redirecting, etc.
+    return redirect('worker_requests')

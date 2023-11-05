@@ -485,7 +485,28 @@
             margin: 10px;
             padding: 15px;
         }
-  
+        .search-results-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Background color with opacity */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside the container */
+            margin-top: 20px; /* Optional margin at the top */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional box shadow for a subtle effect */
+        }
+        
+        .search-results-container ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .search-results-container ul li {
+            margin-bottom: 10px;
+        }
+        
+        .search-results-container a {
+            text-decoration: none;
+            color: #007bff; /* Link color */
+        }
+        
       
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -539,10 +560,10 @@
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
                             <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
+                                <a href="#"><span class="fas fa-search"></span></a>
+                                <form action="{% url 'search_providers' %}" class="search-form" method="GET">
+                                    <input type="text" placeholder="Search provider here ...">
+                                    <button type="submit">Search</button>
                                 </form>
                             </div>
                             <div class="settings-wrapper">
@@ -593,17 +614,33 @@
                             
                             <div class="container">
                               <ul>
-                                {% for provider in providers %}
-                                <div class="provider-card">
-                                    <h3>{{ provider.providername }}</h3>
-                                    <p><strong>Service Type:</strong> {{ provider.service_type }}</p>
-                                    <p><strong>Email:</strong> {{ provider.email }}</p>
-                                    <a href="{% url 'render_booking_form' provider.user.userid %}" class="btn btn-primary">Book Service</a>
-                                </div>
-                                {% empty %}
-                                <p>No providers found for {{ category }}.</p>
-                                {% endfor %}
-                            </ul>
+                                {% if query %}
+                                <h2>Search Results for "{{ query }}"</h2>
+                                <div class="search-results-container">
+                                {% if providers %}
+                                    <ul>
+                                        {% for provider in providers %}
+                                            <li>
+                                                Provider Name: {{ provider.providername }}<br>
+                                                Owner Name: {{ provider.ownername }}<br>
+                                                Contact Number: {{ provider.contact_number }}<br>
+                                                State: {{ provider.state }}<br>
+                                                Service Type: {{ provider.service_type }}<br>
+                                                <a href="{% url 'book_service' %}">Book</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>No providers found.</p>
+                                {% endif %}
+                            {% else %}
+                                <p>Please enter a provider name to search.</p>
+                            {% endif %}
+                            
+                            
+                              </ul>
+                            </div>
+                          </div>
 
                         </div>
                     </div>

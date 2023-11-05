@@ -116,10 +116,10 @@
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
                             <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
+                                <a href="#"><span class="fas fa-search"></span></a>
+                                <form action="{% url 'search_providers' %}" class="search-form" method="GET" onsubmit="return validateForm()">
+                                    <input type="text" placeholder="Search provider here ..." name="query">
+                                    <button type="submit">Search</button>
                                 </form>
                             </div>
                             <div class="settings-wrapper">
@@ -516,7 +516,15 @@
             </div>
         </div>
         <!-- END QUICKVIEW PRODUCT -->
-        
+        <script>
+            function validateForm() {
+                var query = document.forms["searchForm"]["query"].value;
+                if (query == "") {
+                    alert("Please enter a provider name to search.");
+                    return false;
+                }
+            }
+        </script>
         <!-- All js here -->
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
