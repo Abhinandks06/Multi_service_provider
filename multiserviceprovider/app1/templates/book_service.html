@@ -631,13 +631,14 @@
                                     <input type="hidden" id="providerid" name="providerid" value="{{ provider_id }}">
                                     <input type="hidden" id="userid" name="userid" value="{{ client_id }}">
                                     <input type="hidden" id="clientphone" name="clientphone" value="{{ client_phone }}">
+                                    <input type="hidden" id="clientdistrict" name="clientdistrict" value="{{ client_district }}">
                                     <label for="name">Your Name:</label>
                                     <input type="text" id="name" name="name" required><br>                    
                                     <label for="service_date">Preferred Service Date:</label>
                                     <input type="date" id="service_date" name="service_date" required><br>
                                     
                                     <label for="service_time">Preferred Service Time:</label>
-                                    <input type="time" id="service_time" name="service_time" required><br>
+                                    <input type="time" id="service_time" name="service_time" step="3600" min="08:00" max="18:00" required><br>
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
                             </div>

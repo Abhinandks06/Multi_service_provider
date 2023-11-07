@@ -121,6 +121,10 @@ urlpatterns = [
      path('worker_requests', views.worker_requests, name='worker_requests'),
      path('worker_requests/<int:user_id>/', views.worker_requests, name='worker_requests'),
      path('providerpage/worker_requests/<int:user_id>/', views.approve_worker, name='approve_worker'),
+     path('available_workers/<int:providerid_id>/<str:district>/', views.available_workers, name='available_workers'),
+     path('available_workers/<int:providerid_id>/<str:district>/providerpage', views.providerpage, name='providerpage'),
+     path('available_workers/<int:providerid_id>/<str:district>/providerpage.html', views.providerpage, name='providerpage')
+
 
 
 

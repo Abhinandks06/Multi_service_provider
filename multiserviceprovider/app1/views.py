@@ -508,6 +508,7 @@ def workerregister(request):
             district=district,
             state=state,
             role="worker",
+            status="available",
             provider=provider.user_id   # Assign the provider to the worker
             )
             messages.success(request, 'Registration request sent to provider for approval.')
@@ -616,9 +617,11 @@ def render_booking_form(request, userid=None):
     # Fetch client ID based on user role
     client_id = None
     client_phone = None
+    client_district = None
     if current_user.role == 'client':
         client_id = current_user.userid
         client_phone = current_user.client.phone
+        client_district = current_user.client.district
 
     # Process the provider ID from the URL parameters
     if userid is not None:
@@ -628,7 +631,7 @@ def render_booking_form(request, userid=None):
             # Handle the case where provider_id is not a valid integer
             # You can raise an error, redirect, or handle it as per your requirement
             pass
-    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone, 'provider_id': provider_id})
+    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone, 'provider_id': provider_id, 'client_district':client_district})
 @login_required
 def create_booking(request):
     if request.method == 'POST':
@@ -637,10 +640,12 @@ def create_booking(request):
         service_time = request.POST.get('service_time')
         provider_id = request.POST.get('providerid')  # Get providerid from the form data
         client_id = request.POST.get('userid')
-        client_phone = request.POST.get('clientphone')  # Get userid from the form data
+        client_phone = request.POST.get('clientphone')
+        client_district = request.POST.get('clientdistrict')  # Get userid from the form data
         new_booking = ClientBooking(
             name=name,
             phone=client_phone,
+            district=client_district,
             date=service_date,
             time=service_time,
             providerid_id=provider_id,  # Save providerid in the ClientBooking object
@@ -745,4 +750,13 @@ def activate_worker(request, userid):
         html_message = render_to_string('activation_email.html', {'user': user})
         send_mail(subject, message, from_email, recipient_list, html_message=html_message)
         return redirect('providerpage')
-        
+ 
+@login_required       
+def available_workers(request, providerid_id, district):
+    # Filter workers based on providerid_id, district, and status='available'
+    workers = Worker.objects.filter(provider=providerid_id, district=district, status='available')
+    context = {
+        'workers': workers
+    }
+    return render(request, 'available_workers.html', context)
+

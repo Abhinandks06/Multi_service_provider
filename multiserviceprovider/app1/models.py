@@ -43,6 +43,7 @@ class Worker(models.Model):
     district = models.TextField(max_length=100)
     state = models.TextField(max_length=100)
     role = models.CharField(max_length=15)
+    status = models.CharField(max_length=15)
 class ClientBooking(models.Model):
     PENDING = 'pending'
     APPROVED = 'approved'
@@ -54,6 +55,7 @@ class ClientBooking(models.Model):
     ]
     bookingid = models.AutoField(primary_key=True)
     clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
+    district = models.TextField(max_length=100)
     providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
