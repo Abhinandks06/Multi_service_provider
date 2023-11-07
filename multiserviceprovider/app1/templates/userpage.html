@@ -59,7 +59,16 @@
                 {% endfor %}
             </div>
             {% endif %}
+            
         </script>
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      
         
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
@@ -117,9 +126,11 @@
                         <div class="header-content d-flex justify-content-end">
                             <div class="search-wrapper">
                                 <a href="#"><span class="fas fa-search"></span></a>
-                                <form action="{% url 'search_providers' %}" class="search-form" method="GET" onsubmit="return validateForm()">
+                                <form action="{% url 'search_providers' %}?user_id={{ user.id }}" class="search-form" method="GET" onsubmit="return validateForm()">
                                     <input type="text" placeholder="Search provider here ..." name="query">
                                     <button type="submit">Search</button>
+                                </form>
+                                
                                 </form>
                             </div>
                             <div class="settings-wrapper">
@@ -290,13 +301,6 @@
                             <img src="userassets/img/icon/border.png" alt="">
                             <h4><a href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></h4>
 
-                        </div>
-                    </div>
-                    <div class="col text-center">
-                        <div class="single-food-category">
-                            <a href="" class="food-cat-img"><img src="userassets/img/icon/drinks.png" alt=""></a>
-                            <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="{% url 'service_providers_by_category' category='Repair' %}">Repair</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">

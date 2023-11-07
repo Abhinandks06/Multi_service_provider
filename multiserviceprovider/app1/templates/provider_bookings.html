@@ -504,7 +504,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body>
-        
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
             <div class="header-container">
@@ -623,6 +630,10 @@
           <form method="post" action="{% url 'approve_booking' booking.bookingid %}">
               {% csrf_token %}
               <button type="submit">Approve Booking</button>
+          </form>
+          <form method="post" action="{% url 'reject_booking' booking.bookingid %}">
+              {% csrf_token %}
+              <br><button type="submit">Reject Booking</button>
           </form>
           {% endif %}
       </p>

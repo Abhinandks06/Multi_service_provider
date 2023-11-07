@@ -61,5 +61,21 @@ class ClientBooking(models.Model):
     time = models.TimeField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
 
+class WorkerStatus(models.Model):
+    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
+    
+    # Choices for work status
+    PENDING = 'pending'
+    IN_PROGRESS = 'in_progress'
+    COMPLETED = 'completed'
+    WORK_STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (IN_PROGRESS, 'In Progress'),
+        (COMPLETED, 'Completed'),
+    ]
+    
+    workstatus = models.CharField(max_length=15, choices=WORK_STATUS_CHOICES, default=PENDING)
+
 
     

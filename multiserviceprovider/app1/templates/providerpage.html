@@ -62,7 +62,8 @@
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
-                                    <li><a href="{% url 'worker_requests' %}?user_id={{ provider_id }}">Worker Requests</a></li>
+                                    <li><a href="{% url 'worker_requests' user_id=provider_id %}">View Worker Requests</a></li>
+
                                     <li><a href="{% url 'worker_registration' %}">Add worker</a></li>
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>
                                     {% if user.is_authenticated %}

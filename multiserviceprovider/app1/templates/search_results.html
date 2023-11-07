@@ -561,10 +561,10 @@
                         <div class="header-content d-flex justify-content-end">
                             <div class="search-wrapper">
                                 <a href="#"><span class="fas fa-search"></span></a>
-                                <form action="{% url 'search_providers' %}" class="search-form" method="GET">
-                                    <input type="text" placeholder="Search provider here ...">
-                                    <button type="submit">Search</button>
-                                </form>
+                                <form action="{% url 'search_providers' %}?user_id={{ user.id }}" class="search-form" method="GET" onsubmit="return validateForm()">
+                                  <input type="text" placeholder="Search provider here ..." name="query">
+                                  <button type="submit">Search</button>
+                              </form>
                             </div>
                             <div class="settings-wrapper">
                                 <a href="#"><i class="fas fa-bell"></i></a>
@@ -626,7 +626,7 @@
                                                 Contact Number: {{ provider.contact_number }}<br>
                                                 State: {{ provider.state }}<br>
                                                 Service Type: {{ provider.service_type }}<br>
-                                                <a href="{% url 'book_service' %}">Book</a>
+                                                <a href="{% url 'render_booking_form' provider.user.userid %}">Book</a>
                                             </li>
                                         {% endfor %}
                                     </ul>

@@ -592,6 +592,7 @@ from .models import ServiceProvider
 def admin_requests(request):
     provider_requests = ServiceProvider.objects.filter(user__is_active=False)
     return render(request, 'providerrequest.html', {'provider_requests': provider_requests})
+@login_required
 def activate_provider(request, user_id):
     # Retrieve the ServiceProvider instance associated with the request ID
     provider_request = get_object_or_404(ServiceProvider, user_id=user_id, user__is_active=False)
@@ -608,20 +609,6 @@ def activate_provider(request, user_id):
     return redirect('admin_requests') 
 
     # Return a success response (you can customize the response as needed)
-def activate_worker(request, user_id):
-    # Retrieve the ServiceProvider instance associated with the request ID
-    worker_request = get_object_or_404(Worker, user_id=user_id, user__is_active=False)
-
-    # Set is_active to True and save the user
-    worker_request.user.is_active = True
-    worker_request.user.save()
-    subject = 'Account approved'
-    message = 'Your account has been approved .'
-    from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
-    recipient_list = [worker_request.user.email]
-    html_message = render_to_string('activation_email.html', {'user': worker_request.user})
-    send_mail(subject, message, from_email, recipient_list, html_message=html_message)
-    return redirect('admin_requests') 
 @login_required
 def render_booking_form(request, userid=None):
     # Get the current logged-in user
@@ -642,6 +629,7 @@ def render_booking_form(request, userid=None):
             # You can raise an error, redirect, or handle it as per your requirement
             pass
     return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone, 'provider_id': provider_id})
+@login_required
 def create_booking(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -660,21 +648,33 @@ def create_booking(request):
             status="pending" # Save userid in the ClientBooking object
         )
         new_booking.save()
+        messages.success(request, 'Appointment booked successfully.')
         return redirect('userpage')
     else:
         # Handle GET request (if needed)
         # ...
         return render(request, 'signup')
+from django.db.models import Q
+
 @login_required
 def search_providers(request):
-    query = request.GET.get('query', '')  # Get the query parameter from the request, default to empty string if not present
-    providers = ServiceProvider.objects.filter(providername__icontains=query)
+    query = request.GET.get('query', '')  # Get the query parameter from the request, default to an empty string if not present
+    
+    client_id = request.session.get('client_id')  # Assuming client_id is stored in the session
+    
+    # Use Q objects to perform case-insensitive similar name search
+    providers = ServiceProvider.objects.filter(Q(providername__iexact=query) | Q(providername__icontains=query))
+    
     context = {
         'query': query,  # Pass the query back to the template to display in the search results
         'providers': providers,
+        'client_id': client_id,  # Pass the client ID in the context
     }
+    
     return render(request, 'search_results.html', context)
 
+
+@login_required
 def provider_bookings(request):
     provider_id = request.user.userid
     bookings = ClientBooking.objects.filter(providerid=provider_id, status='pending')
@@ -684,7 +684,7 @@ def provider_bookings(request):
     }
 
     return render(request, 'provider_bookings.html', context)
-
+@login_required
 def bookinghistory(request):
     # Get the logged-in provider's user ID
     provider_id = request.user.userid
@@ -696,23 +696,53 @@ def bookinghistory(request):
     }
 
     return render(request, 'bookinghistory.html', context)
-
+@login_required
 def approve_booking(request, booking_id):
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
     booking.status = 'approved'
     booking.save()
+    messages.success(request, 'Appointment accepted.')
     return redirect('provider_bookings')
-    
+def reject_booking(request, booking_id):
+    booking = get_object_or_404(ClientBooking, bookingid=booking_id)
+    booking.status = ''
+    booking.save()
+    messages.success(request, 'Appointment canceled.')
+    return redirect('provider_bookings')
+@login_required
 def worker_requests(request, user_id):
     # Filter workers based on the user_id
-    workers = Worker.objects.filter(role='worker', provider=user_id)
+    workers = Worker.objects.filter(user__is_active=False, provider=user_id,)
     return render(request, 'workerrequest.html', {'workers': workers})
 
-
+# def approve_worker(request, user_id):
+#     worker = get_object_or_404(Worker, user_id=user_id)
+#     # Assuming you have an is_active field in your MyUser model
+#     worker.user.is_active = True
+#     worker.user.save()
+#     # Additional logic if needed, e.g., sending notifications, redirecting, etc.
+#     return redirect('worker_requests')
+@login_required
 def approve_worker(request, user_id):
-    worker = get_object_or_404(Worker, user_id=user_id)
-    # Assuming you have an is_active field in your MyUser model
-    worker.user.is_active = True
-    worker.user.save()
-    # Additional logic if needed, e.g., sending notifications, redirecting, etc.
-    return redirect('worker_requests')
+    # Retrieve the ServiceProvider instance associated with the request ID
+    worker_request = get_object_or_404(Worker, user_id=user_id, user__is_active=False)
+    # Set is_active to True and save the user
+    worker_request.user.is_active = True
+    worker_request.user.save()
+
+    return redirect('worker_requests') 
+
+@login_required
+def activate_worker(request, userid):
+    user = get_object_or_404(MyUser, userid=userid)
+    if not user.is_active:
+        user.is_active = True
+        user.save()
+        subject = 'Account activated'
+        message = 'Your account has been activated by ur provider'
+        from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
+        recipient_list = [user.email]
+        html_message = render_to_string('activation_email.html', {'user': user})
+        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+        return redirect('providerpage')
+        
