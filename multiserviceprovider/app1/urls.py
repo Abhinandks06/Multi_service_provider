@@ -25,6 +25,8 @@ urlpatterns = [
     path('workerpage/',workerpage, name='workerpage'),
     path('worker_requests/workerpage',workerpage, name='workerpage'),
     path('providerpage/',providerpage, name='providerpage'),
+    path('bookinghistory/providerpage/',providerpage, name='providerpage'),
+    path('bookinghistory/providerpage/providerpage',providerpage, name='providerpage'),
     path('accounts/login/signin',signin),
     path('accounts/login/',signin),
     path('signin/signup', register ),
@@ -122,9 +124,12 @@ urlpatterns = [
      path('worker_requests/<int:user_id>/', views.worker_requests, name='worker_requests'),
      path('providerpage/worker_requests/<int:user_id>/', views.approve_worker, name='approve_worker'),
      path('available_workers/<int:providerid_id>/<str:district>/', views.available_workers, name='available_workers'),
-     path('available_workers/<int:providerid_id>/<str:district>/providerpage', views.providerpage, name='providerpage'),
-     path('available_workers/<int:providerid_id>/<str:district>/providerpage.html', views.providerpage, name='providerpage')
-
+     path('available_workers/<int:providerid_id>/<str:district>/<int:booking_id>/providerpage/', views.available_workers, name='available_workers'),
+     path('available_workers/<int:providerid_id>/<str:district>/<int:booking_id>/providerpage.html/', views.available_workers, name='available_workers_html'),
+     path('assign_worker/', views.assign_worker, name='assign_worker'),
+     path('workerjob/', views.worker_job, name='workerjob'),
+     path('assignedwork/', views.assignedwork, name='assignedwork'),
+     path('update_status/', views.update_status, name='update_status'),
 
 
 

@@ -519,30 +519,6 @@ body {
                                 <ul>
                                     <li class="active"><a href="userpage.html">HOME </a>
                                     </li>
-                                    <li><a href="">Services <i class="fa fa-angle-down"></i></a>
-                                        <ul class="ht-mega-menu">
-                                            <li>
-                                                <ul>
-                                                    <li><a href="">House cleaning</a></li>
-                                                    <li><a href="">Laundry</a></li>
-                                                    <li><a href="">Painting</a></li>
-                                                    <li><a href="">Gardening</a></li>
-                                                    
-                                                </ul>
-                                            </li>
-                                            <li>
-                                                <ul>
-                                                    <li><a href="">Pest control</a></li>
-                                                    <li><a href="">Plumbing</a></li>
-                                                    <li><a href="">Repair</a></li>
-                                                    <li><a href="">Electrical</li>
-                                                </ul>
-                                            </li>
-                                            <li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="#bookings">Bookings</a></li>
-                                    <li><a href="#userprofile">Status</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>
@@ -609,7 +585,7 @@ body {
           Client Phone: {{ booking.phone }}<br>
           Date: {{ booking.date }}<br>
           Time: {{ booking.time }}<br>
-          Status: {{ booking.status }}<br>
+          Status: Completed<br>
       </p>
     </ul>
   </div>

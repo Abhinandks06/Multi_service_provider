@@ -78,6 +78,26 @@ class WorkerStatus(models.Model):
     ]
     
     workstatus = models.CharField(max_length=15, choices=WORK_STATUS_CHOICES, default=PENDING)
+class Service(models.Model):
+    ASSIGNED = 'assigned'
+    UNDERPROGRESS = 'underprogress'
+    COMPLETED = 'completed'
+    CANCELED = 'canceled'
+    STATUS_CHOICES = [
+        (ASSIGNED, 'Assigned'),
+        (UNDERPROGRESS, 'Underprogress'),
+        (COMPLETED, 'Completed'),
+        (CANCELED, 'Canceled'),
+    ]
+    serviceid = models.AutoField(primary_key=True)  # New field as primary key and autoincrement
+    bookingid = models.ForeignKey('ClientBooking', on_delete=models.CASCADE)  # Foreign key to ClientBooking model
+    clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
+    district = models.TextField(max_length=100)
+    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
+    date = models.DateField()
+    time = models.TimeField()
+    status = models.CharField(max_length=13, choices=STATUS_CHOICES, default=ASSIGNED)
 
 
     

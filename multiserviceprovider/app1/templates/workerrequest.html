@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
     <title>Admin Requests</title>
     <style>
         body {
-            background-image: url('path/to/background/image.jpg'); /* Add path to your background image */
+            background-image: url('{% static 'userassets/img/bg/bg.jpg' %}'); 
             background-size: cover;
             background-repeat: no-repeat;
             color: white;
@@ -14,7 +15,7 @@
         }
 
         .navbar {
-            background-color: #333;
+            background-color: rgba(0, 0, 0, 0.5)
             overflow: hidden;
         }
 

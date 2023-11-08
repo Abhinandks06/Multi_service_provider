@@ -530,24 +530,18 @@
                                     </li>
                                     <li><a href="">Services <i class="fa fa-angle-down"></i></a>
                                         <ul class="ht-mega-menu">
-                                            <li>
-                                                <ul>
-                                                    <li><a href="">House cleaning</a></li>
-                                                    <li><a href="">Laundry</a></li>
-                                                    <li><a href="">Painting</a></li>
-                                                    <li><a href="">Gardening</a></li>
-                                                    
-                                                </ul>
-                                            </li>
-                                            <li>
-                                                <ul>
-                                                    <li><a href="">Pest control</a></li>
-                                                    <li><a href="">Plumbing</a></li>
-                                                    <li><a href="">Repair</a></li>
-                                                    <li><a href="">Electrical</li>
-                                                </ul>
-                                            </li>
-                                            <li>
+                                          <li>
+                                            <ul>
+                                               
+                                                <li><a href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></li>
+                                                <li><a href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></li>
+                                                <li><a href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</li>
+                                                 <li><a href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></li>
+                                                 <li><a href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></li>
+                                                <li><a href="{% url 'service_providers_by_category' category='Repair' %}">Repair</a></li>
+                                                
+                                            </ul>
+                                        </li>
                                         </ul>
                                     </li>
                                     <li><a href="#bookings">Bookings</a></li>
@@ -557,7 +551,6 @@
                                             <li><a href="{% url 'update_profile' %}">Update Profile</a></li>
                                         </ul>
                                     </li>
-                                    <li><a href="#userprofile">Status</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>

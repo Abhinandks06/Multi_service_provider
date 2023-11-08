@@ -486,61 +486,51 @@
             margin: 10px;
             padding: 15px;
         }
-        .profile-form-container {
-            width: 300px;
-            margin: 0 auto;
-            text-align: center;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        
-      
+        /* styles.css */
+        /* styles.css */
+.booking-box {
+    margin-top: 20px;
+}
+
+.booking-item {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8); /* Set opacity to 0.8 */
+    padding: 15px;
+    margin-bottom: 10px;
+}
+body {
+  background-image: url('https://images.pexels.com/photos/913416/pexels-photo-913416.jpeg?cs=srgb&dl=pexels-min-an-913416.jpg&fm=jpg');
+  background-size: cover; /* This property ensures the image covers the entire background */
+  background-repeat: no-repeat; /* This property prevents the image from repeating */
+  /* You can also set other background properties like position, attachment, etc. as needed */
+}
+.booking-box {
+    background-color: #ffffff; /* Background color */
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1); /* Shadow effect */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 18px; /* Font size */
+    font-family: 'Arial', sans-serif; /* Font family */
+    width: 300px; /* Set the width of the box */
+    margin: 0 auto; /* Center the box */
+    text-align: center; /* Center text inside the box */
+}
+
+.booking-box ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.booking-box li {
+    margin-bottom: 10px;
+}
+
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <body>
-      {% if messages %}
-      <div class="alert alert-success" id="success-message">
-          {% for message in messages %}
-          {{ message }}
-          {% endfor %}
-      </div>
-      {% endif %}
-      
-      <script>
-      // Wait for the document to be fully loaded
-      document.addEventListener('DOMContentLoaded', function() {
-          // Get the success message element
-          var successMessage = document.getElementById('success-message');
-          
-          // Check if the success message element exists
-          if (successMessage) {
-              // Set a timer to hide the success message after 5 seconds (5000 milliseconds)
-              setTimeout(function() {
-                  successMessage.style.display = 'none';
-              }, 5000); // 5000 milliseconds = 5 seconds
-          }
-      });
-      </script>
+        
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
             <div class="header-container">
@@ -549,31 +539,8 @@
                         <div class="ht-main-menu">
                             <nav>
                                 <ul>
-                                    <li class="active"><a href="userpage.html">HOME </a>
+                                    <li class="active"><a href="{% url 'workerpage' %}">HOME </a>
                                     </li>
-                                    <li><a href="">Services <i class="fa fa-angle-down"></i></a>
-                                        <ul class="ht-mega-menu">
-                                          <li>
-                                            <ul>
-                                               
-                                                <li><a href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></li>
-                                                <li><a href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></li>
-                                                <li><a href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</li>
-                                                 <li><a href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></li>
-                                                 <li><a href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></li>
-                                                <li><a href="{% url 'service_providers_by_category' category='Repair' %}">Repair</a></li>
-                                                
-                                            </ul>
-                                        </li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="#bookings">Bookings</a></li>
-                                    <li><a href="#bookings">Profile</a>
-                                      <ul>
-                                          <li><a href="{% url 'view_profile' %}">View Profile</a></li>
-                                          <li><a href="{% url 'update_profile' %}">Update Profile</a></li>
-                                      </ul>
-                                  </li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>
@@ -586,13 +553,6 @@
                     </div>
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
-                            <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
-                                </form>
-                            </div>
                             <div class="settings-wrapper">
                                 <a href="#"><i class="fas fa-bell"></i></a>
                             </div>
@@ -628,109 +588,40 @@
         </header>
         <!-- Header Area End -->
         <!-- Hero Area Start -->
-        <div class="ht-hero-section fix">
-            <div class="ht-hero-slider">
-                <!-- Single Slide Start -->
-                <div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
-                    <div class="container">
-                      <div class="content-section">
-                       <!-- Your content goes here -->
-                        <div class="container">
                             <!-- Your content elements and sections go here -->
                             <br> <br> <br> <br> <br> <br>
-                            <div class="profile-form-container">
-                              <div class="form-container">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                      <label for="username">Username:</label>
-                                      <input type="text" id="username" name="username" value="{{ user.username }}" readonly>
-                                      <p id="username_error" class="error-message"></p>
-                                  </div>
-                                    <div class="form-group">
-                                        <label for="first_name">First Name:</label>
-                                        <input type="text" id="first_name" name="first_name" value="{{ client.first_name }}" required>
-                                        <p id="first_name_error" class="error-message"></p>
-                                    </div>
                             
-                                    <div class="form-group">
-                                        <label for="last_name">Last Name:</label>
-                                        <input type="text" id="last_name" name="last_name" value="{{ client.last_name }}" required>
-                                        <p id="last_name_error" class="error-message"></p>
-                                    </div>
-                            
-                                    <div class="form-group">
-                                        <label for="email">Email:</label>
-                                        <input type="email" id="email" name="email" value="{{ user.email }}" readonly>
-                                    </div>
-                            
-                                    <div class="form-group">
-                                        <label for="phone">Phone:</label>
-                                        <input type="text" id="phone" name="phone" value="{{ client.phone }}" required>
-                                        <p id="phone_error" class="error-message"></p>
-                                    </div>
-                            
-                                 
-                            
-                                    <button type="submit">Update Profile</button>
-                                </form>
+                            <div class="booking-box">
+                                
+                                <ul>
+                                    <h1>Work assigned</h1>
+                                    {% for work in assigned_work %}
+                                        <li>Client-Name {{ work.bookingid.name }}</li>
+                                        <li>Work date {{ work.bookingid.date }}</li>
+                                        <li>Time {{ work.bookingid.time }}</li>
+                                        <li>Client-phone {{ work.bookingid.phone }}</li>
+                                        <form method="post" action="{% url 'update_status' %}">
+                                            {% csrf_token %}
+                                            <label for="status">Status:</label>
+                                            <select name="status" id="status">
+                                                <option value="Completed">Completed</option>
+                                            </select>
+                                            <br><button type="submit">Update Status</button>
+                                        </form>
+                                    {% empty %}
+                                        <li>No work assigned.</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                             
-                            </div>
-                            
-                 
 
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            
+
+        
                 <!-- Single Slide End -->
         <!-- Hero Area End -->
         <!-- Food Categry Area Start -->
         <!-- All js here -->
-        <script>
-          $(document).ready(function() {
-              $("form").submit(function(event) {
-                  var valid = true;
-          
-                  // Validation for first_name (required field, alphabets only, 3-20 characters)
-                  var firstName = $("#first_name").val();
-                  var nameRegex = /^[A-Za-z]{3,20}$/;  // Alphabets only, 3-20 characters
-                  if (!firstName.match(nameRegex)) {
-                      $("#first_name_error").text("Invalid First Name alphabets only).");
-                      valid = false;
-                  } else {
-                      $("#first_name_error").text("");
-                  }
-          
-                  // Validation for last_name (required field, alphabets only, 3-20 characters)
-                  var lastName = $("#last_name").val();
-                  if (!lastName.match(nameRegex)) {
-                      $("#last_name_error").text("Invalid Last Name  alphabets only).");
-                      valid = false;
-                  } else {
-                      $("#last_name_error").text("");
-                  }
-          
-                  // Validation for phone (required field, assuming a valid phone number format)
-                  var phone = $("#phone").val();
-                  var phoneRegex = /^[0-9]{10}$/;  // Assuming a 10-digit phone number format
-                  if (!phone.match(phoneRegex)) {
-                      $("#phone_error").text("Invalid Phone Number.");
-                      valid = false;
-                  } else {
-                      $("#phone_error").text("");
-                  }
-          
-                  if (!valid) {
-                      event.preventDefault(); // Prevent form submission if validation fails
-                  }
-              });
-          });
-          </script>
-      
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>

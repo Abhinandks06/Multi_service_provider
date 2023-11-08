@@ -50,7 +50,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body>
-        
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
             <div class="header-container">
@@ -67,8 +74,6 @@
                                     <li><a href="{% url 'worker_registration' %}">Add worker</a></li>
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>
                                     {% if user.is_authenticated %}
-                                    <li><a href="#status"></a></li>
-                                    <li><a href="#userprofile">Profile</a></li>
                                     <li><a href="{% url 'provider_logout' %}">Logout</a></li>
                                     {% endif %}
                                 </ul>
@@ -77,7 +82,7 @@
                     </div>
                     <div class="col-lg-2 col-sm-4">
                         <div class="logo text-center">
-                            <a href="index-2.html" class="logo-text">MULTISERVICE <span class="provider-text" style="padding-top: 30px;">PROVIDER</span></a>
+                            <a href="providerpage" class="logo-text">MULTISERVICE <span class="provider-text" style="padding-top: 30px;">PROVIDER</span></a>
                         </div>
                     </div>
                     <div class="col-lg-5 col-sm-8">
@@ -141,66 +146,6 @@
                 </div>
             </div>
             <!-- Mobile Menu Area End -->
-            <!--Start of Login Form-->
-            <div class="modal fade" id="login_box" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-pop-up-content">
-								<h2>Login to your account</h2>
-								<form action="#" method="post">
-									<div class="form-box">
-										<input type="text" placeholder="User Name" name="username">
-										<input type="password" placeholder="Password" name="pass">
-									</div>
-									<div class="checkobx-link">
-									    <div class="left-col">
-								            <input type="checkbox" id="remember_me"><label for="remember_me">Remember Me</label>
-									    </div>
-									    <div class="right-col"><a href="#">Forget Password?</a></div>
-									</div>
-								    <button type="submit">Sign In</button>
-								</form>
-							</div>
-                        </div>	
-                    </div>	
-                </div>
-            </div>
-            <!--End of Login Form-->
-            <!--Start of Register Form-->
-            <div class="modal fade" id="register_box" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-pop-up-content">
-								<h2>Sign Up</h2>
-								<form action="#" method="post">
-									<div class="form-box">
-										<input type="text" placeholder="Full Name" name="fullname">
-										<input type="text" placeholder="User Name" name="username">
-										<input type="email" placeholder="Email" name="email">
-										<input type="password" placeholder="Password" name="pass">
-										<input type="password" placeholder="Confirm Password" name="re_pass">
-									</div>
-									<div class="checkobx-link">
-									    <div class="left-col">
-								            <input type="checkbox" id="remember_reg"><label for="remember_reg">Remember Me</label>
-									    </div>
-									</div>
-								    <button class="text-uppercase" type="submit">Register</button>
-								</form>
-							</div>
-                        </div>	
-                    </div>	
-                </div>
-            </div>
-            <!--End of Register Form-->
         </header>
         <!-- Header Area End -->
         <!-- Hero Area Start -->
@@ -228,8 +173,8 @@
                     </div>
                     <p>Your reliable partner for all your home service needs.</p>
                     <div class="footer-text">
-                        <span><i class="icon icon-Pointer"></i>Address : 123 Service Lane, Your City, Your State, ZIP</span>
-                        <span><i class="icon icon-Phone"></i>Phone : +(123) 456-7890</span>
+                        <span><i class="icon icon-Pointer"></i>Address : 123 Service Lane, Abhinand, Thrissur, 680612</span>
+                        <span><i class="icon icon-Phone"></i>Phone : +(91) 8606561420</span>
                         <span><i class="icon icon-Mail"></i>Email : info@multiserviceprovider.com</span>
                     </div>
                 </div>
@@ -267,105 +212,7 @@
             <!-- Footer Bottom Area End -->
         </footer>
         <!-- Footer Area End -->
-        
-        <!-- QUICKVIEW PRODUCT -->
-        <div class="modal fade" id="productModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></button>
-                    <div class="quick-view-container">
-                        <div class="column-left">
-                            <div class="tab-content product-details-large" id="myTabContent">
-                                <div class="tab-pane fade show active" id="single-slide1" role="tabpanel" aria-labelledby="single-slide-tab-1">
-                                    <div class="single-product-img">
-                                        <img src="userassets/img/product/1.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="single-slide2" role="tabpanel" aria-labelledby="single-slide-tab-2">
-                                    <div class="single-product-img">
-                                        <img src="userassets/img/product/2.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="single-slide3" role="tabpanel" aria-labelledby="single-slide-tab-3">
-                                    <div class="single-product-img">
-                                        <img src="userassets/img/product/3.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="single-slide4" role="tabpanel" aria-labelledby="single-slide-tab-4">
-                                    <div class="single-product-img">
-                                        <img src="userassets/img/product/4.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="single-slide5" role="tabpanel" aria-labelledby="single-slide-tab-5">
-                                    <div class="single-product-img">
-                                        <img src="userassets/img/product/5.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="single-slide6" role="tabpanel" aria-labelledby="single-slide-tab-6">
-                                    <div class="single-product-img">
-                                        <img src="userassets/img/product/6.jpg" alt="">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="single-product-menu">
-                                <div class="nav single-slide-menu" role="tablist">
-                                    <div class="single-tab-menu">
-                                        <a class="active" data-bs-toggle="tab" id="single-slide-tab-1" href="#single-slide1"><img src="userassets/img/product/1.jpg" alt=""></a>
-                                    </div>
-                                    <div class="single-tab-menu">
-                                        <a data-bs-toggle="tab" id="single-slide-tab-2" href="#single-slide2"><img src="userassets/img/product/2.jpg" alt=""></a>
-                                    </div>
-                                    <div class="single-tab-menu">
-                                        <a data-bs-toggle="tab" id="single-slide-tab-3" href="#single-slide3"><img src="userassets/img/product/3.jpg" alt=""></a>
-                                    </div>
-                                    <div class="single-tab-menu">
-                                        <a data-bs-toggle="tab" id="single-slide-tab-4" href="#single-slide4"><img src="userassets/img/product/4.jpg" alt=""></a>
-                                    </div>
-                                    <div class="single-tab-menu">
-                                        <a data-bs-toggle="tab" id="single-slide-tab-5" href="#single-slide5"><img src="userassets/img/product/5.jpg" alt=""></a>
-                                    </div>
-                                    <div class="single-tab-menu">
-                                        <a data-bs-toggle="tab" id="single-slide-tab-6" href="#single-slide6"><img src="userassets/img/product/6.jpg" alt=""></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>    
-                        <div class="column-right">
-                            <div class="quick-view-text">
-                                <h2>Curabitur a purus</h2>
-                                <h3 class="q-product-price">$34.00<span class="old-price">$37.00</span></h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco,Proin lectus ipsum, gravida et mattis vulputate, tristique ut lectus</p>
-                                <div class="input-cart">
-                                    <input value="1" type="number">
-                                    <button class="default-btn">Add to cart</button>
-                                </div>
-                                <div class="share-product">
-                                    <h4>Share this product</h4>
-                                    <div class="social-link">
-                                        <a href="#" target="_blank" class="facebook">
-                                            <i class="fa fa-facebook"></i>
-                                        </a>
-                                        <a href="#" target="_blank" class="twitter">
-                                            <i class="fa fa-twitter"></i>
-                                        </a>
-                                        <a href="#" target="_blank" class="pinterest">
-                                            <i class="fa fa-pinterest"></i>
-                                        </a>
-                                        <a href="#" target="_blank" class="google">
-                                            <i class="fa fa-google-plus"></i>
-                                        </a>
-                                        <a href="#" target="_blank" class="linkedin">
-                                            <i class="fa fa-linkedin"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- END QUICKVIEW PRODUCT -->
+
         
         <!-- All js here -->
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>

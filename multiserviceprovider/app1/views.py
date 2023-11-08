@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import MyUser,Client,Worker,ClientBooking
+from .models import MyUser,Client,Worker,ClientBooking,Service
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -222,9 +222,11 @@ def workerpage(request):
         try:
             user = MyUser.objects.get(username=username)
             if user.role == 'worker':
-                return render(request, 'workerpage.html')
+                # Retrieve the Worker object associated with the logged-in user
+                worker = Worker.objects.get(user=user)
+                return render(request, 'workerpage.html', {'worker': worker})
             else:
-                messages.error(request, "You dont have permission to access this page.")
+                messages.error(request, "You don't have permission to access this page.")
                 return redirect('signin')
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
@@ -752,11 +754,83 @@ def activate_worker(request, userid):
         return redirect('providerpage')
  
 @login_required       
-def available_workers(request, providerid_id, district):
-    # Filter workers based on providerid_id, district, and status='available'
-    workers = Worker.objects.filter(provider=providerid_id, district=district, status='available')
-    context = {
-        'workers': workers
-    }
-    return render(request, 'available_workers.html', context)
+def available_workers(request, providerid_id, district, booking_id):
+    # Retrieve booking details for the specified booking ID
+    booking = get_object_or_404(ClientBooking, bookingid=booking_id)
 
+    # Filter workers based on providerid_id, district, status='available', and is_active=1
+    workers = Worker.objects.filter(provider=providerid_id, district=district, status='available', user__is_active=1)
+
+    context = {
+        'booking': booking,
+        'workers': workers,
+    }
+
+    return render(request, 'available_workers.html', context)
+@login_required
+def assign_worker(request):
+    if request.method == 'POST':
+        worker_id = request.POST.get('worker_id')
+        booking_id = request.POST.get('booking_id')
+        
+        # Retrieve worker, booking, and client instances based on IDs
+        worker = Worker.objects.get(user_id=worker_id)
+        booking = ClientBooking.objects.get(bookingid=booking_id)
+        client = booking.clientid
+        
+        # Create a new Service instance and save it to the database
+        service = Service.objects.create(
+            bookingid=booking,
+            clientid=client,
+            district=booking.district,
+            providerid=booking.providerid,
+            workerid=worker,
+            date=booking.date,
+            time=booking.time,
+            status=Service.ASSIGNED  # You can set the initial status to 'assigned'
+        )
+        
+        # Update the booking status to 'assigned'
+        booking.status = ClientBooking.APPROVED
+        booking.save()
+        
+        # Update the worker status to 'onduty'
+        worker.status = 'onduty'
+        worker.save()
+        
+        # Redirect to a success page or back to the previous page
+        messages.success(request, 'Service assigned successfully!')
+        return redirect('providerpage')  # Replace 'success_page' with the appropriate URL name
+
+    # Handle other cases, e.g., GET requests
+    return redirect('providerpage') # Replace 'error_page' with the appropriate URL name
+@login_required
+def worker_job(request):
+    worker_id = request.user.userid  # Assuming the worker's ID is stored in the user object
+    assigned_work = Service.objects.filter(workerid=worker_id ,status=Service.ASSIGNED)
+    return render(request, 'worker_job.html', {'assigned_work': assigned_work})
+
+@login_required
+def assignedwork(request):
+    worker_id = request.user.userid  # Assuming the worker's ID is stored in the user object
+    assigned_work = Service.objects.filter(workerid=worker_id ,status=Service.ASSIGNED)
+    return render(request, 'update_status.html', {'assigned_work': assigned_work})
+@login_required
+def update_status(request):
+    worker_id = request.user.userid
+    # Filter Service objects based on worker ID and status
+    services = Service.objects.filter(workerid=worker_id, status=Service.ASSIGNED)
+    # Check if the request method is POST
+    if request.method == 'POST':
+        # Get the new status from the form data
+        new_status = request.POST.get('status')
+
+        # Update the status of all matching service objects using the update() method
+        services.update(status=new_status)
+
+        # Redirect to a success page or any other page as needed
+        messages.success(request, 'Service status updated!')
+        return redirect('workerpage')  # Replace 'workerpage' with the appropriate URL name
+
+    # Handle other cases, e.g., GET requests
+    return redirect('workerpage')

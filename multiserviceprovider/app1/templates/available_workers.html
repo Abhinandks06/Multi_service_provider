@@ -545,30 +545,7 @@ body {
                                 <ul>
                                     <li class="active"><a href="{% url 'providerpage' %}">HOME </a>
                                     </li>
-                                    <li><a href="">Services <i class="fa fa-angle-down"></i></a>
-                                        <ul class="ht-mega-menu">
-                                            <li>
-                                                <ul>
-                                                    <li><a href="">House cleaning</a></li>
-                                                    <li><a href="">Laundry</a></li>
-                                                    <li><a href="">Painting</a></li>
-                                                    <li><a href="">Gardening</a></li>
-                                                    
-                                                </ul>
-                                            </li>
-                                            <li>
-                                                <ul>
-                                                    <li><a href="">Pest control</a></li>
-                                                    <li><a href="">Plumbing</a></li>
-                                                    <li><a href="">Repair</a></li>
-                                                    <li><a href="">Electrical</li>
-                                                </ul>
-                                            </li>
-                                            <li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="#bookings">Bookings</a></li>
-                                    <li><a href="#userprofile">Status</a></li>
+                                    <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>
@@ -581,13 +558,6 @@ body {
                     </div>
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
-                            <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
-                                </form>
-                            </div>
                             <div class="settings-wrapper">
                                 <a href="#"><i class="fas fa-bell"></i></a>
                             </div>
@@ -633,7 +603,6 @@ body {
                                         <tr>
                                             <th>First Name</th>
                                             <th>Last Name</th>
-
                                             <th>District</th>
                                             <th>Email</th>
                                             <th>Assign</th>
@@ -646,11 +615,17 @@ body {
                                                 <td>{{ worker.last_name }}</td>
                                                 <td>{{ worker.district }}</td>
                                                 <td>{{ worker.email }}</td>
-                                                <td><input type="button" value="Assign"></td>
+                                                <td>
+                                                <form method="post" action="{% url 'assign_worker' %}">
+                                                  {% csrf_token %}
+                                                  <input type="hidden" name="worker_id" value="{{ worker.user_id }}">
+                                                  <input type="hidden" name="booking_id" value="{{ booking.bookingid }}">
+                                                  <input type="submit" value="Assign">
+                                              </form> </td>                                             
                                             </tr>
                                         {% empty %}
                                             <tr>
-                                                <td colspan="5" class="no-workers">No available workers in this district.</td>
+                                                <td colspan="4" class="no-workers">No available workers in this district.</td>
                                                 <td><input type="button" value="Reject"></td>
                                             </tr>
                                         {% endfor %}
