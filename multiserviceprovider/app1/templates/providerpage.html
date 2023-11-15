@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="{% static 'userassets/css/plugins.css' %}">
         <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
         <script src="{% static 'userassets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     </head>
     <style>
         /* Apply standard font and add space */
@@ -69,9 +70,17 @@
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
-                                    <li><a href="{% url 'worker_requests' user_id=provider_id %}">View Worker Requests</a></li>
-
-                                    <li><a href="{% url 'worker_registration' %}">Add worker</a></li>
+                                    <li class="dropdown dropdown-hover">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            Workers <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="{% url 'worker_requests' user_id=provider_id %}">View Worker Requests</a></li>
+                                            <li><a href="{% url 'worker_list' provider_id=provider_id %}">Worker List</a></li>
+                                            <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
+                                            <li><a href="{% url 'worker_report' provider_id=provider_id %}">Worker Report</a></li>
+                                        </ul>
+                                    </li>  
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'provider_logout' %}">Logout</a></li>
@@ -215,6 +224,24 @@
 
         
         <!-- All js here -->
+        <!-- CSS -->
+
+
+<!-- JavaScript and jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Enable Bootstrap dropdown on hover
+        $('.dropdown').hover(function () {
+            $(this).addClass('show');
+            $(this).find('.dropdown-menu').addClass('show');
+        }, function () {
+            $(this).removeClass('show');
+            $(this).find('.dropdown-menu').removeClass('show');
+        });
+    });
+</script>
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>

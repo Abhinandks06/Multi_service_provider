@@ -503,7 +503,7 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <body>
+    <body  style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
       {% if messages %}
       <ul class="messages">
         {% for message in messages %}
@@ -520,7 +520,7 @@
                         <div class="ht-main-menu">
                             <nav>
                                 <ul>
-                                    <li class="active"><a href="userpage.html">HOME </a>
+                                    <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
@@ -580,8 +580,8 @@
         <div class="ht-hero-section fix">
             <div class="ht-hero-slider">
                 <!-- Single Slide Start -->
-                <div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
-                    <div class="container">
+               
+                    <div class="container" >
                       <div class="content-section">
                        <!-- Your content goes here -->
                         <div class="container">
@@ -592,7 +592,7 @@
                               
                    <!-- your_template.html -->
 <!-- your_template.html -->
-<div class="booking-box">
+<div class="booking-box" >
   {% for booking in bookings %}
   <div class="booking-item">
     <ul>
@@ -602,6 +602,7 @@
           Date: {{ booking.date }}<br>
           Time: {{ booking.time }}<br>
           Location: {{ booking.district }}<br>
+          Work status : {{ booking.status }}<br>
 
           {% if booking.status == 'pending' %}
           {% comment %} <form method="post" action="{% url 'approve_booking' booking.bookingid %}">
@@ -632,7 +633,7 @@
                     </div>
                     </div>
                 </div>
-            </div>
+            
         </div>
                 <!-- Single Slide End -->
         <!-- Hero Area End -->

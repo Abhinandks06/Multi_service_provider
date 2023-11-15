@@ -631,15 +631,26 @@
                                     <input type="hidden" id="providerid" name="providerid" value="{{ provider_id }}">
                                     <input type="hidden" id="userid" name="userid" value="{{ client_id }}">
                                     <input type="hidden" id="clientphone" name="clientphone" value="{{ client_phone }}">
-                                    <input type="hidden" id="name" name="name" value="{{ client_first_name }}">
-                                    <input type="hidden" id="clientdistrict" name="clientdistrict" value="{{ client_district }}">                  
+                                    <input type="hidden" id="clientdistrict" name="clientdistrict" value="{{ client_district }}">
+                                    <input type="hidden" id="name" name="name" value="{{ name  }}">
+                                    <!-- Display providername and servicetype -->
+                                    <p>Provider: {{ providername }}</p>
+                                    <p>Service Type: {{ servicetype }}</p>
+                                    
+                                    <!-- Fetch client instance and display the client's name -->
+                                    {% with client=request.user.client %}
+                                        <p>Your Name: {{ client.first_name }} {{ client.last_name }}</p>
+                                    {% endwith %}
+                                    
                                     <label for="service_date">Preferred Service Date:</label>
                                     <input type="date" id="service_date" name="service_date" required><br>
                                     
                                     <label for="service_time">Preferred Service Time:</label>
                                     <input type="time" id="service_time" name="service_time" step="3600" min="08:00" max="18:00" required><br>
+                                    
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
+                                
                             </div>
                           </div>
 
@@ -654,17 +665,11 @@
         <!-- Food Categry Area Start -->
         <!-- All js here -->
         <script>
-          function validateForm() {
             function validateForm() {
-              var name = document.getElementById("name").value;
               var serviceDate = document.getElementById("service_date").value;
               var serviceTime = document.getElementById("service_time").value;
           
-              // Validate name (should contain only alphabets)
-              if (!/^[A-Za-z]+$/.test(name)) {
-                  alert("Please enter a valid name containing only alphabets.");
-                  return false;
-              }
+
           
               // Validate service date (should not be empty and within a month from the current date)
               var currentDate = new Date();

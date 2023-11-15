@@ -112,6 +112,7 @@ urlpatterns = [
      path('approve_booking/<int:booking_id>/', views.approve_booking, name='approve_booking'),
      path('reject_booking/<int:booking_id>/', views.reject_booking, name='reject_booking'),
      path('provider_bookings/', views.provider_bookings, name='provider_bookings'),
+     path('provider_bookings/providerpage', views.providerpage, name='providerpage'),
      path('bookinghistory/', views.bookinghistory, name='bookinghistory'),
      path('approve_booking/providerpage',providerpage),
      path('worker_requests/<int:user_id>', views.worker_requests, name='worker_requests'),
@@ -130,6 +131,11 @@ urlpatterns = [
      path('workerjob/', views.worker_job, name='workerjob'),
      path('assignedwork/', views.assignedwork, name='assignedwork'),
      path('update_status/', views.update_status, name='update_status'),
+     path('generate_report/<int:bookingid_id>/', views.render_report_form, name='render_report_form'),
+     path('generate_report/', views.generate_report, name='generate_report'),
+     path('provider/<int:provider_id>/workers/', views.worker_list, name='worker_list'),
+     path('worker_report/<int:provider_id>/', views.worker_report, name='worker_report'),
+     path('client_bookings/<int:client_id>/', views.client_bookings, name='client_bookings'),
 
 
 

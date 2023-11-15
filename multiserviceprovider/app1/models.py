@@ -48,10 +48,12 @@ class ClientBooking(models.Model):
     PENDING = 'pending'
     APPROVED = 'approved'
     CANCELED = 'canceled'
+    COMPLETED = 'completed'
     STATUS_CHOICES = [
         (PENDING, 'Pending'),
         (APPROVED, 'Approved'),
         (CANCELED, 'Canceled'),
+        (COMPLETED, 'Completed'),
     ]
     bookingid = models.AutoField(primary_key=True)
     clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
@@ -83,11 +85,15 @@ class Service(models.Model):
     UNDERPROGRESS = 'underprogress'
     COMPLETED = 'completed'
     CANCELED = 'canceled'
+    REPORTGIVEN = 'reportgiven'
+    REPORTVERIFIED = 'reportverified'
     STATUS_CHOICES = [
         (ASSIGNED, 'Assigned'),
         (UNDERPROGRESS, 'Underprogress'),
         (COMPLETED, 'Completed'),
         (CANCELED, 'Canceled'),
+        (REPORTGIVEN, 'Report Given'),
+        (REPORTVERIFIED, 'Report Verified'),
     ]
     serviceid = models.AutoField(primary_key=True)  # New field as primary key and autoincrement
     bookingid = models.ForeignKey('ClientBooking', on_delete=models.CASCADE)  # Foreign key to ClientBooking model
@@ -97,7 +103,14 @@ class Service(models.Model):
     workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
-    status = models.CharField(max_length=13, choices=STATUS_CHOICES, default=ASSIGNED)
-
-
-    
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
+class WorkerReport(models.Model):
+    reportid = models.AutoField(primary_key=True)
+    serviceid = models.ForeignKey('Service', on_delete=models.CASCADE)
+    user_id = models.ForeignKey('Worker', on_delete=models.CASCADE)
+    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    duration_of_work = models.CharField(max_length=100)
+    requirements = models.TextField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    num_workers_needed = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)

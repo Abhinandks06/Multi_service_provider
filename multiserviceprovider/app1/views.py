@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import MyUser,Client,Worker,ClientBooking,Service
+from .models import MyUser,Client,Worker,ClientBooking,Service,WorkerReport
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -165,7 +165,8 @@ def userpage(request):
                 # Check if the user exists in the Client model
                 try:
                     client = Client.objects.get(user=user)
-                    return render(request, 'userpage.html')
+                    user_id = user.userid  # Get the user ID
+                    return render(request, 'userpage.html', {'user_id': user_id})
                 except Client.DoesNotExist:
                     messages.warning(request, "User profile not found. Please update your profile.")
                     # Pass username and email to google_profile_update view
@@ -612,28 +613,52 @@ def activate_provider(request, user_id):
     return redirect('admin_requests') 
 
     # Return a success response (you can customize the response as needed)
+
+from django.shortcuts import render, get_object_or_404
+from .models import ServiceProvider
 @login_required
 def render_booking_form(request, userid=None):
     # Get the current logged-in user
     current_user = request.user
+
     # Fetch client ID based on user role
     client_id = None
+    client_name= None
     client_phone = None
     client_district = None
     if current_user.role == 'client':
         client_id = current_user.userid
         client_phone = current_user.client.phone
         client_district = current_user.client.district
+        client_name = current_user.client.username
 
     # Process the provider ID from the URL parameters
     if userid is not None:
         try:
             provider_id = int(userid)
+            # Fetch provider information from the database
+            provider = get_object_or_404(ServiceProvider, user_id=provider_id)
+
+            # Include providername and servicetype in the context dictionary
+            context = {
+                'client_id': client_id,
+                'client_phone': client_phone,
+                'provider_id': provider_id,
+                'client_district': client_district,
+                'providername': provider.providername,
+                'servicetype': provider.service_type,
+                'name':client_name
+            }
+
+            return render(request, 'book_service.html', context)
+
         except ValueError:
             # Handle the case where provider_id is not a valid integer
             # You can raise an error, redirect, or handle it as per your requirement
             pass
-    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone, 'provider_id': provider_id, 'client_district':client_district})
+
+    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone,'name': client_name, 'provider_id': provider_id, 'client_district': client_district})
+
 @login_required
 def create_booking(request):
     if request.method == 'POST':
@@ -684,7 +709,7 @@ def search_providers(request):
 @login_required
 def provider_bookings(request):
     provider_id = request.user.userid
-    bookings = ClientBooking.objects.filter(providerid=provider_id, status='pending')
+    bookings = ClientBooking.objects.filter(providerid=provider_id).exclude(status='completed')
 
     context = {
         'bookings': bookings
@@ -722,13 +747,6 @@ def worker_requests(request, user_id):
     workers = Worker.objects.filter(user__is_active=False, provider=user_id,)
     return render(request, 'workerrequest.html', {'workers': workers})
 
-# def approve_worker(request, user_id):
-#     worker = get_object_or_404(Worker, user_id=user_id)
-#     # Assuming you have an is_active field in your MyUser model
-#     worker.user.is_active = True
-#     worker.user.save()
-#     # Additional logic if needed, e.g., sending notifications, redirecting, etc.
-#     return redirect('worker_requests')
 @login_required
 def approve_worker(request, user_id):
     # Retrieve the ServiceProvider instance associated with the request ID
@@ -828,9 +846,103 @@ def update_status(request):
         # Update the status of all matching service objects using the update() method
         services.update(status=new_status)
 
+        # Update the status of the worker in Worker model
+        worker = Worker.objects.get(user_id=worker_id)
+        worker.status = 'available'
+        worker.save()
+
         # Redirect to a success page or any other page as needed
         messages.success(request, 'Service status updated!')
         return redirect('workerpage')  # Replace 'workerpage' with the appropriate URL name
 
     # Handle other cases, e.g., GET requests
     return redirect('workerpage')
+@login_required
+def render_report_form(request, bookingid_id):
+    service = get_object_or_404(Service, bookingid_id=bookingid_id)
+    return render(request, 'generate_report.html', {'service': service})
+@login_required
+def generate_report(request):
+    if request.method == 'POST':
+        serviceid = request.POST.get('serviceid')
+        providerid = request.POST.get('providerid')
+        user_id = request.POST.get('workerid')
+        duration_of_work = request.POST.get('duration_of_work')
+        requirements = request.POST.get('requirements')
+        cost = request.POST.get('cost')
+        num_workers_needed = request.POST.get('num_workers_needed')
+        service = get_object_or_404(Service, serviceid=serviceid)
+        worker = get_object_or_404(Worker, user_id=user_id)
+        provider = get_object_or_404(ServiceProvider, user_id=providerid)
+        report = WorkerReport.objects.create(
+            serviceid=service,
+            user_id=worker,
+            providerid=provider,
+            duration_of_work=duration_of_work,
+            requirements=requirements,
+            cost=cost,
+            num_workers_needed=num_workers_needed
+        )
+        service.status = Service.REPORTGIVEN
+        service.save()
+        messages.success(request, 'Report successfully submitted')
+        return redirect('workerpage')
+    return render(request, 'generate_report.html', {})
+@login_required
+def worker_list(request, provider_id):
+    # Fetch workers belonging to the specific provider using the provider_id
+    workers = Worker.objects.filter(provider=provider_id)
+
+    return render(request, 'worker_list.html', {'workers': workers})
+@login_required
+def worker_report(request, provider_id):
+    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id)
+    service_status = {}
+    
+    for report in worker_reports:
+        service_id = report.serviceid_id
+        service = Service.objects.get(serviceid=service_id)
+        service_status[report.serviceid] = service.status
+    context = {
+        'worker_reports': worker_reports,
+        'service_status': service_status,
+    }
+    return render(request, 'worker_report.html', context)
+
+@login_required
+def worker_report(request, provider_id):
+    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id)
+    service_status = {}
+    for report in worker_reports:
+        service_id = report.serviceid_id
+        try:
+            service = Service.objects.get(serviceid=service_id)
+            service_status[report.serviceid_id] = service.status
+        except Service.DoesNotExist:
+            service_status[report.serviceid_id] = "Service Not Found"
+    context = {
+        'worker_reports': worker_reports,
+        'service_status': service_status,
+    }
+    return render(request, 'worker_report.html', context)
+def client_bookings(request, client_id):
+    client_bookings = Service.objects.filter(clientid_id=client_id)
+    client_name = Client.objects.get(user_id=client_id).first_name
+    
+    # Fetching provider names for each booking
+    provider_name = [ServiceProvider.objects.get(user_id=booking.providerid_id).providername for booking in client_bookings]
+    service_type = [ServiceProvider.objects.get(user_id=booking.providerid_id).service_type for booking in client_bookings]
+    
+    context = {
+        'client_bookings': client_bookings,
+        'client_name': client_name,
+        'provider_name': provider_name,
+        'service_type': service_type,  # Pass provider objects to the template
+    }
+    return render(request, 'client_bookings.html', context)
+
+
+
+
+
+

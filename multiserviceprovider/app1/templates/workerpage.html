@@ -67,7 +67,15 @@
                                 <ul>
                                     <li class="active"><a href="workerpage">HOME </a>
                                     </li>
-                                    <li><a href="{% url 'workerjob' %}">Works</a></li>
+                                    <li class="dropdown dropdown-hover">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            Works <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="{% url 'workerjob' %}">Work Jobs</a></li>
+                                            <li><a href="#">Work History</a></li>
+                                        </ul>
+                                    </li>  
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'assignedwork' %}">Status</a></li>
                                     <li><a href="{% url 'worker_logout' %}">Logout</a></li>
@@ -247,10 +255,36 @@
     
         
         <!-- All js here -->
+        <!-- jQuery (make sure to include it before Bootstrap JS) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+
+<!-- Bootstrap JS (Make sure to include Popper.js and jQuery before Bootstrap JS) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- Custom script for dropdown on hover -->
+<script>
+    $(document).ready(function () {
+        // Enable Bootstrap dropdown on hover
+        $('.dropdown').hover(function () {
+            $(this).addClass('show');
+            $(this).find('.dropdown-menu').addClass('show');
+        }, function () {
+            $(this).removeClass('show');
+            $(this).find('.dropdown-menu').removeClass('show');
+        });
+    });
+</script>
+
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
-        <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
+        <script src="{% static 'userassets/js/bootstrap.min.js' %}"></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>
         <script src="{% static 'userassets/js/ajax-mail.js' %}"></script>
         <script src="{% static "userassets/js/main.js" %}"></script>
+                <!-- Bootstrap JS (Make sure to include Popper.js and jQuery before Bootstrap JS) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
     </body>
 </html>

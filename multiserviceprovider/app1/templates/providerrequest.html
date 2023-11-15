@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,7 +75,7 @@
         
     </style>
 </head>
-<body>
+<body style="background-image: url('{% static 'userassets/img/bg/mainlast.jpg' %}')">
     <div class="navbar">
         <a href="{% url 'admin_logout' %}">Logout</a>
         <a href="custom_admin_page">Home</a>

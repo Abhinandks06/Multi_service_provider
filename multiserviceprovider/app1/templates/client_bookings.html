@@ -500,31 +500,51 @@
     margin-bottom: 10px;
 }
 body {
-  background-image: url('https://images.pexels.com/photos/913416/pexels-photo-913416.jpeg?cs=srgb&dl=pexels-min-an-913416.jpg&fm=jpg');
+  background-image: url('https://www.creativefabrica.com/wp-content/uploads/2022/05/17/pastel-aesthetic-background-Graphics-30684243-1.jpg');
   background-size: cover; /* This property ensures the image covers the entire background */
   background-repeat: no-repeat; /* This property prevents the image from repeating */
   /* You can also set other background properties like position, attachment, etc. as needed */
 }
 .booking-box {
-    background-color: #ffffff; /* Background color */
-    padding: 20px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1); /* Shadow effect */
-    border-radius: 10px; /* Rounded corners */
-    font-size: 18px; /* Font size */
-    font-family: 'Arial', sans-serif; /* Font family */
-    width: 300px; /* Set the width of the box */
-    margin: 0 auto; /* Center the box */
-    text-align: center; /* Center text inside the box */
+    color: white; /* Set text color to white */
+    font-family: Arial, sans-serif; /* Set font family */
 }
 
-.booking-box ul {
-    list-style-type: none;
-    padding: 0;
+.workers-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.7); /* Set background color with opacity */
 }
 
-.booking-box li {
-    margin-bottom: 10px;
+.workers-table th, .workers-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 18px; /* Increase text size to 18px */
 }
+
+.no-workers {
+    text-align: center;
+    font-size: 18px; /* Increase text size to 18px */
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-size: 16px;
+    color: blue;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
 
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -539,8 +559,9 @@ body {
                         <div class="ht-main-menu">
                             <nav>
                                 <ul>
-                                    <li class="active"><a href="{% url 'workerpage' %}">HOME </a>
+                                    <li class="active"><a href="{% url 'providerpage' %}">HOME </a>
                                     </li>
+                                    <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>
@@ -592,27 +613,40 @@ body {
                             <br> <br> <br> <br> <br> <br>
                             
                             <div class="booking-box">
+                                <h1>My bookings</h1>
+                                <table class="bookings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Provider Name</th>
+                                            <th>Service type</th>
+                                            <th>District</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for booking in client_bookings %}
+                                        <tr class="booking-item">
+                                        <td>{{ client_name }}</td>
+                                        <td>{{ provider_name }}</td>
+                                        <td>{{ service_type }}</td>
+                                        <td>{{ booking.district }}</td>
+                                        <td>{{ booking.date }}</td>
+                                        <td>{{ booking.time }}</td>
+                                        <td>{{ booking.status }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="7" class="no-bookings">No bookings available</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                                 
-                                <ul>
-                                    <h1>Work assigned</h1>
-                                    {% for work in assigned_work %}
-                                        <li>Client-Name {{ work.bookingid.name }}</li>
-                                        <li>Work date {{ work.bookingid.date }}</li>
-                                        <li>Time {{ work.bookingid.time }}</li>
-                                        <li>Client-phone {{ work.bookingid.phone }}</li>
-                                        <form method="post" action="{% url 'update_status' %}">
-                                            {% csrf_token %}
-                                            <label for="status">Status:</label>
-                                            <select name="status" id="status">
-                                                <option value="Completed">Completed</option>
-                                            </select><br>
-                                            <br><button type="submit">Update Status</button>
-                                        </form>
-                                    {% empty %}
-                                        <li>No work assigned.</li>
-                                    {% endfor %}
-                                </ul>
                             </div>
+                            
                             
 
                             
