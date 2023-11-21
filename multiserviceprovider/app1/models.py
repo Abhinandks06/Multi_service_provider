@@ -6,7 +6,6 @@ class MyUser(AbstractUser):
     password = models.CharField(max_length=128, default="")
     role = models.CharField(max_length=15, default='client')
     userid = models.AutoField(primary_key=True) 
-    
 class ServiceProvider(models.Model):
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
     providername = models.CharField(max_length=100, unique=True)
@@ -104,6 +103,8 @@ class Service(models.Model):
     date = models.DateField()
     time = models.TimeField()
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
+    rating = models.IntegerField(blank=True, null=True)  # Field to store the rating
+    review = models.TextField(blank=True, null=True) 
 class WorkerReport(models.Model):
     COMPLETED = 'completed'
     CANCELED = 'canceled'

@@ -544,8 +544,54 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+.rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  margin-bottom: 10px;
+}
 
+.rating input {
+  display: none;
+}
 
+.rating label {
+  display: inline-block;
+  font-size: 34px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.rating label:hover,
+.rating label:hover ~ label,
+.rating input:checked ~ label {
+  color: #f7d701;
+}
+.submit-button {
+  display: block;
+  margin: 10px auto;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff; /* Button color */
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Style for the textarea */
+textarea[name="review"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-size: 14px;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -617,31 +663,77 @@ th {
                                 <table class="bookings-table">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
                                             <th>Provider Name</th>
                                             <th>Service type</th>
                                             <th>District</th>
                                             <th>Date</th>
                                             <th>Time</th>
                                             <th>Status</th>
+                                            <th>Rating</th>
+                                            <th>Review</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for booking in client_bookings %}
-                                        <tr class="booking-item">
-                                        <td>{{ client_name }}</td>
-                                        <td>{{ provider_name }}</td>
-                                        <td>{{ service_type }}</td>
-                                        <td>{{ booking.district }}</td>
-                                        <td>{{ booking.date }}</td>
-                                        <td>{{ booking.time }}</td>
-                                        <td>{{ booking.status }}</td>
-                                            </tr>
-                                        {% empty %}
-                                            <tr>
-                                                <td colspan="7" class="no-bookings">No bookings available</td>
-                                            </tr>
-                                        {% endfor %}
+                                      {% for booking in client_bookings %}
+                                      <tr class="booking-item">
+                                          <td>{{ booking.providerid.providername }}</td>
+                                          <td>{{ booking.providerid.service_type }}</td>
+                                          <td>{{ booking.district }}</td>
+                                          <td>{{ booking.date }}</td>
+                                          <td>{{ booking.time }}</td>
+                                          <td>{{ booking.status }}</td>
+                                          <td>
+                                            {% if booking.rating %}
+                                            {% if booking.rating == 1 %}
+                                                &#9733;&#9734;&#9734;&#9734;&#9734; <!-- One filled star -->
+                                            {% elif booking.rating == 2 %}
+                                                &#9733;&#9733;&#9734;&#9734;&#9734; <!-- Two filled stars -->
+                                            {% elif booking.rating == 3 %}
+                                                &#9733;&#9733;&#9733;&#9734;&#9734; <!-- Three filled stars -->
+                                            {% elif booking.rating == 4 %}
+                                                &#9733;&#9733;&#9733;&#9733;&#9734; <!-- Four filled stars -->
+                                            {% else %}
+                                                &#9733;&#9733;&#9733;&#9733;&#9733; <!-- Five filled stars -->
+                                            {% endif %}
+                                        {% else %}
+                                                <!-- Show the rating form if no rating exists -->
+                                                <form method="post" action="{% url 'update_rating' %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
+                                                    <div class="rating">
+                                                      <input type="radio" id="star5" name="rating" value="5">
+                                                      <label for="star5">&#9733;</label>
+                                                      <input type="radio" id="star4" name="rating" value="4">
+                                                      <label for="star4">&#9733;</label>
+                                                      <input type="radio" id="star3" name="rating" value="3">
+                                                      <label for="star3">&#9733;</label>
+                                                      <input type="radio" id="star2" name="rating" value="2">
+                                                      <label for="star2">&#9733;</label>
+                                                      <input type="radio" id="star1" name="rating" value="1">
+                                                      <label for="star1">&#9733;</label>
+                                                    </div>
+                                                    <center>
+                                                        <button class="submit-button" type="submit">Submit Rating</button>
+                                                    </center>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                          <form method="post" action="{% url 'update_review' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
+                                            <textarea name="review" rows="3" cols="30" placeholder="Write a review">{{ booking.review }}</textarea>
+                                            <center><button class="submit-button" type="submit">Submit Review</button></center>
+                                        </form>
+                                        </td>
+                                      </tr>
+                                  {% empty %}
+                                      <tr>
+                                          <td colspan="7" class="no-bookings">No bookings available</td>
+                                      </tr>
+                                  {% endfor %}
+                                  
+
                                     </tbody>
                                 </table>
                                 

@@ -723,7 +723,7 @@ def bookinghistory(request):
     provider_id = request.user.userid
 
     # Filter bookings based on the provider's providerid and status is 'pending'
-    bookings = ClientBooking.objects.filter(providerid=provider_id, status='approved')
+    bookings = Service.objects.filter(providerid_id=provider_id, status='Completed')
     context = {
         'bookings': bookings
     }
@@ -734,13 +734,10 @@ def approve_booking(request, booking_id):
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
     booking.status = 'approved'
     booking.save()
-    
-    # Update related Service status to 'approved'
     service_id = booking.serviceid_id
     service = Service.objects.get(serviceid=service_id)
     service.status = 'approved'
     service.save()
-
     messages.success(request, 'Appointment accepted.')
     return redirect('provider_bookings')
 @login_required
@@ -748,13 +745,10 @@ def reject_booking(request, booking_id):
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
     booking.status = 'canceled'
     booking.save()
-    
-    # Update related Service status to 'canceled'
     service_id = booking.serviceid_id
     service = Service.objects.get(serviceid=service_id)
     service.status = 'canceled'
     service.save()
-
     messages.success(request, 'Appointment canceled.')
     return redirect('provider_bookings')
 @login_required
@@ -762,7 +756,6 @@ def worker_requests(request, user_id):
     # Filter workers based on the user_id
     workers = Worker.objects.filter(user__is_active=False, provider=user_id,)
     return render(request, 'workerrequest.html', {'workers': workers})
-
 @login_required
 def approve_worker(request, user_id):
     # Retrieve the ServiceProvider instance associated with the request ID
@@ -862,7 +855,8 @@ def update_status(request):
 
         # Get all workers related to this service
         related_workers = Worker.objects.filter(service=service)
-
+        clientbooking=ClientBooking.objects.filter(bookingid=service.bookingid_id)
+        clientbooking.update(status='completed')
         # Update the status of related workers
         related_workers.update(status='available')  # Set status as needed
 
@@ -1118,3 +1112,63 @@ def cancel_service(request):
         messages.success(request, 'Service cancelled successfully!')
     return redirect('userpage')
 
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+@login_required
+def update_service_and_booking(request, booking_id):
+    try:
+        # Retrieve booking details for the specified booking ID
+        booking = ClientBooking.objects.get(bookingid=booking_id)
+
+        # Update booking status to 'canceled'
+        booking.status = 'canceled'
+        booking.save()
+
+        service = Service.objects.get(bookingid_id=booking.bookingid)
+
+        # Update service status to 'canceled'
+        service.status = 'canceled'
+        service.save()
+
+        # Redirect to 'providerpage' view
+        return redirect('providerpage')
+
+    except (ClientBooking.DoesNotExist, Service.DoesNotExist) as e:
+        messages.error(request, 'Cancelled booking.')
+
+        # Redirect to an appropriate page or handle the error scenario
+        return redirect('providerpage')
+
+@login_required
+def update_rating(request):
+    if request.method == 'POST':
+        service_id = request.POST.get('service_id')
+        rating = request.POST.get('rating')
+
+        # Update the Service model with the received rating
+        service = Service.objects.get(serviceid=service_id)
+        service.rating = rating
+        service.save()
+
+        # Redirect to the client bookings page or any other page
+        return redirect('client_bookings', client_id=service.clientid_id)
+
+    # Handle other cases, e.g., GET requests
+    return redirect('userpage')
+@login_required
+def update_review(request):
+    if request.method == 'POST':
+        service_id = request.POST.get('service_id')
+        review = request.POST.get('review')
+
+        # Update the Service model with the received review
+        service = Service.objects.get(serviceid=service_id)
+        service.review = review
+        service.save()
+
+        # Redirect to the client bookings page or any other page
+        return redirect('client_bookings', client_id=service.clientid_id)
+
+    # Handle other cases, e.g., GET requests
+    return redirect('userpage')

@@ -148,6 +148,9 @@ urlpatterns = [
      path('bookinghistory/user_logout', views.user_logout, name='user_logout'),
      path('approve_report/', views.approve_report, name='approve_report'),
      path('cancel_service/', views.cancel_service, name='cancel_service'),
+     path('update_rating/', views.update_rating, name='update_rating'),
+     path('update_review/', views.update_review, name='update_review'),
+     path('update-service-and-booking/<int:booking_id>/', views.update_service_and_booking, name='update_service_and_booking'),
 
 
 

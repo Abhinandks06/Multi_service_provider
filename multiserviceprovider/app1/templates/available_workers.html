@@ -626,7 +626,10 @@ body {
                                         {% empty %}
                                             <tr>
                                                 <td colspan="4" class="no-workers">No available workers in this district.</td>
-                                                <td><input type="button" value="Reject"></td>
+                                                <td><form method="post" action="{% url 'update_service_and_booking' booking.bookingid %}">
+                                                  {% csrf_token %}
+                                                  <button type="submit">Reject</button>
+                                              </form></td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
