@@ -156,6 +156,7 @@ def index(request):
 def services(request):
     request.session.flush() 
     return render(request, "servicelist.html")
+@login_required
 def userpage(request):
     if 'username' in request.session:
         username = request.session['username']
@@ -733,12 +734,27 @@ def approve_booking(request, booking_id):
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
     booking.status = 'approved'
     booking.save()
+    
+    # Update related Service status to 'approved'
+    service_id = booking.serviceid_id
+    service = Service.objects.get(serviceid=service_id)
+    service.status = 'approved'
+    service.save()
+
     messages.success(request, 'Appointment accepted.')
     return redirect('provider_bookings')
+@login_required
 def reject_booking(request, booking_id):
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
-    booking.status = ''
+    booking.status = 'canceled'
     booking.save()
+    
+    # Update related Service status to 'canceled'
+    service_id = booking.serviceid_id
+    service = Service.objects.get(serviceid=service_id)
+    service.status = 'canceled'
+    service.save()
+
     messages.success(request, 'Appointment canceled.')
     return redirect('provider_bookings')
 @login_required
@@ -802,12 +818,11 @@ def assign_worker(request):
             clientid=client,
             district=booking.district,
             providerid=booking.providerid,
-            workerid=worker,
             date=booking.date,
             time=booking.time,
             status=Service.ASSIGNED  # You can set the initial status to 'assigned'
         )
-        
+        service.workerid.set([worker])
         # Update the booking status to 'assigned'
         booking.status = ClientBooking.APPROVED
         booking.save()
@@ -825,42 +840,49 @@ def assign_worker(request):
 @login_required
 def worker_job(request):
     worker_id = request.user.userid  # Assuming the worker's ID is stored in the user object
-    assigned_work = Service.objects.filter(workerid=worker_id ,status=Service.ASSIGNED)
-    return render(request, 'worker_job.html', {'assigned_work': assigned_work})
-
+    assigned_work = Service.objects.filter(workerid=worker_id, status=Service.ASSIGNED)
+    return render(request, 'worker_job.html', {'assigned_work': assigned_work, 'worker_id': worker_id})
 @login_required
 def assignedwork(request):
-    worker_id = request.user.userid  # Assuming the worker's ID is stored in the user object
-    assigned_work = Service.objects.filter(workerid=worker_id ,status=Service.ASSIGNED)
+    worker_id = request.user.userid
+    assigned_work = Service.objects.filter(workerid=worker_id).exclude(status__iexact='COMPLETED')
     return render(request, 'update_status.html', {'assigned_work': assigned_work})
 @login_required
 def update_status(request):
     worker_id = request.user.userid
-    # Filter Service objects based on worker ID and status
-    services = Service.objects.filter(workerid=worker_id, status=Service.ASSIGNED)
-    # Check if the request method is POST
+    
     if request.method == 'POST':
-        # Get the new status from the form data
+        service_id = request.POST.get('service_id')
         new_status = request.POST.get('status')
 
-        # Update the status of all matching service objects using the update() method
-        services.update(status=new_status)
+        # Update the status of the service
+        service = get_object_or_404(Service, serviceid=service_id)
+        service.status = new_status
+        service.save()
 
-        # Update the status of the worker in Worker model
-        worker = Worker.objects.get(user_id=worker_id)
-        worker.status = 'available'
-        worker.save()
+        # Get all workers related to this service
+        related_workers = Worker.objects.filter(service=service)
 
-        # Redirect to a success page or any other page as needed
+        # Update the status of related workers
+        related_workers.update(status='available')  # Set status as needed
+
         messages.success(request, 'Service status updated!')
-        return redirect('workerpage')  # Replace 'workerpage' with the appropriate URL name
+        return redirect('workerpage')
 
-    # Handle other cases, e.g., GET requests
     return redirect('workerpage')
 @login_required
 def render_report_form(request, bookingid_id):
+    worker_id = request.POST.get('worker_id')  # Get the worker_id from the POST data
+    
     service = get_object_or_404(Service, bookingid_id=bookingid_id)
-    return render(request, 'generate_report.html', {'service': service})
+    return render(request, 'generate_report.html', {'service': service, 'worker_id': worker_id})
+
+
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.core.files.base import ContentFile
+from django.http import HttpResponse
+from .models import Service, Worker, ServiceProvider, WorkerReport
 @login_required
 def generate_report(request):
     if request.method == 'POST':
@@ -871,9 +893,13 @@ def generate_report(request):
         requirements = request.POST.get('requirements')
         cost = request.POST.get('cost')
         num_workers_needed = request.POST.get('num_workers_needed')
+        
+        # Fetch necessary objects from the database
         service = get_object_or_404(Service, serviceid=serviceid)
         worker = get_object_or_404(Worker, user_id=user_id)
         provider = get_object_or_404(ServiceProvider, user_id=providerid)
+        
+        # Create a WorkerReport instance to store the inputs
         report = WorkerReport.objects.create(
             serviceid=service,
             user_id=worker,
@@ -881,13 +907,52 @@ def generate_report(request):
             duration_of_work=duration_of_work,
             requirements=requirements,
             cost=cost,
-            num_workers_needed=num_workers_needed
+            num_workers_needed=num_workers_needed,
+            status="reportgiven"
         )
+        
+        # Update Service status
         service.status = Service.REPORTGIVEN
         service.save()
-        messages.success(request, 'Report successfully submitted')
-        return redirect('workerpage')
+
+        # Fetch additional data from related models
+        provider_name = provider.providername  # Replace 'provider_name' with the actual field name
+        worker_name = f"{worker.first_name} {worker.last_name}"
+        service_type = provider.service_type  # Replace 'service_type' with the actual field name
+        
+        # Fetch data to render in the PDF template
+        context = {
+            'serviceid': serviceid,
+            'duration_of_work': duration_of_work,
+            'requirements': requirements,
+            'workers': num_workers_needed,
+            'cost': cost,
+            'provider_name': provider_name,
+            'worker_name': worker_name,
+            'service_type': service_type,
+            # Add other data as needed
+        }
+        
+        # Render the HTML template
+        template = get_template('report_template.html')
+        html = template.render(context)
+        
+        # Generate PDF using xhtml2pdf
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="worker_report.pdf"'
+
+        # Generate the PDF file
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        
+        if pisa_status.err:
+            return HttpResponse('Failed to generate PDF!')
+         # Save the PDF content to WorkerReport model
+        report.report_pdf.save(f'worker_report_{report.reportid}.pdf', ContentFile(response.content), save=True)
+        return redirect (workerpage)
+
     return render(request, 'generate_report.html', {})
+
+
 @login_required
 def worker_list(request, provider_id):
     # Fetch workers belonging to the specific provider using the provider_id
@@ -909,22 +974,27 @@ def worker_report(request, provider_id):
     }
     return render(request, 'worker_report.html', context)
 
+from django.db.models import Prefetch
 @login_required
 def worker_report(request, provider_id):
     worker_reports = WorkerReport.objects.filter(providerid_id=provider_id)
-    service_status = {}
-    for report in worker_reports:
-        service_id = report.serviceid_id
-        try:
-            service = Service.objects.get(serviceid=service_id)
-            service_status[report.serviceid_id] = service.status
-        except Service.DoesNotExist:
-            service_status[report.serviceid_id] = "Service Not Found"
+    
+    # Prefetch the related Service objects and extract only the 'status' field
+    service_status = Service.objects.filter(providerid_id=provider_id).values_list('status', flat=True)
+    
+    # Combine the queries into a single call
+    worker_reports = worker_reports.prefetch_related(
+        Prefetch('serviceid', queryset=Service.objects.filter(providerid_id=provider_id))
+    )
+    
     context = {
         'worker_reports': worker_reports,
         'service_status': service_status,
     }
     return render(request, 'worker_report.html', context)
+
+
+@login_required
 def client_bookings(request, client_id):
     client_bookings = Service.objects.filter(clientid_id=client_id)
     client_name = Client.objects.get(user_id=client_id).first_name
@@ -940,9 +1010,111 @@ def client_bookings(request, client_id):
         'service_type': service_type,  # Pass provider objects to the template
     }
     return render(request, 'client_bookings.html', context)
+@login_required
+def assign_workers(request, reportid):
+    worker_report = WorkerReport.objects.get(reportid=reportid)
+    service_id = worker_report.serviceid_id
+    service = Service.objects.get(serviceid=service_id)
+    
+    # Fetch available workers based on the service's district
+    workers = Worker.objects.filter(district=service.district, status='available')
+    
+    context = {
+        'worker_report': worker_report,
+        'service': service,
+        'available_workers': workers,
+    }
+    return render(request, 'assign_workers.html', context)
+@login_required
+def assign_workers_service(request):
+    if request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        service_id = request.POST.get('service_id')
+        selected_worker_ids = request.POST.getlist('selected_workers')
+        
+        # Retrieve the worker report and service objects
+        worker_report = WorkerReport.objects.get(reportid=report_id)
+        service = Service.objects.get(serviceid=service_id)
+
+        # Retrieve selected workers based on their IDs
+        selected_workers = Worker.objects.filter(user_id__in=selected_worker_ids)
 
 
+        # Assign selected workers to the service model
+        service.workerid.add(*selected_workers)
 
+        # Update status of selected workers to "on duty"
+        Worker.objects.filter(user_id__in=selected_worker_ids).update(status='onduty')
 
+        return redirect('providerpage')  # Redirect to a success page or any other view upon successful assignment
 
+    # Render the page initially or handle GET requests
+    return redirect('providerpage')
+    
+
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from .models import WorkerReport
+@login_required
+def download_worker_report(request, report_id):
+    # Fetch the worker report for the specific report ID
+    worker_report = get_object_or_404(WorkerReport, reportid=report_id)
+    
+    # Assuming 'pdf_field' is the field in the WorkerReport model that stores the PDF
+    pdf_content = worker_report.report_pdf.read()
+    
+    # Set up the response to serve the PDF file
+    response = HttpResponse(pdf_content, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="worker_report_{report_id}.pdf"'
+    
+    return response
+@login_required
+def client_work_reports(request, client_id):
+    # Get the client
+    client = get_object_or_404(Client, user_id=client_id)
+
+    # Get the services related to the client
+    services = Service.objects.filter(clientid_id=client.user_id)
+
+    # Extract the service IDs
+    service_ids = [service.serviceid for service in services]
+
+    # Get worker reports associated with those service IDs
+    client_reports = WorkerReport.objects.filter(serviceid__in=service_ids)
+
+    return render(request, 'client_work_reports.html', {'client_reports': client_reports})
+def approve_report(request):
+    if request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        # Perform logic to approve the report (update database, etc.)
+        # Example:
+        report = WorkerReport.objects.get(reportid=report_id)
+        report.status = 'completed'
+        report.save()
+
+        # Update Service status to reportverified
+        service_id = report.serviceid_id
+        service = Service.objects.get(serviceid=service_id)
+        service.status = 'reportverified'
+        service.save()
+
+        messages.success(request, 'Report approved successfully!')
+    return redirect('userpage')
+def cancel_service(request):
+    if request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        # Perform logic to cancel the service (update database, etc.)
+        # Example:
+        report = WorkerReport.objects.get(reportid=report_id)
+        report.status = 'canceled'
+        report.save()
+
+        # Update Service status to cancelled
+        service_id = report.serviceid_id
+        service = Service.objects.get(serviceid=service_id)
+        service.status = 'cancelled'
+        service.save()
+
+        messages.success(request, 'Service cancelled successfully!')
+    return redirect('userpage')
 

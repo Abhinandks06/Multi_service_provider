@@ -1,3 +1,4 @@
+
 {% load static %}
 <!doctype html>
 <html class="no-js" lang="en">
@@ -498,20 +499,20 @@
     padding: 15px;
     margin-bottom: 10px;
 }
+body {
+  background-image: url('https://www.creativefabrica.com/wp-content/uploads/2022/05/17/pastel-aesthetic-background-Graphics-30684243-1.jpg');
+  background-size: cover; /* This property ensures the image covers the entire background */
+  background-repeat: no-repeat; /* This property prevents the image from repeating */
+  /* You can also set other background properties like position, attachment, etc. as needed */
+}
 
-      
+
+
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <body  style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
-      {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    
+    <body>
+        
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
             <div class="header-container">
@@ -520,7 +521,7 @@
                         <div class="ht-main-menu">
                             <nav>
                                 <ul>
-                                    <li class="active"><a href="providerpage">HOME </a>
+                                    <li class="active"><a href="{% url 'providerpage' %}">HOME </a>
                                     </li>
                                     <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
@@ -535,13 +536,6 @@
                     </div>
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
-                            <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
-                                </form>
-                            </div>
                             <div class="settings-wrapper">
                                 <a href="#"><i class="fas fa-bell"></i></a>
                             </div>
@@ -575,65 +569,69 @@
             <!-- Mobile Menu Area End -->
 
         </header>
-        <!-- Header Area End -->
-        <!-- Hero Area Start -->
-        <div class="ht-hero-section fix">
-            <div class="ht-hero-slider">
-                <!-- Single Slide Start -->
-               
-                    <div class="container" >
-                      <div class="content-section">
-                       <!-- Your content goes here -->
-                        <div class="container">
-                            <!-- Your content elements and sections go here -->
+
                             <br> <br> <br> <br> <br> <br>
-                            
-                            <div class="container">
-                              
-                   <!-- your_template.html -->
-<!-- your_template.html -->
-<div class="booking-box" >
-  {% for booking in bookings %}
-  <div class="booking-item">
-    <ul>
-      <p>
-          Client Name: {{ booking.name }}<br>
-          Client Phone: {{ booking.phone }}<br>
-          Date: {{ booking.date }}<br>
-          Time: {{ booking.time }}<br>
-          Location: {{ booking.district }}<br>
-          Work status : {{ booking.status }}<br>
+                            <div class="booking-box" style="border: 1px solid #ccc; border-radius: 10px; padding: 20px; background-color: rgba(255, 255, 255, 0.8);">
+                          
+                              <h1 style="font-size: 24px;">Assign Workers</h1>
+                          
+                              <div style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                                  <h2 style="font-size: 20px;">Worker Report Details</h2>
+                                  <p style="font-size: 16px;">Duration of Work: {{ worker_report.duration_of_work }}</p>
+                                  <p style="font-size: 16px;">Additional Workers required: {{ worker_report.num_workers_needed|add:"-1" }}</p>
 
-          {% if booking.status == 'pending' %}
-          {% comment %} <form method="post" action="{% url 'approve_booking' booking.bookingid %}">
-              {% csrf_token %}
-              <button type="submit">Approve Booking</button>
-          </form> {% endcomment %}
-          <form method="get" action="{% url 'available_workers' booking.providerid_id booking.district booking.bookingid %}">
-            <button type="submit">Assign Worker</button>
-        </form>
-          {% endif %}
-      </p>
-    </ul>
-  </div>
-  {% empty %}
-  <p>No bookings available.</p>
-  {% endfor %}
-</div>
+                                  <!-- Display other details of the worker report as needed -->
+                              </div>
+                          
+                              <div style="border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 10px;">
+                                  <h2 style="font-size: 20px;">Available Workers</h2>
+                                  <form method="post" action="{% url 'assign_workers_service' %}" onsubmit="return validateWorkers()">
+                                      {% csrf_token %}
+                                      <input type="hidden" name="report_id" value="{{ worker_report.reportid }}">
+                                      <input type="hidden" name="service_id" value="{{ service.serviceid }}">
+                                      <!-- Include hidden fields to pass report_id and service_id to the view -->
+                          
+                                      <ul>
+                                          {% if available_workers %}
+                                              {% for worker in available_workers %}
+                                                  <li style="margin-bottom: 5px;">
+                                                      <label>
+                                                          <input type="checkbox" name="selected_workers" value="{{ worker.user_id }}">
+                                                          <span style="font-size: 16px;">{{ worker.first_name }} {{ worker.last_name }} ({{ worker.district }})</span>
+                                                      </label>
+                                                  </li>
+                                              {% endfor %}
+                                              
+                                              <button type="submit" style="font-size: 16px; margin-top: 10px;">Assign Selected Workers</button>
+                                          {% else %}
+                                              <li>No available workers</li>
+                                              <a href="" style="font-size: 16px; margin-top: 10px;">Cancel Booking</a>
+                                          {% endif %}
+                                      </ul>
+                                  </form>
+                              </div>
+                          </div>
+                          
+                          <script>
+                            function validateWorkers() {
+                                const numWorkersNeeded = {{ worker_report.num_workers_needed }};
+                                const checkboxes = document.getElementsByName('selected_workers');
+                                let numChecked = 0;
+                        
+                                checkboxes.forEach((checkbox) => {
+                                    if (checkbox.checked) {
+                                        numChecked++;
+                                    }
+                                });
+                        
+                                if (numChecked !== numWorkersNeeded - 1) {
+                                    alert(`Please select exactly ${numWorkersNeeded - 1}  workers.`);
+                                    return false;
+                                }
+                                return true;
+                            }
+                        </script>           
 
-
-                            
-
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            
-        </div>
-                <!-- Single Slide End -->
-        <!-- Hero Area End -->
-        <!-- Food Categry Area Start -->
-        <!-- All js here -->
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>
@@ -641,3 +639,4 @@
         <script src="{% static "userassets/js/main.js" %}"></script>
     </body>
 </html>
+

@@ -602,6 +602,7 @@ body {
                                         <li>Client-phone {{ work.bookingid.phone }}</li>
                                         <form method="post" action="{% url 'update_status' %}">
                                             {% csrf_token %}
+                                            <input type="hidden" name="service_id" value="{{ work.serviceid }}">
                                             <label for="status">Status:</label>
                                             <select name="status" id="status">
                                                 <option value="Completed">Completed</option>

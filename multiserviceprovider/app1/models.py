@@ -100,11 +100,21 @@ class Service(models.Model):
     clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
     district = models.TextField(max_length=100)
     providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
-    workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
+    workerid = models.ManyToManyField('Worker')
     date = models.DateField()
     time = models.TimeField()
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
 class WorkerReport(models.Model):
+    COMPLETED = 'completed'
+    CANCELED = 'canceled'
+    REPORTGIVEN = 'reportgiven'
+    REPORTVERIFIED = 'reportverified'
+    STATUS_CHOICES = [
+        (COMPLETED, 'Completed'),
+        (CANCELED, 'Canceled'),
+        (REPORTGIVEN, 'Report Given'),
+        (REPORTVERIFIED, 'Report Verified'),
+    ]
     reportid = models.AutoField(primary_key=True)
     serviceid = models.ForeignKey('Service', on_delete=models.CASCADE)
     user_id = models.ForeignKey('Worker', on_delete=models.CASCADE)
@@ -114,3 +124,6 @@ class WorkerReport(models.Model):
     cost = models.DecimalField(max_digits=10, decimal_places=2)
     num_workers_needed = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=REPORTGIVEN)
+    report_pdf = models.FileField(upload_to='worker_reports/', blank=True, null=True)
+

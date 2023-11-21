@@ -605,15 +605,17 @@ body {
                                     
                                     <div class="booking-box1">
                                     {% for work in assigned_work %}
+
                                         <li>ClientName {{ work.bookingid.name }}</li>
                                         <li>Work date {{ work.bookingid.date }}</li>
                                         <li>Time {{ work.bookingid.time }}</li>
                                         <li>Client-phone {{ work.bookingid.phone }}</li>
-                                        <form method="post" action="{% url 'render_report_form' work.bookingid_id %}">
-                                          {% csrf_token %}
-                                          <input type="submit" value="Give Report">
-                                      </form>
-                                      
+                                         <form method="post" action="{% url 'render_report_form' work.bookingid_id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="worker_id" value="{{ worker_id }}">
+                                        <!-- Include a hidden field to pass worker_id to the view -->
+                                        <input type="submit" value="Give Report">
+                                    </form>
                                     {% empty %}
                                         <li>No work assigned.</li>
                                     {% endfor %}

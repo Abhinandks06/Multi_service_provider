@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worker Report</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-image: url('https://i.pinimg.com/originals/d2/98/a2/d298a2af3ea9dc4ebb28ecad9ccfef7a.jpg'); /* Replace 'path_to_your_image.jpg' with the actual path */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .report-container {
+            
+            padding: 20px;
+            width: 80%;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9); /* White background with some transparency */
+        }
+        .report-title {
+            border: 1px solid #ccc;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .report-details {
+            margin-bottom: 10px;
+        }
+        .report-details p {
+            margin: 5px 0;
+        }
+        /* Add more styles as needed */
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-title">Multiserviceprovider</div>
+        <h1>Worker Report</h1>
+        <div class="report-details">
+            <p>Service ID: {{ serviceid }}</p>
+            <p>Provider: {{ provider_name }}</p>
+            <p>Service Type: {{ service_type }}</p>
+            <p>Worker: {{ worker_name }}</p>
+            <p>Number of workers needed: {{ workers }}</p>
+            <p>Duration of work: {{ duration_of_work }}</p>
+            <p>Requirements: {{ requirements }}</p>
+            <p>Cost: {{ cost }}</p>
+        </div>
+    </div>
+</body>
+</html>

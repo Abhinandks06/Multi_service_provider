@@ -614,47 +614,40 @@ th {
                             <div class="booking-box">
                                 <h1>Worker reports</h1>
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Service ID</th>
-                                            <th>Worker Name</th>
-                                            <th>Duration of Work</th>
-                                            <th>Requirements</th>
-                                            <th>Cost</th>
-                                            <th>Number of Workers Needed</th>
-                                            <th>Report Time</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for report in worker_reports %}
-                                            <tr>
-                                                <td>{{ report.serviceid.serviceid }}</td>
-                                                <td>{{ report.user_id.first_name }}</td>
-                                                <td>{{ report.duration_of_work }}</td>
-                                                <td>{{ report.requirements }}</td>
-                                                <td>{{ report.cost }}</td>
-                                                <td>{{ report.num_workers_needed }}</td>
-                                                <td>{{ report.created_at }}</td>
-                                                <td>{{ service_status }}</td>
-
-
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                  <thead>
+                                      <tr>
+                                          <th>Service ID</th>
+                                          <th>Worker Name</th>
+                                          <th>Duration of Work</th>
+                                          <th>Requirements</th>
+                                          <th>Cost</th>
+                                          <th>Number of Workers Needed</th>
+                                          <th>Report Time</th>
+                                          <th>Status</th>
+                                          <th>Assign</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for report in worker_reports %}
+                                          <tr>
+                                              <td>{{ report.serviceid.serviceid }}</td>
+                                              <td>{{ report.user_id.first_name }}</td>
+                                              <td>{{ report.duration_of_work }}</td>
+                                              <td>{{ report.requirements }}</td>
+                                              <td>{{ report.cost }}</td>
+                                              <td>{{ report.num_workers_needed }}</td>
+                                              <td>{{ report.created_at }}</td>
+                                              <td>{{ report.status }}</td>
+                                              <td>
+                                                <button type="button" onclick="window.location.href='{% url 'assign_workers' report.reportid %}'">Assign Workers</button>
+                                              </td>
+                                          </tr>
+                                      {% endfor %}
+                                  </tbody>
+                              </table>
+                              
                                 
                             </div>
-                            
-                            
-
-                            
-
-        
-                <!-- Single Slide End -->
-        <!-- Hero Area End -->
-        <!-- Food Categry Area Start -->
-        <!-- All js here -->
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>

@@ -121,6 +121,8 @@ urlpatterns = [
      path('approve_worker/<int:user_id>/', views.approve_worker, name='approve_worker'),
      path('provider_bookings/userpage.html', views.providerpage, name='providerpage'),
      path('bookinghistory/userpage.html', views.providerpage, name='providerpage'),
+     path('bookinghistory/userpage', views.userpage, name='userpage'),
+     path('bookinghistory/providerpage', views.providerpage, name='providerpage'),
      path('worker_requests', views.worker_requests, name='worker_requests'),
      path('worker_requests/<int:user_id>/', views.worker_requests, name='worker_requests'),
      path('providerpage/worker_requests/<int:user_id>/', views.approve_worker, name='approve_worker'),
@@ -136,6 +138,16 @@ urlpatterns = [
      path('provider/<int:provider_id>/workers/', views.worker_list, name='worker_list'),
      path('worker_report/<int:provider_id>/', views.worker_report, name='worker_report'),
      path('client_bookings/<int:client_id>/', views.client_bookings, name='client_bookings'),
+     path('assign_workers/<int:reportid>/', views.assign_workers, name='assign_workers'),
+     path('assign_workers_service/', views.assign_workers_service, name='assign_workers_service'),
+     path('client_work_reports/<int:client_id>/', views.client_work_reports, name='client_work_reports'),
+     path('download_work_report/<int:report_id>/', views.download_worker_report, name='download_work_report'),
+     path('client_work_reports/<int:client_id>/userpage', views.userpage, name='userpage'),
+     path('assign_workers_service/assign_workers.html', views.providerpage, name='providerpage'),
+     path('bookinghistory/providerpage', views.providerpage, name='providerpage'),
+     path('bookinghistory/user_logout', views.user_logout, name='user_logout'),
+     path('approve_report/', views.approve_report, name='approve_report'),
+     path('cancel_service/', views.cancel_service, name='cancel_service'),
 
 
 

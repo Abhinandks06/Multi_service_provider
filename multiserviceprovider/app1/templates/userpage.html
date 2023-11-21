@@ -98,7 +98,7 @@
                                     </li>
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'client_bookings' client_id=user_id %}">Bookings</a></li>
-
+                                    <li><a href="{% url 'client_work_reports' client_id=user_id %}">Work Report</a></li>
                                     <li><a href="#bookings">Profile</a>
                                         <ul>
                                             <li><a href="{% url 'view_profile' %}">View Profile</a></li>
