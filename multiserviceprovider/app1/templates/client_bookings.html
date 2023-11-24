@@ -684,38 +684,45 @@ textarea[name="review"] {
                                           <td>{{ booking.status }}</td>
                                           <td>
                                             {% if booking.rating %}
-                                            {% if booking.rating == 1 %}
-                                                &#9733;&#9734;&#9734;&#9734;&#9734; <!-- One filled star -->
-                                            {% elif booking.rating == 2 %}
-                                                &#9733;&#9733;&#9734;&#9734;&#9734; <!-- Two filled stars -->
-                                            {% elif booking.rating == 3 %}
-                                                &#9733;&#9733;&#9733;&#9734;&#9734; <!-- Three filled stars -->
-                                            {% elif booking.rating == 4 %}
-                                                &#9733;&#9733;&#9733;&#9733;&#9734; <!-- Four filled stars -->
+                                                <!-- Display the rating based on the booking's rating -->
+                                                {% if booking.rating == 1 %}
+                                                    &#9733;&#9734;&#9734;&#9734;&#9734; <!-- One filled star -->
+                                                {% elif booking.rating == 2 %}
+                                                    &#9733;&#9733;&#9734;&#9734;&#9734; <!-- Two filled stars -->
+                                                {% elif booking.rating == 3 %}
+                                                    &#9733;&#9733;&#9733;&#9734;&#9734; <!-- Three filled stars -->
+                                                {% elif booking.rating == 4 %}
+                                                    &#9733;&#9733;&#9733;&#9733;&#9734; <!-- Four filled stars -->
+                                                {% else %}
+                                                    &#9733;&#9733;&#9733;&#9733;&#9733; <!-- Five filled stars -->
+                                                {% endif %}
                                             {% else %}
-                                                &#9733;&#9733;&#9733;&#9733;&#9733; <!-- Five filled stars -->
-                                            {% endif %}
-                                        {% else %}
+                                            
                                                 <!-- Show the rating form if no rating exists -->
                                                 <form method="post" action="{% url 'update_rating' %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
-                                                    <div class="rating">
-                                                      <input type="radio" id="star5" name="rating" value="5">
-                                                      <label for="star5">&#9733;</label>
-                                                      <input type="radio" id="star4" name="rating" value="4">
-                                                      <label for="star4">&#9733;</label>
-                                                      <input type="radio" id="star3" name="rating" value="3">
-                                                      <label for="star3">&#9733;</label>
-                                                      <input type="radio" id="star2" name="rating" value="2">
-                                                      <label for="star2">&#9733;</label>
-                                                      <input type="radio" id="star1" name="rating" value="1">
-                                                      <label for="star1">&#9733;</label>
-                                                    </div>
-                                                    <center>
-                                                        <button class="submit-button" type="submit">Submit Rating</button>
-                                                    </center>
-                                                </form>
+                                                  {% csrf_token %}
+                                                  <!-- Use booking ID as a unique identifier for each booking -->
+                                                  <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
+                                                  <div class="rating">
+                                                      <input type="radio" id="star5_{{ booking.serviceid }}" name="rating" value="5">
+                                                      <label for="star5_{{ booking.serviceid }}">&#9733;</label>
+                                              
+                                                      <input type="radio" id="star4_{{ booking.serviceid }}" name="rating" value="4">
+                                                      <label for="star4_{{ booking.serviceid }}">&#9733;</label>
+                                              
+                                                      <input type="radio" id="star3_{{ booking.serviceid }}" name="rating" value="3">
+                                                      <label for="star3_{{ booking.serviceid }}">&#9733;</label>
+                                              
+                                                      <input type="radio" id="star2_{{ booking.serviceid }}" name="rating" value="2">
+                                                      <label for="star2_{{ booking.serviceid }}">&#9733;</label>
+                                              
+                                                      <input type="radio" id="star1_{{ booking.serviceid }}" name="rating" value="1">
+                                                      <label for="star1_{{ booking.serviceid }}">&#9733;</label>
+                                                  </div>
+                                                  <center>
+                                                      <button class="submit-button" type="submit">Submit Rating</button>
+                                                  </center>
+                                              </form>
                                             {% endif %}
                                         </td>
                                         <td>
