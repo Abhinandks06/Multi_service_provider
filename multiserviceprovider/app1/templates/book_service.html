@@ -624,9 +624,14 @@
                             <br> <br> <br> <br> <br> <br>
                             
                             <div class="container">
+                                
+
+
                                 <div class="booking-form-box">
                                   <form method="post" action="{% url 'create_booking' %}" onsubmit="return validateForm()">
-                                    {% csrf_token %}
+                                      {% csrf_token %}
+
+                                    
                                     <!-- Hidden input fields for providerid and userid -->
                                     <input type="hidden" id="providerid" name="providerid" value="{{ provider_id }}">
                                     <input type="hidden" id="userid" name="userid" value="{{ client_id }}">
@@ -641,15 +646,20 @@
                                     {% with client=request.user.client %}
                                         <p>Your Name: {{ client.first_name }} {{ client.last_name }}</p>
                                     {% endwith %}
-                                    
-                                    <label for="service_date">Preferred Service Date:</label>
-                                    <input type="date" id="service_date" name="service_date" required><br>
-                                    
-                                    <label for="service_time">Preferred Service Time:</label>
-                                    <input type="time" id="service_time" name="service_time" step="3600" min="08:00" max="18:00" required><br>
-                                    
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
+                                      <!-- Hidden input fields for providerid and userid -->
+                                      <!-- Other form elements here -->
+                                      <div class="form-group">
+                                          <label for="service_date">Preferred Service Date:</label>
+                                          <input type="date" id="service_date" name="service_date" class="form-control" required>
+                                      </div>
+                                      <div class="form-group">
+                                          <label for="service_time">Preferred Service Time:</label>
+                                          <input type="time" id="service_time" name="service_time" class="form-control" step="3600" min="08:00" max="18:00" required>
+                                      </div>
+                                      <button type="submit" class="btn btn-primary">Submit</button>
+                                  </form>
+                              </div>
+                              
                                 
                             </div>
                           </div>

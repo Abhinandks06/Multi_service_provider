@@ -86,6 +86,10 @@ class Service(models.Model):
     CANCELED = 'canceled'
     REPORTGIVEN = 'reportgiven'
     REPORTVERIFIED = 'reportverified'
+    REQUESTED = 'requested'
+    IN_PROGRESS = 'in_progress'
+    COMPLETED = 'completed'
+    CANCELED = 'canceled'
     STATUS_CHOICES = [
         (ASSIGNED, 'Assigned'),
         (UNDERPROGRESS, 'Underprogress'),
@@ -93,6 +97,12 @@ class Service(models.Model):
         (CANCELED, 'Canceled'),
         (REPORTGIVEN, 'Report Given'),
         (REPORTVERIFIED, 'Report Verified'),
+    ]
+    PAYMENT_STATUS_CHOICES = [
+        (REQUESTED, 'Requested'),
+        (IN_PROGRESS, 'In Progress'),
+        (COMPLETED, 'Completed'),
+
     ]
     serviceid = models.AutoField(primary_key=True)  # New field as primary key and autoincrement
     bookingid = models.ForeignKey('ClientBooking', on_delete=models.CASCADE)  # Foreign key to ClientBooking model
@@ -105,6 +115,7 @@ class Service(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
     rating = models.IntegerField(blank=True, null=True)  # Field to store the rating
     review = models.TextField(blank=True, null=True) 
+    paymentstatus = models.CharField(max_length=15, choices=PAYMENT_STATUS_CHOICES, default=REQUESTED)
 class WorkerReport(models.Model):
     COMPLETED = 'completed'
     CANCELED = 'canceled'
@@ -113,8 +124,8 @@ class WorkerReport(models.Model):
     STATUS_CHOICES = [
         (COMPLETED, 'Completed'),
         (CANCELED, 'Canceled'),
-        (REPORTGIVEN, 'Report Given'),
-        (REPORTVERIFIED, 'Report Verified'),
+        (REPORTGIVEN, 'ReportGiven'),
+        (REPORTVERIFIED, 'ReportVerified'),
     ]
     reportid = models.AutoField(primary_key=True)
     serviceid = models.ForeignKey('Service', on_delete=models.CASCADE)

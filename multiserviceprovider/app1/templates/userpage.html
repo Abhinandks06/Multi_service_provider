@@ -68,7 +68,11 @@
           {% endfor %}
         </ul>
       {% endif %}
-      
+      {% if payment_success_message %}
+    <script>
+        alert("{{ payment_success_message }}");
+    </script>
+{% endif %}
         
         <!-- Header Area Start -->
         <header class="header-area header-sticky">

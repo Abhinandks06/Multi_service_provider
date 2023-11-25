@@ -500,10 +500,12 @@
     margin-bottom: 10px;
 }
 body {
-  background-image: url('https://www.creativefabrica.com/wp-content/uploads/2022/05/17/pastel-aesthetic-background-Graphics-30684243-1.jpg');
-  background-size: cover; /* This property ensures the image covers the entire background */
-  background-repeat: no-repeat; /* This property prevents the image from repeating */
+  height: 2000px;
+  background-image: url('https://images.pexels.com/photos/1809644/pexels-photo-1809644.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1g');
+  /* This property prevents the image from repeating */
   /* You can also set other background properties like position, attachment, etc. as needed */
+  background-size: 100% 100%;
+  
 }
 .booking-box {
     color: white; /* Set text color to white */
@@ -529,21 +531,50 @@ body {
     font-size: 18px; /* Increase text size to 18px */
 }
 table {
-    border-collapse: collapse;
+
     width: 100%;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    font-size: 16px;
-    color: blue;
+.bookings-table {
+  border-collapse: collapse;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Apply a subtle shadow */
+  background-color: white; /* Set a white background */
+  border-radius: 10px;
+  margin-bottom: 130px;
+  opacity: 0.8;
 }
 
-th {
+th{
+    border: none;
     background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 16px;
+    color: black;
+
+
 }
+td{
+  margin-top:13px;
+  border: none;
+  padding: 1px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 16px;
+  color: black;
+  margin-bottom: 30px;
+}
+
+.bookings-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Set gray background for even rows */
+}
+
+.bookings-table tr:nth-child(odd) {
+  background-color: white; /* Set white background for odd rows */
+}
+
 .rating {
   display: flex;
   flex-direction: row-reverse;
@@ -567,7 +598,7 @@ th {
 .rating input:checked ~ label {
   color: #f7d701;
 }
-.submit-button {
+{% comment %} .submit-button {
   display: block;
   margin: 10px auto;
   padding: 8px 15px;
@@ -576,39 +607,52 @@ th {
   background-color: #007bff; /* Button color */
   color: white;
   cursor: pointer;
-  font-size: 16px;
-}
+  font-size: 12px;
+  
+} {% endcomment %}
 
 /* Style for the textarea */
 textarea[name="review"] {
   width: 100%;
-  padding: 8px;
+  padding: 3px;
   border-radius: 5px;
   border: 1px solid #ccc;
   resize: vertical;
   font-size: 14px;
+  margin-top: 9px;
 }
 
 .submit-button:hover {
   background-color: #0056b3;
 }
+.bookings-table th {
+  text-align: center; /* Center-align text */
+}
+
+/* Center content in table cells */
+.bookings-table td {
+  text-align: center; /* Center-align text */
+}
+
+
+
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body>
         
         <!-- Header Area Start -->
-        <header class="header-area header-sticky">
+        <header class="header-area ">
             <div class="header-container">
-                <div class="row">
+                <div class="row ">
                     <div class="col-lg-5 display-none-md display-none-xs">
-                        <div class="ht-main-menu">
+                        <div class="ht-main-menu ">
                             <nav>
-                                <ul>
-                                    <li class="active"><a href="{% url 'providerpage' %}">HOME </a>
+                                <ul class="text-white">
+                                    <li class="active"><a href="{% url 'providerpage' %}"  class="text-white">HOME </a>
                                     </li>
-                                    <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
-                                    <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                                    <li><a href="{% url 'provider_bookings' %}" class="text-white">Bookings</a></li>
+                                    <li><a href="{% url 'user_logout' %}" class="text-white">Logout</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -621,12 +665,12 @@ textarea[name="review"] {
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
                             <div class="settings-wrapper">
-                                <a href="#"><i class="fas fa-bell"></i></a>
+                                <a href="#"><i class="fas fa-bell text-white"></i></a>
                             </div>
                             <div class="cart-wrapper">
                                 
-                                <a href="#"><i class="fas fa-user"></i></a>  
-                                <span>{{request.user}}</span>         
+                                <a href="#"><i class="fas fa-user text-white"></i></a>  
+                                <span class="text-white">{{request.user}}</span>         
                             </div>
                         </div>
                     </div>
@@ -658,8 +702,9 @@ textarea[name="review"] {
                             <!-- Your content elements and sections go here -->
                             <br> <br> <br> <br> <br> <br>
                             
-                            <div class="booking-box">
-                                <h1>My bookings</h1>
+                            <div class="booking-box mx-5">
+                                <h1 class="text-white fw-bolder">My Bookings</h1>
+                                
                                 <table class="bookings-table">
                                     <thead>
                                         <tr>
@@ -720,7 +765,7 @@ textarea[name="review"] {
                                                       <label for="star1_{{ booking.serviceid }}">&#9733;</label>
                                                   </div>
                                                   <center>
-                                                      <button class="submit-button" type="submit">Submit Rating</button>
+                                                      <button class="submit-button btn btn-outline-info" type="submit">Submit Rating</button>
                                                   </center>
                                               </form>
                                             {% endif %}
@@ -730,7 +775,7 @@ textarea[name="review"] {
                                             {% csrf_token %}
                                             <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
                                             <textarea name="review" rows="3" cols="30" placeholder="Write a review">{{ booking.review }}</textarea>
-                                            <center><button class="submit-button" type="submit">Submit Review</button></center>
+                                            <center><button class="submit-button btn btn-outline-primary my-3" type="submit">Submit Review</button></center>
                                         </form>
                                         </td>
                                       </tr>

@@ -1062,6 +1062,8 @@ def download_worker_report(request, report_id):
     response['Content-Disposition'] = f'attachment; filename="worker_report_{report_id}.pdf"'
     
     return response
+from decimal import Decimal
+import razorpay
 @login_required
 def client_work_reports(request, client_id):
     # Get the client
@@ -1076,6 +1078,23 @@ def client_work_reports(request, client_id):
     # Get worker reports associated with those service IDs
     client_reports = WorkerReport.objects.filter(serviceid__in=service_ids)
 
+    # Multiply 'cost' attribute of each report by 100
+    for report in client_reports:
+        report.cost *= Decimal('100')  # Perform the multiplication
+
+    if request.method == 'POST':
+        DATA = {
+            "amount": 100,
+            "currency": "INR",
+            "receipt": "receipt#1",
+            "notes": {
+                "key1": "value3",
+                "key2": "value2"
+            }
+        }
+        client = razorpay.Client(auth=("rzp_test_bWe8tmmP1WXOe7", "qR7WzF8AfC6RxJdGluOKWyUa"))
+        payment = client.order.create(data=DATA)
+
     return render(request, 'client_work_reports.html', {'client_reports': client_reports})
 def approve_report(request):
     if request.method == 'POST':
@@ -1087,7 +1106,7 @@ def approve_report(request):
         report.save()
 
         # Update Service status to reportverified
-        service_id = report.serviceid_id
+        service_id = request.POST.get('service_id')
         service = Service.objects.get(serviceid=service_id)
         service.status = 'reportverified'
         service.save()
@@ -1097,16 +1116,14 @@ def approve_report(request):
 def cancel_service(request):
     if request.method == 'POST':
         report_id = request.POST.get('report_id')
-        # Perform logic to cancel the service (update database, etc.)
-        # Example:
         report = WorkerReport.objects.get(reportid=report_id)
         report.status = 'canceled'
         report.save()
 
         # Update Service status to cancelled
-        service_id = report.serviceid_id
+        service_id = request.POST.get('service_id') 
         service = Service.objects.get(serviceid=service_id)
-        service.status = 'cancelled'
+        service.status = 'canceled'
         service.save()
 
         messages.success(request, 'Service cancelled successfully!')
@@ -1171,4 +1188,12 @@ def update_review(request):
         return redirect('client_bookings', client_id=service.clientid_id)
 
     # Handle other cases, e.g., GET requests
+    return redirect('userpage')
+
+def payment_success(request):
+    service_id = request.POST.get('service_id')  # Ensure to pass the service_id via POST
+    service = Service.objects.get(pk=service_id)
+    service.paymentstatus = 'completed'
+    service.save()
+    messages.success(request, 'Payment successful!')
     return redirect('userpage')

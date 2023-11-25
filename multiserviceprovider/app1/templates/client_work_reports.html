@@ -619,21 +619,48 @@
                                                 <li>Workers needed: {{ report.num_workers_needed }}</li>
                                                 <li>
                                                     <a href="{% url 'download_work_report' report_id=report.reportid %}">Download PDF</a>
+                                                    {% if report.serviceid.status == 'reportgiven' %}
                                                     <li>
-                                                      <form method="post" action="{% url 'approve_report' %}">
-                                                          {% csrf_token %}
-                                                          <input type="hidden" name="report_id" value="{{ report.reportid }}">
-                                                          <button type="submit">Approve Report</button>
-                                                      </form>
-                                                  </li>
+                                                        <form method="post" action="{% url 'approve_report' %}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="report_id" value="{{ report.reportid }}">
+                                                            <input type="hidden" name="service_id" value="{{ report.serviceid.serviceid }}">
+                                                            <button type="submit">Approve Report</button>
+                                                        </form>
+                                                    </li>
+                                                {% endif %}
+                                                {% if report.serviceid.status == 'reportgiven' %}
                                                   <li>
                                                       <form method="post" action="{% url 'cancel_service' %}">
                                                           {% csrf_token %}
-                                                          <input type="hidden" name="service_id" value="{{ report.serviceid.id }}">
+                                                          <input type="hidden" name="report_id" value="{{ report.reportid }}">
+                                                          <input type="hidden" name="service_id" value="{{ report.serviceid.serviceid }}">
                                                           <button type="submit">Cancel Service</button>
                                                       </form>
                                                   </li>
-                                                </li>
+                                                  {% endif %}
+                                              {% if report.serviceid.paymentstatus == 'requested' %}
+                                              <li>
+                                                  <form action="{% url 'payment_success' %}" method="POST">
+                                                      {% csrf_token %}
+                                                      <input type="hidden" name="service_id" value="{{ report.serviceid.serviceid }}">
+                                                      <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                                              data-key="rzp_test_bWe8tmmP1WXOe7"
+                                                              data-amount="{{ report.cost }}"
+                                                              data-currency="INR"
+                                                              data-order_id="{{ payment.id }}"
+                                                              data-buttontext="Pay with Razorpay"
+                                                              data-name="Multiservice provider"
+                                                              data-description="An efficient and reliable service provider"
+                                                              data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                                              data-prefill.name="Abhinand K S"
+                                                              data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                                              data-theme.color="#F37254">
+                                                      </script>
+                                                  </form>
+                                              </li>
+                                          {% endif %}
+                                                
                                             </ul>
                                         </li>
                                     
@@ -652,6 +679,14 @@
         <!-- Hero Area End -->
         <!-- Food Categry Area Start -->
         <!-- All js here -->
+        <script>const costElements = document.querySelectorAll('.report-item li:nth-child(4)');
+
+          // Loop through each element and update the displayed cost
+          costElements.forEach((element) => {
+              const originalCost = parseFloat(element.textContent.split(': ')[1]);
+              const dividedCost = originalCost / 100;
+              element.textContent = `Cost: ${dividedCost}`;
+          });</script>
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>

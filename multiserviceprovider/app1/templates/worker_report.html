@@ -506,15 +506,14 @@ body {
   /* You can also set other background properties like position, attachment, etc. as needed */
 }
 .booking-box {
-    color: white; /* Set text color to white */
     font-family: Arial, sans-serif; /* Set font family */
+    margin-left: 150px;
 }
 
 .workers-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background-color: rgba(0, 0, 0, 0.7); /* Set background color with opacity */
 }
 
 .workers-table th, .workers-table td {
@@ -528,22 +527,46 @@ body {
     text-align: center;
     font-size: 18px; /* Increase text size to 18px */
 }
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    font-size: 16px;
-    color: blue;
-}
-
-th {
-    background-color: #f2f2f2;
-}
+.bookings-table {
+  border-collapse: collapse;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Apply a subtle shadow */
+  background-color: white; /* Set a white background */
+  border-radius: 10px;
+  margin-bottom: 130px;
+  opacity: 0.8;
+  
+  }
+  
+  th{
+  border: none;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 16px;
+  color: black;
+  background-color: white;
+  
+  }
+  td{
+  margin-top:13px;
+  border: none;
+  padding: 5px;
+  
+  text-align: center;
+  font-size: 16px;
+  color: black;
+  margin-bottom: 30px;
+  background-color: white;  
+  }
+  
+  .bookings-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Set gray background for even rows */
+  }
+  
+  .bookings-table tr:nth-child(odd) {
+  background-color: white; /* Set white background for odd rows */
+  }
 
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -557,8 +580,8 @@ th {
                     <div class="col-lg-5 display-none-md display-none-xs">
                         <div class="ht-main-menu">
                             <nav>
-                                <ul>
-                                    <li class="active"><a href="{% url 'providerpage' %}">HOME </a>
+                                <ul class="text-white">
+                                    <li class="active"><a href="{% url 'providerpage' %}" >HOME </a>
                                     </li>
                                     <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
@@ -579,7 +602,7 @@ th {
                             <div class="cart-wrapper">
                                 
                                 <a href="#"><i class="fas fa-user"></i></a>  
-                                <span>{{request.user}}</span>         
+                                <span class="fw-bolder fs-6 text-black">{{request.user}}</span>         
                             </div>
                         </div>
                     </div>
@@ -639,7 +662,7 @@ th {
                                               <td>{{ report.created_at }}</td>
                                               <td>{{ report.status }}</td>
                                               <td>
-                                                <button type="button" onclick="window.location.href='{% url 'assign_workers' report.reportid %}'">Assign Workers</button>
+                                                <button type="button" onclick="window.location.href='{% url 'assign_workers' report.reportid %}'" class="btn btn-outline-primary">Assign Workers</button>
                                               </td>
                                           </tr>
                                       {% endfor %}

@@ -151,6 +151,8 @@ urlpatterns = [
      path('update_rating/', views.update_rating, name='update_rating'),
      path('update_review/', views.update_review, name='update_review'),
      path('update-service-and-booking/<int:booking_id>/', views.update_service_and_booking, name='update_service_and_booking'),
+     path('client_work_reports/<int:client_id>/payment_success', views.payment_success, name='payment_success'),
+     path('payment_success/', payment_success, name='payment_success'),
 
 
 
