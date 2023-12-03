@@ -988,12 +988,14 @@ def worker_report(request, provider_id):
     return render(request, 'worker_report.html', context)
 
 
+
+from django.shortcuts import render
+from .models import Service, Client, ServiceProvider
 @login_required
 def client_bookings(request, client_id):
     client_bookings = Service.objects.filter(clientid_id=client_id)
     client_name = Client.objects.get(user_id=client_id).first_name
     
-    # Fetching provider names for each booking
     provider_name = [ServiceProvider.objects.get(user_id=booking.providerid_id).providername for booking in client_bookings]
     service_type = [ServiceProvider.objects.get(user_id=booking.providerid_id).service_type for booking in client_bookings]
     
@@ -1001,9 +1003,13 @@ def client_bookings(request, client_id):
         'client_bookings': client_bookings,
         'client_name': client_name,
         'provider_name': provider_name,
-        'service_type': service_type,  # Pass provider objects to the template
+        'service_type': service_type,
+        'worker_report': worker_report,
     }
     return render(request, 'client_bookings.html', context)
+
+
+
 @login_required
 def assign_workers(request, reportid):
     worker_report = WorkerReport.objects.get(reportid=reportid)
@@ -1189,7 +1195,8 @@ def update_review(request):
 
     # Handle other cases, e.g., GET requests
     return redirect('userpage')
-
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 def payment_success(request):
     service_id = request.POST.get('service_id')  # Ensure to pass the service_id via POST
     service = Service.objects.get(pk=service_id)

@@ -102,13 +102,15 @@
                                     </li>
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'client_bookings' client_id=user_id %}">Bookings</a></li>
-                                    <li><a href="{% url 'client_work_reports' client_id=user_id %}">Work Report</a></li>
-                                    <li><a href="#bookings">Profile</a>
-                                        <ul>
-                                            <li><a href="{% url 'view_profile' %}">View Profile</a></li>
-                                            <li><a href="{% url 'update_profile' %}">Update Profile</a></li>
+                                    <li><a href="{% url 'client_work_reports' client_id=user_id %}" id="work-report-link">Work Report</a></li>
+                                     <li id="profileMenu">
+                                        <a href="#bookings">Profile</a>
+                                        <ul id="profileDropdown">
+                                            <li><a href="{% url 'view_profile' %}" id="viewProfileLink">View Profile</a></li>
+                                            <li><a href="{% url 'update_profile' %}" id="updateProfileLink">Update Profile</a></li>
                                         </ul>
-                                    </li>
+                                    </li> 
+                                    {% comment %} <li><a href="{% url 'update_profile' %}" id="updateProfileLink">Update Profile</a></li> {% endcomment %}
                                     {% comment %} <li><a href="{% url 'client_profile' client.username %}">Update Profile</a></li> {% endcomment %}
                                     <li><a href="user_logout">Logout</a></li> 
                                     {% endif %}
@@ -124,14 +126,13 @@
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
                             <div class="search-wrapper">
-                                <a href="#"><span class="fas fa-search"></span></a>
+                                <a href="#" id="search-icon"><span class="fas fa-search"></span></a>
                                 <form action="{% url 'search_providers' %}?user_id={{ user.id }}" class="search-form" method="GET" onsubmit="return validateForm()">
-                                    <input type="text" placeholder="Search provider here ..." name="query">
-                                    <button type="submit">Search</button>
-                                </form>
-                                
+                                    <input type="text" placeholder="Search provider here ..." name="query" id="search-bar">
+                                    <button type="submit" id="search-submit">Search</button>
                                 </form>
                             </div>
+                            
                             <div class="settings-wrapper">
                                 <a href="#"><i class="fas fa-bell"></i></a>
                             </div>
@@ -252,7 +253,8 @@
                     <div class="ht-hero-content-one container">
                         <h1 class="cssanimation leDoorCloseLeft sequence">We are here to serve</h1>
                         <p>"Your Trusted Partner for Every Household Need: Where Quality Meets Convenience!"</p>
-                        <a href="#services" class="default-btn large circle blue hover-blue uppercase">Book now</a>
+                        <a id="book-now-btn" href="#services" class="default-btn large circle blue hover-blue uppercase">Book now</a>
+
                     </div>
                 </div>
                 <!-- Single Slide End --><div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/mainlast.jpg' %}')">
@@ -281,40 +283,40 @@
                 <div class="ht-food-slider row">
                     <div class="col text-center">
                         <div class="single-food-category">
-                            <a href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
+                            <a id="cleaning-link" href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></h4>
+                            <h4><a id="cleaning-category" href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
-                            <a href="" class="food-cat-img"><img src="userassets/img/icon/burger.png" alt=""></a>
+                            <a id="laundry-link" href="" class="food-cat-img"><img src="userassets/img/icon/burger.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></h4>
+                            <h4><a id="laundry-category" href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
-                            <a href="" class="food-cat-img"><img src="userassets/img/icon/fruit.png" alt=""></a>
+                            <a id="plumbing-link" href="" class="food-cat-img"><img src="userassets/img/icon/fruit.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></h4>
-
+                            <h4><a id="plumbing-category" href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
-                            <a href="" class="food-cat-img"><img src="userassets/img/icon/vegetable.png" alt=""></a>
+                            <a id="pestcontrol-link" href="" class="food-cat-img"><img src="userassets/img/icon/vegetable.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></h4>
+                            <h4><a id="pestcontrol-category" href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></h4>
                         </div>
                     </div>
                     <div class="col text-center">
                         <div class="single-food-category">
-                            <a href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
+                            <a id="electrical-link" href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</a></h4>
+                            <h4><a id="electrical-category" href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</a></h4>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>   

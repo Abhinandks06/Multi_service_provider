@@ -649,9 +649,9 @@ textarea[name="review"] {
                         <div class="ht-main-menu ">
                             <nav>
                                 <ul class="text-white">
-                                    <li class="active"><a href="{% url 'providerpage' %}"  class="text-white">HOME </a>
+                                    <li class="active"><a href="{% url 'userpage' %}"  class="text-white">HOME </a>
                                     </li>
-                                    <li><a href="{% url 'provider_bookings' %}" class="text-white">Bookings</a></li>
+                                    {% comment %} <li><a href="{% url 'provider_bookings' %}" class="text-white">Bookings</a></li> {% endcomment %}
                                     <li><a href="{% url 'user_logout' %}" class="text-white">Logout</a></li>
                                 </ul>
                             </nav>
@@ -713,6 +713,7 @@ textarea[name="review"] {
                                             <th>District</th>
                                             <th>Date</th>
                                             <th>Time</th>
+                                            <th>Payment</th>
                                             <th>Status</th>
                                             <th>Rating</th>
                                             <th>Review</th>
@@ -726,6 +727,11 @@ textarea[name="review"] {
                                           <td>{{ booking.district }}</td>
                                           <td>{{ booking.date }}</td>
                                           <td>{{ booking.time }}</td>
+                                          
+                                            <td>{{ booking.paymentstatus }}</td>
+                                        
+                                        
+                            
                                           <td>{{ booking.status }}</td>
                                           <td>
                                             {% if booking.rating %}

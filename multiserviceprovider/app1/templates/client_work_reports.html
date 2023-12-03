@@ -540,7 +540,7 @@
                                         </li>
                                         </ul>
                                     </li>
-                                    <li><a href="#bookings">Bookings</a></li>
+                                    {% comment %} <li><a href="#bookings">Bookings</a></li> {% endcomment %}
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>
@@ -617,8 +617,10 @@
                                                 <li>Requirements: {{ report.requirements }}</li>
                                                 <li>Cost: {{ report.cost }}</li>
                                                 <li>Workers needed: {{ report.num_workers_needed }}</li>
+                                                <li>payment status: {{ report.serviceid.paymentstatus }}</li>
                                                 <li>
-                                                    <a href="{% url 'download_work_report' report_id=report.reportid %}">Download PDF</a>
+                                                  <a href="{% url 'download_work_report' report_id=report.reportid %}" id="download-pdf-link">Download PDF</a>
+
                                                     {% if report.serviceid.status == 'reportgiven' %}
                                                     <li>
                                                         <form method="post" action="{% url 'approve_report' %}">
