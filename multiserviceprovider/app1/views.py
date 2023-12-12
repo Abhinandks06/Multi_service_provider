@@ -393,11 +393,11 @@ def worker_registration(request):
 def worker_reg(request):
     request.session.flush() 
     return render(request, "worker_registration.html")
-
+@login_required
 def providerlist(request):
     request.session.flush() 
     return render(request, "providerlist.html")
-
+@login_required
 def signup_redirect(request):
     messages.error(request, "Something wrong here, it may be that you already have account!")
     return redirect("signin")
@@ -410,6 +410,7 @@ from django.shortcuts import render, redirect
 from .models import ServiceProvider
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+@login_required
 def providerregister(request):
     if request.method == 'POST':
         # Get form data
@@ -465,6 +466,7 @@ def providerregister(request):
             messages.error(request, f'Error: {e}')
 
     return render(request, 'provider_registration.html')
+
 def workerregister(request):
     if request.method == 'POST':
         # Get form data
@@ -619,14 +621,12 @@ from django.shortcuts import render, get_object_or_404
 from .models import ServiceProvider
 @login_required
 def render_booking_form(request, userid=None):
-    # Get the current logged-in user
     current_user = request.user
-
-    # Fetch client ID based on user role
     client_id = None
-    client_name= None
+    client_name = None
     client_phone = None
     client_district = None
+
     if current_user.role == 'client':
         client_id = current_user.userid
         client_phone = current_user.client.phone
@@ -640,6 +640,14 @@ def render_booking_form(request, userid=None):
             # Fetch provider information from the database
             provider = get_object_or_404(ServiceProvider, user_id=provider_id)
 
+            # Check if there are any incomplete bookings for this client with the same provider
+            incomplete_bookings = ClientBooking.objects.filter(clientid_id=current_user, providerid_id=provider, status__in=['pending', 'ongoing'])
+
+            if incomplete_bookings.exists():
+                # If there are incomplete bookings, display a message and redirect to the user page
+                messages.error(request, 'You already have an incomplete booking with this service provider.')
+                return redirect('userpage')  # Redirect to the user page or adjust the redirect as needed
+
             # Include providername and servicetype in the context dictionary
             context = {
                 'client_id': client_id,
@@ -648,7 +656,7 @@ def render_booking_form(request, userid=None):
                 'client_district': client_district,
                 'providername': provider.providername,
                 'servicetype': provider.service_type,
-                'name':client_name
+                'name': client_name
             }
 
             return render(request, 'book_service.html', context)
@@ -658,7 +666,7 @@ def render_booking_form(request, userid=None):
             # You can raise an error, redirect, or handle it as per your requirement
             pass
 
-    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone,'name': client_name, 'provider_id': provider_id, 'client_district': client_district})
+    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone,'servicetype': provider.service_type, 'name': client_name,'providername': provider.providername, 'provider_id': provider_id, 'client_district': client_district})
 
 @login_required
 def create_booking(request):
@@ -670,6 +678,16 @@ def create_booking(request):
         client_id = request.POST.get('userid')
         client_phone = request.POST.get('clientphone')
         client_district = request.POST.get('clientdistrict')  # Get userid from the form data
+        
+        # Check if the current user has any pending bookings
+        existing_bookings = ClientBooking.objects.filter(clientid_id=client_id, status__in=['pending', 'approved'])
+        
+        if existing_bookings.exists():
+            # If pending bookings exist, display a message and redirect to the user page
+            messages.error(request, 'You already have a pending booking. Complete or cancel it to make a new one.')
+            return redirect('userpage')  # Redirect to the user page or adjust the redirect as needed
+        
+        # No pending bookings exist, proceed to create a new booking
         new_booking = ClientBooking(
             name=name,
             phone=client_phone,
@@ -678,10 +696,25 @@ def create_booking(request):
             time=service_time,
             providerid_id=provider_id,  # Save providerid in the ClientBooking object
             clientid_id=client_id,
-            status="pending" # Save userid in the ClientBooking object
+            status="pending"  # Save userid in the ClientBooking object
         )
         new_booking.save()
-        messages.success(request, 'Appointment booked successfully.')
+        client_email = new_booking.clientid.email  # Replace with the actual field name for client email
+        provider_email = new_booking.providerid.user.email  # Replace with the actual field name for provider's user email
+        
+        # Compose email messages for the client and provider
+        client_subject = 'Booking Confirmation'
+        client_message = f"Dear {name},\nYour appointment has been booked successfully."
+        provider_subject = 'New Booking Received'
+        provider_message = f"Dear {new_booking.providerid.providername},\nA new booking has been made."
+
+        # Send email to the client
+        send_mail(client_subject, client_message, 'sender@example.com', [client_email])
+
+        # Send email to the provider
+        send_mail(provider_subject, provider_message, 'sender@example.com', [provider_email])
+        
+        messages.success(request, 'Appointment booked successfully. Confirmation emails sent.')
         return redirect('userpage')
     else:
         # Handle GET request (if needed)
@@ -710,7 +743,7 @@ def search_providers(request):
 @login_required
 def provider_bookings(request):
     provider_id = request.user.userid
-    bookings = ClientBooking.objects.filter(providerid=provider_id).exclude(status='completed')
+    bookings = ClientBooking.objects.filter(providerid=provider_id).exclude(status='completed').exclude(status='canceled')
 
     context = {
         'bookings': bookings
@@ -750,7 +783,16 @@ def reject_booking(request, booking_id):
     service.status = 'canceled'
     service.save()
     messages.success(request, 'Appointment canceled.')
+
+    # Send email notification to the client
+    client_email = booking.clientid.email  # Replace 'email' with the actual field name
+    subject = 'Work Rejection Notification'
+    message = f"Dear {booking.name},\n\nWe regret to inform you that your booking with provider {{provider_name}} has been rejected.\n\nRegards,\nMultiserviceprovider"
+
+    send_mail(subject, message, 'sender@example.com', [client_email], fail_silently=False)
+
     return redirect('provider_bookings')
+
 @login_required
 def worker_requests(request, user_id):
     # Filter workers based on the user_id
@@ -838,29 +880,59 @@ def worker_job(request):
 @login_required
 def assignedwork(request):
     worker_id = request.user.userid
-    assigned_work = Service.objects.filter(workerid=worker_id).exclude(status__iexact='COMPLETED')
+    assigned_work = Service.objects.filter(
+        workerid=worker_id
+    ).exclude(
+        status__iexact='COMPLETED'
+    ).exclude(
+        status__iexact='CANCELED'
+    )
     return render(request, 'update_status.html', {'assigned_work': assigned_work})
+
 @login_required
 def update_status(request):
-    worker_id = request.user.userid
-    
     if request.method == 'POST':
         service_id = request.POST.get('service_id')
         new_status = request.POST.get('status')
 
-        # Update the status of the service
+        # Fetch the service
         service = get_object_or_404(Service, serviceid=service_id)
-        service.status = new_status
-        service.save()
 
-        # Get all workers related to this service
-        related_workers = Worker.objects.filter(service=service)
-        clientbooking=ClientBooking.objects.filter(bookingid=service.bookingid_id)
-        clientbooking.update(status='completed')
-        # Update the status of related workers
-        related_workers.update(status='available')  # Set status as needed
+        # Fetch the associated booking and its payment
+        client_booking = get_object_or_404(ClientBooking, bookingid=service.bookingid_id)
 
-        messages.success(request, 'Service status updated!')
+        # Fetch the worker associated with the service
+        worker = service.workerid
+        # Check if payment status is completed before updating
+        if service.paymentstatus == 'completed':
+            # Update the status of the service
+            service.status = new_status
+            service.save()
+
+            # Get all workers related to this service
+            related_workers = Worker.objects.filter(service=service)
+
+            # Update the status of related workers
+            related_workers.update(status='available')  # Set status as needed
+
+            # Update the status of the client booking
+            client_booking.status = 'completed'
+            client_booking.save()
+
+            # Sending emails to client and provider
+            client_email = client_booking.clientid.user.email
+            provider_email = service.providerid.user.email
+
+            client_message = f"Hi {client_booking.name}, The work for your booking has been marked as completed ."
+            provider_message = f"Dear Provider, The worker has marked the work for the booking completed."
+
+            send_mail('Work Completion Notification - Client', client_message, 'your@email.com', [client_email])
+            send_mail('Work Completion Notification - Provider', provider_message, 'your@email.com', [provider_email])
+
+            messages.success(request, 'Service status updated! Emails sent to the client and provider.')
+        else:
+            messages.error(request, 'Payment pending. Cannot update service status.')
+
         return redirect('workerpage')
 
     return redirect('workerpage')
@@ -916,7 +988,6 @@ def generate_report(request):
         
         # Fetch data to render in the PDF template
         context = {
-            'serviceid': serviceid,
             'duration_of_work': duration_of_work,
             'requirements': requirements,
             'workers': num_workers_needed,
@@ -942,6 +1013,7 @@ def generate_report(request):
             return HttpResponse('Failed to generate PDF!')
          # Save the PDF content to WorkerReport model
         report.report_pdf.save(f'worker_report_{report.reportid}.pdf', ContentFile(response.content), save=True)
+        messages.success(request, 'Work report given!')
         return redirect (workerpage)
 
     return render(request, 'generate_report.html', {})
@@ -955,23 +1027,25 @@ def worker_list(request, provider_id):
     return render(request, 'worker_list.html', {'workers': workers})
 @login_required
 def worker_report(request, provider_id):
-    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id)
+    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id, status='REPORTGIVEN')
     service_status = {}
-    
+
     for report in worker_reports:
         service_id = report.serviceid_id
         service = Service.objects.get(serviceid=service_id)
         service_status[report.serviceid] = service.status
+
     context = {
         'worker_reports': worker_reports,
         'service_status': service_status,
     }
     return render(request, 'worker_report.html', context)
 
+
 from django.db.models import Prefetch
 @login_required
 def worker_report(request, provider_id):
-    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id)
+    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id,status="reportgiven")
     
     # Prefetch the related Service objects and extract only the 'status' field
     service_status = Service.objects.filter(providerid_id=provider_id).values_list('status', flat=True)
@@ -1039,14 +1113,18 @@ def assign_workers_service(request):
         # Retrieve selected workers based on their IDs
         selected_workers = Worker.objects.filter(user_id__in=selected_worker_ids)
 
-
         # Assign selected workers to the service model
         service.workerid.add(*selected_workers)
 
         # Update status of selected workers to "on duty"
         Worker.objects.filter(user_id__in=selected_worker_ids).update(status='onduty')
 
-        return redirect('providerpage')  # Redirect to a success page or any other view upon successful assignment
+        # Update status of worker report to "reportverified"
+        worker_report.status = 'reportverified'
+        worker_report.save()
+
+        return redirect('providerpage')
+  # Redirect to a success page or any other view upon successful assignment
 
     # Render the page initially or handle GET requests
     return redirect('providerpage')
@@ -1102,6 +1180,7 @@ def client_work_reports(request, client_id):
         payment = client.order.create(data=DATA)
 
     return render(request, 'client_work_reports.html', {'client_reports': client_reports})
+@login_required
 def approve_report(request):
     if request.method == 'POST':
         report_id = request.POST.get('report_id')
@@ -1119,6 +1198,7 @@ def approve_report(request):
 
         messages.success(request, 'Report approved successfully!')
     return redirect('userpage')
+@login_required
 def cancel_service(request):
     if request.method == 'POST':
         report_id = request.POST.get('report_id')
@@ -1131,8 +1211,29 @@ def cancel_service(request):
         service = Service.objects.get(serviceid=service_id)
         service.status = 'canceled'
         service.save()
+        workers = service.workerid.all()
+        for worker in workers:
+            worker.status = 'available'
+            worker.save()
+        worker.save()
+        # Update booking status to canceled
+        booking_id = service.bookingid_id
+        booking = ClientBooking.objects.get(bookingid=booking_id)
+        booking.status = 'canceled'
+        booking.save()
 
-        messages.success(request, 'Service cancelled successfully!')
+        # Retrieve provider's email
+        provider_email = service.providerid.user.email
+
+        # Send an email to the provider
+        client_name = booking.name
+        subject = 'Booking Cancellation Notification'
+        message = f'Dear Provider, The booking made by {client_name} has been canceled.'
+        from_email = 'your@email.com'  # Replace with your email
+        recipient_list = [provider_email]
+        send_mail(subject, message, from_email, recipient_list)
+
+        messages.success(request, 'Service cancelled successfully! An email has been sent to the provider.')
     return redirect('userpage')
 
 
@@ -1196,11 +1297,25 @@ def update_review(request):
     # Handle other cases, e.g., GET requests
     return redirect('userpage')
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 @csrf_exempt
+@login_required
 def payment_success(request):
     service_id = request.POST.get('service_id')  # Ensure to pass the service_id via POST
     service = Service.objects.get(pk=service_id)
     service.paymentstatus = 'completed'
     service.save()
-    messages.success(request, 'Payment successful!')
+    
+    # Get the necessary details for the email
+    provider_email = service.providerid.user.email
+    client_name = service.clientid.user.username
+    payment_date = timezone.now().date()
+
+    # Send an email to the provider
+    subject = 'Payment Successful Notification'
+    message = f'Dear Provider, {client_name} has made the payment on {payment_date}.'
+    from_email = 'your@email.com'  # Replace with your email
+    recipient_list = [provider_email]
+    send_mail(subject, message, from_email, recipient_list)
+    messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
     return redirect('userpage')

@@ -50,29 +50,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body>
-        <script>
-            // Display alert message if it exists in the session
-            {% if messages %}
-            <div class="alert alert-success">
-                {% for message in messages %}
-                {{ message }}
-                {% endfor %}
-            </div>
-            {% endif %}
-            
-        </script>
-        {% if messages %}
-        <ul class="messages">
-          {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      {% if payment_success_message %}
-    <script>
+      {% if messages %}
+      <div class="alert alert-success">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+      <script>
+        // Automatically hide messages after 5 seconds
+        setTimeout(function() {
+          document.querySelector('.alert-success').style.display = 'none';
+        }, 5000); // Adjust the time as needed (in milliseconds)
+      </script>
+    {% endif %}
+    
+    {% if payment_success_message %}
+      <script>
         alert("{{ payment_success_message }}");
-    </script>
-{% endif %}
+    
+        // Automatically close the payment success alert after 5 seconds
+        setTimeout(function() {
+          document.querySelector('.payment-success-alert').style.display = 'none';
+        }, 5000); // Adjust the time as needed (in milliseconds)
+      </script>
+    {% endif %}
+    
         
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
@@ -104,14 +106,14 @@
                                     <li><a href="{% url 'client_bookings' client_id=user_id %}">Bookings</a></li>
                                     <li><a href="{% url 'client_work_reports' client_id=user_id %}" id="work-report-link">Work Report</a></li>
                                      <li id="profileMenu">
-                                        <a href="#bookings">Profile</a>
+                                      <a href="#bookings">Profile</a>
                                         <ul id="profileDropdown">
                                             <li><a href="{% url 'view_profile' %}" id="viewProfileLink">View Profile</a></li>
                                             <li><a href="{% url 'update_profile' %}" id="updateProfileLink">Update Profile</a></li>
-                                        </ul>
+                                        </ul> 
                                     </li> 
                                     {% comment %} <li><a href="{% url 'update_profile' %}" id="updateProfileLink">Update Profile</a></li> {% endcomment %}
-                                    {% comment %} <li><a href="{% url 'client_profile' client.username %}">Update Profile</a></li> {% endcomment %}
+                                  
                                     <li><a href="user_logout">Logout</a></li> 
                                     {% endif %}
                                 </ul>
@@ -283,7 +285,7 @@
                 <div class="ht-food-slider row">
                     <div class="col text-center">
                         <div class="single-food-category">
-                            <a id="cleaning-link" href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
+                            <a id="cleaning-link" href="" class="food-cat-img"><img src="userassets/img/bg/mainhead.jpg" alt=""></a>
                             <img src="userassets/img/icon/border.png" alt="">
                             <h4><a id="cleaning-category" href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></h4>
                         </div>

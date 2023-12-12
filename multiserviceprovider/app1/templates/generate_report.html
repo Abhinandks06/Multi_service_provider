@@ -530,7 +530,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body>
-        
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.success %} class="{{ message.succes }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
             <div class="header-container">

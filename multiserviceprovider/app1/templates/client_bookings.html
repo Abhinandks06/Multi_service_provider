@@ -713,14 +713,15 @@ textarea[name="review"] {
                                             <th>District</th>
                                             <th>Date</th>
                                             <th>Time</th>
-                                            <th>Payment</th>
+                                            {% comment %} <th>Payment</th> {% endcomment %}
                                             <th>Status</th>
                                             <th>Rating</th>
                                             <th>Review</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                      {% for booking in client_bookings %}
+                                      {% for booking in client_bookings reversed %}
+                                      {% if booking.paymentstatus == 'completed' %}
                                       <tr class="booking-item">
                                           <td>{{ booking.providerid.providername }}</td>
                                           <td>{{ booking.providerid.service_type }}</td>
@@ -728,7 +729,7 @@ textarea[name="review"] {
                                           <td>{{ booking.date }}</td>
                                           <td>{{ booking.time }}</td>
                                           
-                                            <td>{{ booking.paymentstatus }}</td>
+                                            {% comment %} <td>{{ booking.paymentstatus }}</td> {% endcomment %}
                                         
                                         
                             
@@ -785,10 +786,12 @@ textarea[name="review"] {
                                         </form>
                                         </td>
                                       </tr>
+                                       {% endif %}
                                   {% empty %}
                                       <tr>
                                           <td colspan="7" class="no-bookings">No bookings available</td>
                                       </tr>
+                                     
                                   {% endfor %}
                                   
 

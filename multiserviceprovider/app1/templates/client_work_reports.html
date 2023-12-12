@@ -609,7 +609,7 @@
                             <div class="container">
                                 <h1>Your Work Report status</h1>
                                 <ul class="report-list">
-                                    {% for report in client_reports %}
+                                    {% for report in client_reports reversed %}
                                         <li class="report-item">
                                             <ul>
                                                 <li>Worker Name: {{ report.user_id.first_name }} {{ report.user_id.last_name }}</li>
@@ -617,8 +617,10 @@
                                                 <li>Requirements: {{ report.requirements }}</li>
                                                 <li>Cost: {{ report.cost }}</li>
                                                 <li>Workers needed: {{ report.num_workers_needed }}</li>
+                                                {% if report.serviceid.paymentstatus == 'requested' and report.serviceid.status != 'canceled' and report.serviceid.status != 'completed' %}
                                                 <li>payment status: {{ report.serviceid.paymentstatus }}</li>
-                                                <li>
+                                            {% endif %}
+                                              <li>
                                                   <a href="{% url 'download_work_report' report_id=report.reportid %}" id="download-pdf-link">Download PDF</a>
 
                                                     {% if report.serviceid.status == 'reportgiven' %}
@@ -641,7 +643,7 @@
                                                       </form>
                                                   </li>
                                                   {% endif %}
-                                              {% if report.serviceid.paymentstatus == 'requested' %}
+                                                  {% if report.serviceid.paymentstatus == 'requested' and report.serviceid.status != 'canceled' and report.serviceid.status != 'completed' %}
                                               <li>
                                                   <form action="{% url 'payment_success' %}" method="POST">
                                                       {% csrf_token %}

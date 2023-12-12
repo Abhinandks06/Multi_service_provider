@@ -652,35 +652,43 @@
         <!-- Food Categry Area Start -->
         <!-- All js here -->
         <script>
-            function validateForm() {
+          function validateForm() {
               var serviceDate = document.getElementById("service_date").value;
               var serviceTime = document.getElementById("service_time").value;
-          
-
-          
-              // Validate service date (should not be empty and within a month from the current date)
-              var currentDate = new Date();
+      
+              // Get today's date
+              var today = new Date();
+              today.setHours(0, 0, 0, 0);
+      
+              // Calculate the date for tomorrow and a week from now
+              var tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+      
+              var weekFromNow = new Date(today);
+              weekFromNow.setDate(weekFromNow.getDate() + 7);
+      
+              // Convert the service date input to a Date object
               var selectedDate = new Date(serviceDate);
-              var oneMonthLater = new Date();
-              oneMonthLater.setMonth(currentDate.getMonth() + 1);
-          
-              if (serviceDate.trim() === "" || selectedDate > oneMonthLater) {
-                  alert("Please select a valid service date within the next month.");
+      
+              // Validate service date (should not be empty and within a week starting from tomorrow)
+              if (serviceDate.trim() === "" || selectedDate < tomorrow || selectedDate > weekFromNow) {
+                  alert("Please select a valid service date starting from tomorrow and within a week.");
                   return false;
               }
-          
+      
               // Extract hours and minutes from the serviceTime input
               var hours = parseInt(serviceTime.substring(0, 2));
+      
               // Validate service time (should not be empty and between 8am and 6pm)
               if (serviceTime.trim() === "" || hours < 8 || hours >= 18) {
                   alert("Please select a valid service time between 8am and 6pm.");
                   return false;
               }
-          
+      
               return true;
           }
-          
       </script>
+      
       
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>

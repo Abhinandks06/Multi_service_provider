@@ -581,10 +581,10 @@ body {
                         <div class="ht-main-menu">
                             <nav>
                                 <ul class="text-white">
-                                    <li class="active"><a href="{% url 'providerpage' %}" >HOME </a>
+                                    <li class="active"><a href="{% url 'providerpage' %}" style="color:white;" >HOME </a>
                                     </li>
-                                    <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
-                                    <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                                    <li><a href="{% url 'provider_bookings' %}" style="color:white;">Bookings</a></li>
+                                    <li><a href="{% url 'user_logout' %}" style="color:white;">Logout</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -597,12 +597,12 @@ body {
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
                             <div class="settings-wrapper">
-                                <a href="#"><i class="fas fa-bell"></i></a>
+                                <a href="#"><i class="fas fa-bell" style="color:white;"></i></a>
                             </div>
                             <div class="cart-wrapper">
                                 
-                                <a href="#"><i class="fas fa-user"></i></a>  
-                                <span class="fw-bolder fs-6 text-black">{{request.user}}</span>         
+                                <a href="#"><i class="fas fa-user" style="color:white;"></i></a>  
+                                <span class="fw-bolder fs-6 text-white" >{{request.user}}</span>         
                             </div>
                         </div>
                     </div>
@@ -614,10 +614,10 @@ body {
                 <div class="mobile-menu container">
                     <nav id="mobile-menu-active">
                         <ul class="menu-overflow">
-                            <li><a href="userpage">HOME</a>
+                            <li><a href="userpage" style="color:white;">HOME</a>
                               
                             </li>
-                            <li><a href="#">Services <i class="fa fa-angle-down"></i></a>
+                            <li><a href="#" style="color:white;">Services <i class="fa fa-angle-down"></i></a>
                             </li>
                             <li><a href="#bookings">Bookings</a></li>
                             <li><a href="#userprofile">User Profile</a></li>
@@ -635,11 +635,11 @@ body {
                             <br> <br> <br> <br> <br> <br>
                             
                             <div class="booking-box">
-                                <h1>Worker reports</h1>
+                                <h1 style="color:black; font-weight: bolder">Worker reports</h1>
+                                {% if worker_reports %}
                                 <table>
                                   <thead>
                                       <tr>
-                                          <th>Service ID</th>
                                           <th>Worker Name</th>
                                           <th>Duration of Work</th>
                                           <th>Requirements</th>
@@ -651,24 +651,28 @@ body {
                                       </tr>
                                   </thead>
                                   <tbody>
-                                      {% for report in worker_reports %}
-                                          <tr>
-                                              <td>{{ report.serviceid.serviceid }}</td>
-                                              <td>{{ report.user_id.first_name }}</td>
-                                              <td>{{ report.duration_of_work }}</td>
-                                              <td>{{ report.requirements }}</td>
-                                              <td>{{ report.cost }}</td>
-                                              <td>{{ report.num_workers_needed }}</td>
-                                              <td>{{ report.created_at }}</td>
-                                              <td>{{ report.status }}</td>
-                                              <td>
+                                    {% for report in worker_reports %}
+                                    {% if report.status == 'reportgiven' %}
+                                        <tr>
+                                            <td>{{ report.user_id.first_name }}</td>
+                                            <td>{{ report.duration_of_work }}</td>
+                                            <td>{{ report.requirements }}</td>
+                                            <td>{{ report.cost }}</td>
+                                            <td>{{ report.num_workers_needed }}</td>
+                                            <td>{{ report.created_at }}</td>
+                                            <td>{{ report.status }}</td>
+                                            <td>
                                                 <button type="button" onclick="window.location.href='{% url 'assign_workers' report.reportid %}'" class="btn btn-outline-primary">Assign Workers</button>
-                                              </td>
-                                          </tr>
-                                      {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                
                                   </tbody>
                               </table>
-                              
+                              {% else %}
+                                  <p style="color:black; font-weight: bolder">No pending work to be assigned.</p>
+                              {% endif %}
                                 
                             </div>
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
