@@ -6,18 +6,46 @@ class MyUser(AbstractUser):
     password = models.CharField(max_length=128, default="")
     role = models.CharField(max_length=15, default='client')
     userid = models.AutoField(primary_key=True) 
+class ServiceTypes(models.Model):
+    service_id = models.AutoField(primary_key=True)
+    service_type = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    number_of_providers = models.IntegerField(default=0) 
+
 class ServiceProvider(models.Model):
-    user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
+    providerid = models.AutoField(primary_key=True)  # Auto-incremented primary key
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, unique=True)
     providername = models.CharField(max_length=100, unique=True)
     ownername = models.CharField(max_length=100)
     username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    district = models.CharField(max_length=100,default="kottayam")
+    contact_number = models.CharField(max_length=15)
+    service_type = models.ManyToManyField(ServiceTypes)
+
+class BranchManager(models.Model):
+    managerid = models.AutoField(primary_key=True)
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, unique=True)
+    providerid = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    providername = models.CharField(max_length=100)
+    date_of_joining = models.DateField()
+    phone_no = models.CharField(max_length=15)
     state = models.CharField(max_length=100)
     district = models.CharField(max_length=100)
-    contact_number = models.CharField(max_length=15)
+    pincode = models.IntegerField()
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=50)
-    service_type = models.CharField(max_length=100)
+    
+class Branch(models.Model):
+    branchid = models.AutoField(primary_key=True)
+    providerid = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    providername = models.CharField(max_length=100)
+    service_type = models.ForeignKey(ServiceTypes, on_delete=models.CASCADE)
+    district = models.CharField(max_length=100)
+    pincode = models.IntegerField()
+    status = models.CharField(max_length=10, default='inactive')
+class BranchManagerAssignment(models.Model):
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    manager = models.ForeignKey(BranchManager, on_delete=models.CASCADE)    
 class Client(models.Model):
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
     first_name=models.TextField(max_length=100)
@@ -29,20 +57,25 @@ class Client(models.Model):
     phone = models.CharField(max_length=12, unique=True)  # Set as unique
     district = models.TextField(max_length=100)
     state = models.TextField(max_length=100)
+    pincode = models.IntegerField()
     role = models.CharField(max_length=15, default='')
+
 class Worker(models.Model):
-    user = models.OneToOneField(MyUser, on_delete=models.CASCADE,primary_key=True)
-    provider = models.TextField(max_length=100)
-    # Additional fields specific to workers can be added here
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, primary_key=True)
+    provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    branchid = models.ManyToManyField(Branch)
+    service_types = models.ManyToManyField(ServiceTypes)
     first_name = models.TextField(max_length=100)
     last_name = models.TextField(max_length=100)
     email = models.EmailField(unique=True)
     dob = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=12, unique=True)
+    pincode = models.IntegerField()
     district = models.TextField(max_length=100)
     state = models.TextField(max_length=100)
     role = models.CharField(max_length=15)
     status = models.CharField(max_length=15)
+
 class ClientBooking(models.Model):
     PENDING = 'pending'
     APPROVED = 'approved'
@@ -54,10 +87,11 @@ class ClientBooking(models.Model):
         (CANCELED, 'Canceled'),
         (COMPLETED, 'Completed'),
     ]
+
     bookingid = models.AutoField(primary_key=True)
     clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
     district = models.TextField(max_length=100)
-    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    branchid = models.ForeignKey('Branch', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
     date = models.DateField()
@@ -65,7 +99,7 @@ class ClientBooking(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
 
 class WorkerStatus(models.Model):
-    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    branchid = models.ForeignKey('Branch', on_delete=models.CASCADE)
     workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
     
     # Choices for work status
@@ -108,8 +142,8 @@ class Service(models.Model):
     bookingid = models.ForeignKey('ClientBooking', on_delete=models.CASCADE)  # Foreign key to ClientBooking model
     clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
     district = models.TextField(max_length=100)
-    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
-    workerid = models.ManyToManyField('Worker')
+    branchid = models.ForeignKey('Branch', on_delete=models.CASCADE)
+    workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
@@ -130,7 +164,7 @@ class WorkerReport(models.Model):
     reportid = models.AutoField(primary_key=True)
     serviceid = models.ForeignKey('Service', on_delete=models.CASCADE)
     user_id = models.ForeignKey('Worker', on_delete=models.CASCADE)
-    providerid = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
+    branchid = models.ForeignKey('Branch', on_delete=models.CASCADE)
     duration_of_work = models.CharField(max_length=100)
     requirements = models.TextField()
     cost = models.DecimalField(max_digits=10, decimal_places=2)

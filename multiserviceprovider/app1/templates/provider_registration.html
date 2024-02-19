@@ -188,14 +188,11 @@
                           </div>
                         </div>
                         <div class="form-outline form-white">
-                          <label for="service-type">Select Service Type:</label>
-                          <select id="service-type" name="service_type">
-                              <option value="Cleaning">Cleaning</option>
-                              <option value="Plumbing">Plumbing</option>
-                              <option value="Laundry">Laundry</option>
-                              <option value="Electrical">ElectricalWork</option>
-                              <option value="Pestcontrol">PestControl</option>
-                              <!-- Add more service types as needed -->
+                          <label for="service">Select Service:</label>
+                          <select id="service_type" name="service_type">
+                              {% for service_type in service_types %}
+                                  <option value="{{ service_type.id }}">{{ service_type.name }}</option>
+                              {% endfor %}
                           </select>
                       </div><br>
                         <div class="row">
@@ -226,8 +223,7 @@
                           </label>
                         </div>
       
-                        <a href="/login"></a><button type="submit" id="submit" class="btn btn-light btn-lg"
-                          data-mdb-ripple-color="dark">Register</button></a>
+                        <input type="submit" value="Register">
       
                       </div>
                     </div>

@@ -1,8 +1,9 @@
+from datetime import date
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import MyUser,Client,Worker,ClientBooking,Service,WorkerReport
+from .models import Branch, BranchManager, BranchManagerAssignment, MyUser,Client,Worker,ClientBooking,Service,WorkerReport,ServiceTypes
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -45,6 +46,9 @@ def signin(request):
                 return redirect('workerpage')
             elif myuser.role == "admin":
                 return redirect('custom_admin_page')
+            elif myuser.role == "branchmanager":
+                # Redirect to the branch manager page
+                return redirect('managerpage')
         else:
             messages.error(request, "Incorrect Login. Please check your credentials.")
             return redirect('signin')
@@ -67,10 +71,11 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         confirmpassword = request.POST.get('confirm_password')
+        pincode = request.POST.get('pincode')  # Add this line to get pincode
         role = "client"  # Get selected role from the dropdown
         
         # Check for empty fields
-        if not firstname or not lastname or not username or not phoneno or not state or not dob or not district or not email or not password or not confirmpassword or not role:
+        if not firstname or not lastname or not username or not phoneno or not state or not dob or not district or not email or not password or not confirmpassword or not pincode or not role:
             messages.error(request, 'All fields are required.')
             return render(request, 'signup.html')
 
@@ -108,6 +113,7 @@ def register(request):
                     phone=phoneno,
                     district=district,
                     state=state,
+                    pincode=pincode,  # Add this line to save pincode
                     role=role,
                     user=user
                 )
@@ -255,7 +261,28 @@ def providerpage(request):
             messages.error(request, "User does not exist.")
     else:
         messages.error(request, "Login failed. Please check your credentials.")
-        return redirect('signin')  # Redirect should be here if the user is not logged in or doesn't have permission
+        return redirect('signin')
+      # Redirect should be here if the user is not logged in or doesn't have permission
+def managerpage(request):
+    if 'username' in request.session:
+        username = request.session['username']
+        try:
+            user = MyUser.objects.get(username=username)
+            
+            if user.role == 'branchmanager':
+                # If the user is a branch manager, you can add specific logic or render a manager-specific template.
+                context = {
+                    'user': user,
+                    'manager_id': user.userid  # Pass the manager's ID to the template context
+                }
+                return render(request, 'managerpage.html', context)
+            else:
+                messages.error(request, "You don't have permission to access this page.")
+        except MyUser.DoesNotExist:
+            messages.error(request, "User does not exist.")
+    else:
+        messages.error(request, "Login failed. Please check your credentials.")
+        return redirect('signin')
 from itertools import chain
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True, max_age=0)
@@ -266,10 +293,13 @@ def custom_admin_page(request):
         try:
             user = User.objects.get(username=username)
             if user.role == 'admin':
-                user_profiles=MyUser.objects.select_related('serviceprovider', 'client','worker').all()
+                # Fetch user profiles with their associated service providers, clients, and workers
+                user_profiles = MyUser.objects.select_related('serviceprovider', 'client', 'worker').all()
                 
-                
-                context = {'user_profiles': user_profiles}
+                # Fetch all service types
+                services = ServiceTypes.objects.all()
+
+                context = {'user_profiles': user_profiles, 'services': services}
                 return render(request, 'admin.html', context)
             else:
                 messages.error(request, "You don't have permission to access this page.")
@@ -277,6 +307,7 @@ def custom_admin_page(request):
             messages.error(request, "User does not exist.")
     else:
         messages.error(request, "Login failed. Please check your credentials.")
+    
     return redirect('signin')
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -317,7 +348,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 from .forms import ClientProfileForm
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 @login_required
 def provider_registration(request):
     if request.user.role == 'admin':  # Assuming 'role' is the attribute in your User model indicating the user's role
@@ -360,8 +391,15 @@ def provider_registration(request):
         return render(request, 'signin.html')
         
 def provider_reg(request):
+    # Fetch all ServiceType objects from the database
     request.session.flush() 
-    return render(request, "provider_registration.html")
+    service_types = ServiceTypes.objects.all()
+
+    # Convert the queryset to a list of dictionaries
+    service_types_list = [{'id': service.service_id, 'name': service.service_type} for service in service_types]
+
+    # Pass the service types data to the template
+    return render(request, "provider_registration.html", {'service_types': service_types_list})
 from django.urls import reverse
 def worker_registration(request):
     if request.method == 'POST':
@@ -391,8 +429,20 @@ def worker_registration(request):
     
     return render(request, 'worker_registration_form.html')
 def worker_reg(request):
-    request.session.flush() 
-    return render(request, "worker_registration.html")
+    request.session.flush()
+
+    # Retrieve the list of providers, branches, and services
+    providers_list = ServiceProvider.objects.all()
+    branches_list = Branch.objects.all()
+    service_types = ServiceTypes.objects.all()
+
+    # Convert the queryset to a list of dictionaries
+    service_types_list = [{'id': service.service_id, 'name': service.service_type} for service in service_types]
+
+    # Pass the providers, branches, and services lists to the template context
+    context = {'providers_list': providers_list, 'branches_list': branches_list, 'services_list': service_types_list}
+    
+    return render(request, "worker_registration.html", context)
 @login_required
 def providerlist(request):
     request.session.flush() 
@@ -410,7 +460,6 @@ from django.shortcuts import render, redirect
 from .models import ServiceProvider
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-@login_required
 def providerregister(request):
     if request.method == 'POST':
         # Get form data
@@ -422,16 +471,18 @@ def providerregister(request):
         district = request.POST.get('district')
         contact_number = request.POST.get('contact_no')
         email = request.POST.get('email')
-        service_type = request.POST.get('service_type')
+        service_type_names = request.POST.getlist('service_type')
         role = "provider"
         
         # Check for empty fields
-        if not providername or not ownername or not username or not password or not state or not district or not contact_number or not email or not service_type:
+        if not providername or not ownername or not username or not password or not state or not district or not contact_number or not email or not service_type_names:
             messages.error(request, 'All fields are required.')
             return render(request, 'provider_registration.html')
+
         try:
             if not email:
                 raise ValidationError("Email is required.")
+            
             # Create MyUser instance
             User = get_user_model()
             user = User.objects.create_user(
@@ -439,25 +490,27 @@ def providerregister(request):
                 email=email,
                 password=password,  # Store the password (it will be hashed internally)
                 role=role,
-                is_active=False
+                is_active=True  # Set user to active upon registration
             )
-
+            
             # Create ServiceProvider instance associated with the created MyUser instance
             service_provider = ServiceProvider.objects.create(
                 user=user,  # Assign the MyUser instance to the user field of ServiceProvider
                 providername=providername,
                 ownername=ownername,
-                password=make_password(password),  # Store the hashed password
                 state=state,
                 username=username,
-                email=email,
                 district=district,
                 contact_number=contact_number,
-                service_type=service_type,
-                role=role,
-                
-
             )
+            for service_type_name in service_type_names:
+                try:
+                    service_type = ServiceTypes.objects.get(service_type=service_type_name)
+                    service_type.number_of_providers += 1
+                    service_type.save()
+                    service_provider.service_type.add(service_type)
+                except ServiceTypes.DoesNotExist:
+                    messages.warning(request, f'Service type "{service_type_name}" does not exist.')
 
             messages.success(request, 'Registration request sent to admin for approval.')
             return redirect('signin')  # Redirect to signin page after successful registration
@@ -466,7 +519,6 @@ def providerregister(request):
             messages.error(request, f'Error: {e}')
 
     return render(request, 'provider_registration.html')
-
 def workerregister(request):
     if request.method == 'POST':
         # Get form data
@@ -482,8 +534,11 @@ def workerregister(request):
         confirmpassword = request.POST.get('confirm_password')
         role = "worker"  # Get selected role from the dropdown
         providername = request.POST.get('providername')  # Get providername from the form
+        pincode = request.POST.get('pincode')  # Add this line to get pincode
+        service_type_name = request.POST.get('service_type')  # Add this line to get service_type
+
         # Check for empty fields
-        if not firstname or not lastname or not username or not phoneno or not state or not dob or not district or not email or not password or not confirmpassword or not role or not providername: 
+        if not firstname or not lastname or not username or not phoneno or not state or not dob or not district or not email or not password or not confirmpassword or not role or not providername or not pincode or not service_type_name:
             messages.error(request, 'All fields are required.')
             return render(request, 'signup.html')
 
@@ -491,42 +546,54 @@ def workerregister(request):
         if password != confirmpassword:
             messages.error(request, 'Password does not match the confirm password.')
             return render(request, 'signup.html')
-            # Get provider based on providername
+
+        # Get provider based on providername
         try:
-            provider = ServiceProvider.objects.get(providername=providername)
+            provider = ServiceProvider.objects.get(providerid=providername)
             User = get_user_model()
             user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,  # Store the password (it will be hashed internally)
-            role=role,
-            is_active=False
+                username=username,
+                email=email,
+                password=password,
+                role=role,
+                is_active=False
             )
 
             # Create Worker instance associated with the created MyUser instance and provider
             worker = Worker.objects.create(
-            user=user,
-            first_name=firstname,
-            last_name=lastname,
-            dob=dob,
-            email=email,
-            phone=phoneno,
-            district=district,
-            state=state,
-            role="worker",
-            status="available",
-            provider=provider.user_id   # Assign the provider to the worker
+                user=user,
+                provider=provider,
+                first_name=firstname,
+                last_name=lastname,
+                dob=dob,
+                email=email,
+                phone=phoneno,
+                pincode=pincode,
+                district=district,
+                state=state,
+                role="worker",
+                status="registered",
             )
+
+            # Save the pincode and service_type in the Worker table
+            service_type = ServiceTypes.objects.get(service_id=service_type_name)
+            worker.service_types.add(service_type)
+
+            # Assuming branch_ids is a list of branch ids obtained from the form
+            branch_ids = request.POST.getlist('branch_id')
+            branches = Branch.objects.filter(pk__in=branch_ids)
+            worker.branchid.set(branches)
+
+            worker.save()
+
+
             messages.success(request, 'Registration request sent to provider for approval.')
             return redirect('signin')  # Redirect to signin page after successful registration
         except ServiceProvider.DoesNotExist:
             messages.error(request, 'Invalid provider name.')
-            return render(request, 'signup.html')
+            return render(request, 'workerregister')
 
-            # Create MyUser instance
-        
-    return render(request, 'signup.html')
-
+    return render(request, 'signin')
 @login_required
 def service_providers_by_category(request, category):
     providers = ServiceProvider.objects.filter(user__is_active=True, service_type=category)
@@ -795,9 +862,19 @@ def reject_booking(request, booking_id):
 
 @login_required
 def worker_requests(request, user_id):
-    # Filter workers based on the user_id
-    workers = Worker.objects.filter(user__is_active=False, provider=user_id,)
-    return render(request, 'workerrequest.html', {'workers': workers})
+    try:
+        manager = BranchManager.objects.get(user=user_id)
+        # Filter workers based on the manager's ID and other criteria (provider, pincode)
+        workers = Worker.objects.filter(
+                                        provider=manager.providerid,
+                                        pincode=manager.pincode,
+                                        status='registered'
+)
+        return render(request, 'workerrequest.html', {'workers': workers})
+    except MyUser.DoesNotExist:
+        messages.error(request, "Invalid request")
+        return redirect('signin')  # Replace 'some_error_page' with an appropriate error page
+
 @login_required
 def approve_worker(request, user_id):
     # Retrieve the ServiceProvider instance associated with the request ID
@@ -1319,3 +1396,135 @@ def payment_success(request):
     send_mail(subject, message, from_email, recipient_list)
     messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
     return redirect('userpage')
+def add_service(request):
+    if request.method == 'POST':
+        # Extract data from the form
+        service_type = request.POST.get('serviceType')
+        description = request.POST.get('description')
+
+        # Perform any additional processing or validation here
+
+        # Save the data to your ServiceTypes model
+        new_service = ServiceTypes.objects.create(
+            service_type=service_type,
+            description=description,
+            # Set other fields as needed
+        )
+
+        # Redirect to a success page or any other desired page
+        return redirect('custom_admin_page')
+
+    # Render the service form page for GET requests
+    return render(request, 'custom_admin_page')
+
+@login_required
+def add_branch(request):
+    # Check if the user is a provider
+    if request.user.role != 'provider':
+        return redirect('home')  # Redirect to home or another appropriate page
+
+    provider = ServiceProvider.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        service_type_id = request.POST.get('service_type')
+        district = request.POST.get('district')
+        pincode = request.POST.get('pincode')
+
+        if not service_type_id or not district or not pincode:
+            messages.error(request, 'All fields for Branch are required.')
+            return render(request, 'add_branch.html', {'provider': provider})
+
+        # Convert service_type_id to an instance of ServiceTypes
+        service_type = ServiceTypes.objects.get(service_id=service_type_id)
+
+        # Create a new branch
+        branch = Branch.objects.create(
+            providerid=provider,
+            providername=provider.providername,
+            service_type=service_type,
+            district=district,
+            pincode=pincode
+        )
+
+        messages.success(request, 'Branch added successfully.')
+        return redirect('providerpage')  # Redirect to the branches page
+
+    return render(request, 'add_branch.html', {'provider': provider})
+def add_branch_page(request, provider_id):
+    # Fetch provider details based on the provider_id
+    try:
+        service_types = ServiceTypes.objects.all()
+
+    # Convert the queryset to a list of dictionaries
+        service_types_list = [{'id': service.service_id, 'name': service.service_type} for service in service_types]
+        provider = ServiceProvider.objects.get(providerid=provider_id)
+    except ServiceProvider.DoesNotExist:
+        # Handle the case where the provider is not found
+        return render(request, 'signin')
+
+    return render(request, 'branchregistration.html', {'provider': provider, 'service_types': service_types_list})
+def branch_page(request, provider_id):
+    # Assuming provider_id is the user ID
+    user_id = provider_id  # Rename the variable for clarity
+
+    # Get the ServiceProvider instance based on the user ID
+    provider = get_object_or_404(ServiceProvider, user=user_id)
+
+    # Get branches of the provider with status "inactive"
+    inactive_branches = Branch.objects.filter(providerid=provider, status='inactive')
+
+    # Pass the provider and inactive branches to the template
+    return render(request, 'branch.html', {'provider': provider, 'inactive_branches': inactive_branches})
+from datetime import date as dt_date
+@login_required
+def manager_registration(request, provider_id, branch_id):
+    provider = get_object_or_404(ServiceProvider, providerid=provider_id)
+    branch = get_object_or_404(Branch, branchid=branch_id, providerid=provider)
+    if request.method == 'POST':
+        user_name = request.POST.get('user_name')
+        email = request.POST.get('email')
+        phone_no = request.POST.get('phone_no')
+        state = request.POST.get('state')
+        district = request.POST.get('district')
+        pincode = request.POST.get('pincode')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('manager_registration', branch_id=branch_id)
+
+        # Create MyUser instance with role 'branchmanager'
+        user = MyUser.objects.create_user(username=user_name, email=email, password=password)
+        user.role = 'branchmanager'
+        user.save()
+
+        # Authenticate and login the user
+        authenticated_user = authenticate(request, username=user_name, password=password)
+        login(request, authenticated_user)
+
+        # Set the date_of_joining to the current date
+        current_date = dt_date.today()
+
+
+        # Create BranchManager instance
+        branch_manager = BranchManager.objects.create(
+            user=authenticated_user,
+            providerid=provider,  # Use the fetched provider
+            providername=provider.providername,
+            date_of_joining=current_date,
+            phone_no=phone_no,
+            state=state,
+            district=district,
+            pincode=pincode,
+            email=email
+        )
+
+        BranchManagerAssignment.objects.create(branch=branch, manager=branch_manager)
+        branch.status = 'active'
+        branch.save()
+
+        messages.success(request, 'Manager registered successfully.')
+        return redirect('providerpage')
+
+    return render(request, 'branchmanagereg.html', {'provider_id': provider_id, 'branch_id': branch_id, 'provider': provider})

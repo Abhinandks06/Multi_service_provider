@@ -153,10 +153,12 @@ urlpatterns = [
      path('update-service-and-booking/<int:booking_id>/', views.update_service_and_booking, name='update_service_and_booking'),
      path('client_work_reports/<int:client_id>/payment_success', views.payment_success, name='payment_success'),
      path('payment_success/', payment_success, name='payment_success'),
-
-
-
-
-
-
+     path('add_service/', add_service, name='add_service'),
+     path('add_branch/', add_branch, name='add_branch'),
+     path('add_branch_page/<int:provider_id>/', add_branch_page, name='add_branch_page'),
+     path('branch_page/<int:provider_id>/', views.branch_page, name='branch_page'),
+     path('manager_registration/<int:provider_id>/<int:branch_id>/', manager_registration, name='manager_registration'),
+     path('managerpage/', managerpage, name='managerpage'),
+     path('worker_requests/<int:user_id>/', worker_requests, name='worker_requests'),
+     path('activate_worker/<int:user_id>/<int:branch_manager_id>/', activate_worker, name='activate_worker'),
 ]

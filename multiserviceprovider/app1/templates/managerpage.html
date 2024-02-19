@@ -46,6 +46,12 @@
             font-family: 'CustomFont';
             content: "\e123"; /* Replace with the correct Unicode character for your notification icon */
         }
+        .ht-single-slide h3,
+        .ht-single-slide p {
+            color: white;
+            font-weight: bold;
+            font-size: 40px;
+        }
 
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -82,17 +88,17 @@
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     {% comment %} <li><a href="{% url 'provider_bookings' %}">Bookings</a></li> {% endcomment %}
-                                   <li><a href="{% url 'branch_page' provider_id=provider_id %}">Branch</a></li>
+                                   <li><a href="">Branch</a></li>
                                     <li class="dropdown dropdown-hover">
                                         
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                             Workers <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="{% url 'worker_requests' user_id=provider_id %}">View Worker Requests</a></li>
-                                            <li><a href="{% url 'worker_list' provider_id=provider_id %}">Worker List</a></li>
+                                            <li><a href="{% url 'worker_requests' user_id=manager_id %}">View Worker Requests</a></li>
+                                            <li><a href="">Worker List</a></li>
                                             <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
-                                            <li><a href="{% url 'worker_report' provider_id=provider_id %}">Worker Report</a></li>
+                                            <li><a href="">Worker Report</a></li>
                                         </ul>
                                     </li>  
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>
@@ -175,7 +181,7 @@
         <div class="ht-hero-section fix">
             <div class="ht-hero-slider">
                 <!-- Single Slide Start -->
-                <div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/bg.jpg' %}')">
+                <div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/manager.jpg' %}')">
                     <div class="ht-hero-content-one container">
                         <h3 class="cssanimation leDoorCloseLeft sequence">{{request.user}} </h3>
                         <p>"Empowering Hands, Building Dreams: Dedicated to Excellence, Crafted by Skill."</p>

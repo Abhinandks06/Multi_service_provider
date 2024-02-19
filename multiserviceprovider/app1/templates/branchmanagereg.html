@@ -1,0 +1,120 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Multiservice Provider</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'userassets/img/icon.png' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
+    <style>
+        .container {
+            margin-top: 150px;
+        }
+    </style>
+</head>
+
+<body style="background: linear-gradient(to right, #141e30, #243b55);">
+    <!-- Header Area Start -->
+    <header class="header-area header-sticky">
+        <div class="header-container">
+            <div class="row">
+                <div class="col-lg-2 col-sm-4">
+                    <div class="logo text-center">
+                       <h1> <a href="providerpage" class="logo-text">MULTISERVICE <span class="provider-text">PROVIDER</span></a></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header Area End -->
+
+    <!-- Container Div Start -->
+    <div class="container" style="margin-top: 150px;">
+        <h2>Manager Registration</h2>
+
+        <form method="post" action="{% url 'manager_registration' provider_id=provider.providerid branch_id=branch_id %}">
+            {% csrf_token %}
+
+            <!-- Manager Details -->
+            <div style="width: 50%; margin: 0 auto;">
+                <label for="user_name">User Name:</label>
+                <input type="text" name="user_name" required><br><br>
+
+                <label for="email">Email:</label>
+                <input type="email" name="email" required><br><br>
+
+                <label for="phone_no">Phone Number:</label>
+                <input type="text" name="phone_no" required><br><br>
+
+                <label for="state">State:</label>
+                <input type="text" name="state" required><br><br>
+
+                <label for="district">District:</label>
+                <input type="text" name="district" required><br><br>
+
+                <label for="pincode">Pincode:</label>
+                <input type="text" name="pincode" required><br><br>
+
+                <label for="password">Password:</label>
+                <input type="password" name="password" required><br><br>
+
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" name="confirm_password" required><br><br>
+
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit">Register Manager</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Container Div End -->
+
+    <!-- Footer Area Start -->
+    <footer class="footer-widget-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="footer-text-bottom">
+                        <p>Copyright &copy; <a href="#">multiserviceprovider</a>. All Rights Reserved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer Area End -->
+
+    <!-- All js here -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Enable Bootstrap dropdown on hover
+            $('.dropdown').hover(function () {
+                $(this).addClass('show');
+                $(this).find('.dropdown-menu').addClass('show');
+            }, function () {
+                $(this).removeClass('show');
+                $(this).find('.dropdown-menu').removeClass('show');
+            });
+        });
+    </script>
+    <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'userassets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'userassets/js/main.js' %}"></script>
+</body>
+
+</html>

@@ -39,13 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app1',
     'app1.custom_filters',
-    #allauth
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'social_django'
+    'social_django',
 
 
 ]
@@ -151,6 +150,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abhinandks2024a@mca.ajce.in'
 EMAIL_HOST_PASSWORD = 'Saltpot@006'
+
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY =  '194823522532-38u3jnj1mnb2di3tc6c1g10ahjiopc5s.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'

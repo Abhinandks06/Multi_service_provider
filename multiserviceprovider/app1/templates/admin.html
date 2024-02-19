@@ -151,6 +151,9 @@
                     <a class="nav-link" href="#" onclick="showTable('worker')">Workers</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showTable('service')">Services</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'admin_logout' %}">Logout</a>
                 </li>
             </ul>
@@ -293,7 +296,57 @@
             {% endfor %}
             </tbody>
         </table>
+        <table id="serviceTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Service Type</th>
+                    <th>Description</th>
+                    <th>Number of Providers</th>
+                
+                </tr>
+            </thead>
+            <tbody>
+          
+                {% for service in services %}
+                    <tr>
+                        <td>{{ service.service_type }}</td>
+                        <td>{{ service.description }}</td>
+                        <td>{{ service.number_of_providers }}</td>
+             
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Optionally, add a button to add a new service -->
+        <button class="btn btn-success mb-3" onclick="showServiceForm()">Add New Service</button>
+        <div id="serviceForm" style="display: none;">
+            <h2>Add New Service</h2>
+           <!-- Service Form -->
+<form id="serviceForm" method="post" action="{% url 'add_service' %}">
+    {% csrf_token %}
+    <label for="serviceType">Service Type:</label>
+    <input type="text" id="serviceType" name="serviceType" required>
+    
+    <label for="description">Description:</label>
+    <textarea id="description" name="description"></textarea>
+
+    <!-- Add more fields as needed -->
+
+    <!-- Submit button to directly submit the form to the view -->
+    <button type="submit">Add Service</button>
+</form>
+
+        </div>
     </div>
+    <script>
+        function showServiceForm() {
+            document.getElementById('serviceTable').style.display = 'none';
+            document.getElementById('serviceForm').style.display = 'block';
+        }
+
+        
+    </script>
     <script>
         function filterTable() {
             var selectedRole = document.getElementById("userRole").value;
@@ -330,13 +383,19 @@
         document.getElementById('clientTable').style.display = 'none';
         document.getElementById('providerTable').style.display = 'none';
         document.getElementById('workerTable').style.display = 'none';
+        document.getElementById('serviceTable').style.display = 'table';
     
         // Show the selected table based on the tableType parameter
         if (tableType === 'client') {
             document.getElementById('clientTable').style.display = 'table';
-        } else if (tableType === 'worker') {
+        } 
+        else if (tableType === 'worker') {
             document.getElementById('workerTable').style.display = 'table';
         }
+        else if (tableType === 'service') {
+            document.getElementById('serviceTable').style.display = 'table';
+        }
+        
     }
     
     function showProviderOptions() {

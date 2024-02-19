@@ -202,7 +202,15 @@
                           </script>
                           </div>
                         </div>
+                        <div class="row">
+                          <div class="col-md-7 mb-4 pb-2">
       
+                            <div class="form-outline form-white">
+                              <label class="form-label" for="form3Examplea8">Pin code</label>
+                              <input type="text" id="pincode" name="pincode" class="form-control form-control-lg" />
+                              <span id="pincodeerror"></span>     
+                          </div>
+                        </div>
                         <div class="row">
                           <div class="col-md-7 mb-4 pb-2">
       
@@ -246,6 +254,32 @@
     </form>
     <script src="{% static 'js/registration.js' %}"></script>
     <script src="{% static 'js/reg.js' %}"></script>
+    <script>
+      const pincodeInput = document.getElementById('pincode');
+      const pincodeError = document.getElementById('pincodeerror');
+  
+      pincodeInput.addEventListener('input', function () {
+          const enteredPincode = pincodeInput.value;
+  
+          // Validate if it contains only digits and up to 6 digits
+          if (/^\d{1,6}$/.test(enteredPincode)) {
+              // Validate if all numbers are not the same
+              if (new Set(enteredPincode).size !== 1) {
+                  // Validate if the first number is not zero
+                  if (enteredPincode[0] !== '0') {
+                      // Clear any previous error message
+                      pincodeError.textContent = '';
+                  } else {
+                      pincodeError.textContent = 'First number cannot be zero';
+                  }
+              } else {
+                  pincodeError.textContent = 'All numbers cannot be same';
+              }
+          } else {
+              pincodeError.textContent = 'Pincode must contain only digits and be up to 6 digits';
+          }
+      });
+  </script>
     <script>
       function validateForm() {
           // Get form elements

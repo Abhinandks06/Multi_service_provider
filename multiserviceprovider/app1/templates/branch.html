@@ -47,27 +47,24 @@
             content: "\e123"; /* Replace with the correct Unicode character for your notification icon */
         }
 
+        .branches-list {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+
+            padding: 20px; /* Add padding for better readability */
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <body>
+    <body style="background-image: url('{% static 'userassets/img/bg/bg.jpg' %}')">
         {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                // Set a timer to hide messages after 5 seconds (5000 milliseconds)
-                setTimeout(function () {
-                    $(".messages").fadeOut("slow");
-                }, 5000);
-            });
-        </script>
-    {% endif %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
@@ -82,17 +79,17 @@
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     {% comment %} <li><a href="{% url 'provider_bookings' %}">Bookings</a></li> {% endcomment %}
-                                   <li><a href="{% url 'branch_page' provider_id=provider_id %}">Branch</a></li>
+                                  
                                     <li class="dropdown dropdown-hover">
                                         
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                             Workers <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="{% url 'worker_requests' user_id=provider_id %}">View Worker Requests</a></li>
-                                            <li><a href="{% url 'worker_list' provider_id=provider_id %}">Worker List</a></li>
+                                            <li><a href="{% url 'worker_requests' user_id=provider.user_id %}">View Worker Requests</a></li>
+                                            <li><a href="{% url 'worker_list' provider_id=provider.providerid %}">Worker List</a></li>
                                             <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
-                                            <li><a href="{% url 'worker_report' provider_id=provider_id %}">Worker Report</a></li>
+                                            <li><a href="{% url 'worker_report' provider_id=provider.providerid %}">Worker Report</a></li>
                                         </ul>
                                     </li>  
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>
@@ -172,18 +169,30 @@
         </header>
         <!-- Header Area End -->
         <!-- Hero Area Start -->
-        <div class="ht-hero-section fix">
+        <div class="ht-hero-section fix" style="position: relative; top: 30%;">
             <div class="ht-hero-slider">
                 <!-- Single Slide Start -->
-                <div class="ht-single-slide" style="background-image: url('{% static 'userassets/img/bg/bg.jpg' %}')">
-                    <div class="ht-hero-content-one container">
-                        <h3 class="cssanimation leDoorCloseLeft sequence">{{request.user}} </h3>
-                        <p>"Empowering Hands, Building Dreams: Dedicated to Excellence, Crafted by Skill."</p>
-                        <a href="#services" class="default-btn large circle blue hover-blue uppercase">WORKS</a>
+                <div class="ht-single-slide" >
+                    <div class="branches-list" style="position: absolute; top: 5%; left: 5%; background: rgba(255, 255, 255, 0.8); padding: 20px;">
+                        <h2>Your Branches:</h2>
+                        <ul>
+                            {% for branch in inactive_branches %}
+                            <div>
+                                <p>Service Type: {{ branch.service_type.service_type }}</p>
+                                <p>District: {{ branch.district }}</p>
+                                <p>Pincode: {{ branch.pincode }}</p>
+                                <a href="{% url 'manager_registration' branch_id=branch.branchid provider_id=branch.providerid.providerid %}">Add Manager</a>
+
+                            </div>
+                        {% endfor %}
+                        
+                        </ul>
+                        <a href="{% url 'add_branch_page' provider_id=provider.providerid %}">Add New Branch</a>
                     </div>
                 </div>
             </div>
         </div>
+        
         <!-- Hero Area End -->
 <!-- Footer Widget Area Start -->
 <div class="footer-widget-area">

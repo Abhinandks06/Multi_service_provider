@@ -326,42 +326,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	{% comment %} <script src="{% static 'js/login.js' %}" ></script> {% endcomment %}
-	{% comment %} <script>
-		// Get references to HTML elements
-		const usernameInput = document.getElementById('username');
-		const usernameError = document.getElementById('UsernameError');
-	
-		// Function to validate the username
-		function validateUsername() {
-		  const username = usernameInput.value.trim();
-	  
-		  if (username === '') {
-			  usernameError.textContent = 'Username is required';
-			  usernameError.style.color = 'red'; // Set text color to red
-			  return false;
-		  } else if (username.length < 5 || username.length > 16) {
-			  usernameError.textContent = 'Username must be between 5 and 16 characters';
-			  usernameError.style.color = 'red'; // Set text color to red
-			  return false;
-		  } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(username)) {
-			  usernameError.textContent = 'Username can only contain alphabets, numbers, and underscores. It must start with an alphabet or underscore.';
-			  usernameError.style.color = 'red'; // Set text color to red
-			  return false;
-		  } else if (!/[a-zA-Z]/.test(username)) {
-			  usernameError.textContent = 'Username must contain at least one alphabet character.';
-			  usernameError.style.color = 'red'; // Set text color to red
-			  return false;
-		  }
-	  
-		  usernameError.textContent = 'Good'; // Clear any previous error message
-		  usernameError.style.color = 'green'; // Reset text color
-		  return true;
-	  }
-	  
-	
-		// Event listener for real-time validation as the user types
-		usernameInput.addEventListener('input', validateUsername);
-	</script> {% endcomment %}
+
 </body>
 </html>

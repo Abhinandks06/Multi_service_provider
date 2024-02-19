@@ -89,6 +89,17 @@
                                 <input type="password" id="cpass"name="confirm_password" class="form-control form-control-lg" /><br>
                                 <span id="cpasserror"></span>
                               </div>
+                              <div class="form-outline3">
+                                <label class="form-label" for="pincode">Pincode</label>
+                                <input type="text" id="pincode" name="pincode" class="form-control form-control-lg" />
+                                <span id="pincodeError"></span>
+                            </div><br><br>
+                            <label for="service">Select Service:</label>
+                            <select id="service_type" name="service_type">
+                                {% for service_type in services_list %}
+                                    <option value="{{ service_type.id }}">{{ service_type.name }}</option>
+                                {% endfor %}
+                            </select>
                             </div>
       
                       </div>
@@ -223,12 +234,19 @@
                           </div>
                         </div>
                         <div class="mb-4">
-                          <div class="form-outline form-white">
-                              <label class="form-label" for="providername">Provider Name</label>
-                              <input type="text" id="providername" name="providername" class="form-control form-control-lg" />
-                              <span id="ProviderNameError"></span>
-                          </div>
-                      </div>
+                          <div class="mb-4" data-branches="{{ branches_list|default:'[]' }}">
+
+                            <div class="form-outline form-white">
+                                <label class="form-label" for="providername">Provider Name</label>
+                                <select id="providername" name="providername" class="form-control form-control-lg" onchange="updateBranches()">
+                                    <option value="">Select Provider</option>
+                                    {% for provider in providers_list %}
+                                        <option value="{{ provider.providerid }}">{{ provider.providername }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span id="ProviderNameError"></span>
+                            </div>
+                        </div>
                         <div class="form-check d-flex justify-content-start mb-4 pb-3">
                           <input class="form-check-input me-3" type="checkbox" value="" id="form2Example3c" />
                           <label class="form-check-label text-white" for="form2Example3">
