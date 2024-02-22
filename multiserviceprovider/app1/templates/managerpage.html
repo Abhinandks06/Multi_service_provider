@@ -88,17 +88,19 @@
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     {% comment %} <li><a href="{% url 'provider_bookings' %}">Bookings</a></li> {% endcomment %}
-                                   <li><a href="">Branch</a></li>
+
+                                   <li><a href="{% url 'provider_booking' user=manager_id %}">Booking</a></li>
                                     <li class="dropdown dropdown-hover">
                                         
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                             Workers <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="{% url 'worker_requests' user_id=manager_id %}">View Worker Requests</a></li>
+                                            <li><a href="{% url 'worker_requests' user=manager_id %}">View Worker Requests</a></li>
                                             <li><a href="">Worker List</a></li>
                                             <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
-                                            <li><a href="">Worker Report</a></li>
+                                            <li><a href="{% url 'worker_report' managerid=manager_id %}">Worker Report</a></li>
+                                            <li><a href="{% url 'leave_requests' provider_id=manager_id %}">Leave Requests</a></li>
                                         </ul>
                                     </li>  
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>

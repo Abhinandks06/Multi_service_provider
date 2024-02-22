@@ -592,22 +592,33 @@ body {
                                       <!-- Include hidden fields to pass report_id and service_id to the view -->
                           
                                       <ul>
-                                          {% if available_workers %}
-                                              {% for worker in available_workers %}
-                                                  <li style="margin-bottom: 5px;">
-                                                      <label>
-                                                          <input type="checkbox" name="selected_workers" value="{{ worker.user_id }}">
-                                                          <span style="font-size: 16px;">{{ worker.first_name }} {{ worker.last_name }} ({{ worker.district }})</span>
-                                                      </label>
-                                                  </li>
-                                              {% endfor %}
-                                              
-                                              <button type="submit" style="font-size: 16px; margin-top: 10px;">Assign Selected Workers</button>
-                                          {% else %}
-                                              <li>No available workers</li>
-                                              <a href="" style="font-size: 16px; margin-top: 10px;">Cancel Booking</a>
-                                          {% endif %}
-                                      </ul>
+                                        {% if worker_report.num_workers_needed == 1 %}
+                                            <!-- Display the update button/link only when num_workers_needed is equal to 0 -->
+                                            <li>
+                                                <form method="post" action="{% url 'update_service_status' worker_report.reportid %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" style="font-size: 16px; margin-top: 10px;">Update Service Status</button>
+                                                </form>
+                                            </li>
+                                        {% else %}
+                                            {% if available_workers %}
+                                                {% for worker in available_workers %}
+                                                    <li style="margin-bottom: 5px;">
+                                                        <label>
+                                                            <input type="checkbox" name="selected_workers" value="{{ worker.user_id }}">
+                                                            <span style="font-size: 16px;">{{ worker.first_name }} {{ worker.last_name }} ({{ worker.district }})</span>
+                                                        </label>
+                                                    </li>
+                                                {% endfor %}
+                                                <li>
+                                                    <button type="submit" style="font-size: 16px; margin-top: 10px;">Assign Selected Workers</button>
+                                                </li>
+                                            {% else %}
+                                                <li>No available workers</li>
+                                                <li><a href="" style="font-size: 16px; margin-top: 10px;">Cancel Booking</a></li>
+                                            {% endif %}
+                                        {% endif %}
+                                    </ul>
                                   </form>
                               </div>
                           </div>

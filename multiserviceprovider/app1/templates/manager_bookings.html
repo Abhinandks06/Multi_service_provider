@@ -604,13 +604,12 @@
           Time: {{ booking.time }}<br>
           Location: {{ booking.district }}<br>
           Work status : {{ booking.status }}<br>
-
           {% if booking.status == 'pending' %}
           {% comment %} <form method="post" action="{% url 'approve_booking' booking.bookingid %}">
               {% csrf_token %}
               <button type="submit">Approve Booking</button>
           </form> {% endcomment %}
-          <form method="get" action="{% url 'available_workers' booking.providerid_id booking.district booking.bookingid %}">
+          <form method="get" action="{% url 'available_workers' booking.branchid_id booking.district booking.bookingid %}">
             <button type="submit">Assign Worker</button>
         </form>
           {% endif %}

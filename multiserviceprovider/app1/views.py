@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import Branch, BranchManager, BranchManagerAssignment, MyUser,Client,Worker,ClientBooking,Service,WorkerReport,ServiceTypes
+from .models import Branch, BranchManager, BranchManagerAssignment, MyUser,Client,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -173,20 +173,24 @@ def userpage(request):
                 try:
                     client = Client.objects.get(user=user)
                     user_id = user.userid  # Get the user ID
-                    return render(request, 'userpage.html', {'user_id': user_id})
+
+                    # Fetch the list of services
+                    services = ServiceTypes.objects.all()
+
+                    return render(request, 'userpage.html', {'user_id': user_id, 'services': services})
                 except Client.DoesNotExist:
                     messages.warning(request, "User profile not found. Please update your profile.")
                     # Pass username and email to google_profile_update view
                     email = user.email
-                    return redirect('google_profile_update', username=username, email=email,user=user)  
+                    return redirect('google_profile_update', username=username, email=email, user=user)  
             else:
                 messages.error(request, "You don't have permission to access this page.")
                 return redirect('signin')
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
-            return redirect('signin')  # Redirect to signin page if user does not exist
+            return redirect('signin')  # Redirect to signin page if the user does not exist
     else:
-        return render(request, 'userpage.html')  
+        return render(request, 'userpage.html', {'user_id': user_id, 'services': services})
 @login_required
 def google_profile_update(request, username, email,user):
     if request.method == 'POST':
@@ -262,7 +266,27 @@ def providerpage(request):
     else:
         messages.error(request, "Login failed. Please check your credentials.")
         return redirect('signin')
+    
       # Redirect should be here if the user is not logged in or doesn't have permission
+@login_required
+def providerpagehome(request,provider_id):
+    if 'username' in request.session:
+        username = request.session['username']
+        try:
+            user = MyUser.objects.get(username=username)
+            if user.role == 'provider':
+                context = {
+                    'user': user,
+                    'provider_id': user.userid  # Pass the provider's ID to the template context
+                }
+                return render(request, 'providerpage.html', context)
+            else:
+                messages.error(request, "You don't have permission to access this page.")
+        except MyUser.DoesNotExist:
+            messages.error(request, "User does not exist.")
+    else:
+        messages.error(request, "Login failed. Please check your credentials.")
+        return redirect('signin')
 def managerpage(request):
     if 'username' in request.session:
         username = request.session['username']
@@ -452,8 +476,8 @@ def signup_redirect(request):
     messages.error(request, "Something wrong here, it may be that you already have account!")
     return redirect("signin")
 @login_required
-def book_service(request):
-    return render(request, "book_service.html")
+def book_service(request, userid):
+    return render(request, 'book_service.html', {'userid': userid})
 
 
 from django.shortcuts import render, redirect
@@ -596,8 +620,12 @@ def workerregister(request):
     return render(request, 'signin')
 @login_required
 def service_providers_by_category(request, category):
-    providers = ServiceProvider.objects.filter(user__is_active=True, service_type=category)
-    context = {'providers': providers, 'category': category}
+    # Retrieve service providers for the given category
+    
+
+    # Retrieve branches associated with the category ID
+    branches = Branch.objects.filter(service_type=category)
+    context = { 'providers': branches, 'category': category}
     return render(request, 'providerlist.html', context)
 
 #update profile
@@ -687,67 +715,64 @@ def activate_provider(request, user_id):
 from django.shortcuts import render, get_object_or_404
 from .models import ServiceProvider
 @login_required
-def render_booking_form(request, userid=None):
+def render_booking_form(request, client_id, branchid):
     current_user = request.user
-    client_id = None
     client_name = None
     client_phone = None
     client_district = None
 
     if current_user.role == 'client':
-        client_id = current_user.userid
+        client_name = current_user.client.username
         client_phone = current_user.client.phone
         client_district = current_user.client.district
-        client_name = current_user.client.username
 
-    # Process the provider ID from the URL parameters
-    if userid is not None:
-        try:
-            provider_id = int(userid)
-            # Fetch provider information from the database
-            provider = get_object_or_404(ServiceProvider, user_id=provider_id)
+    # Process the branch ID from the URL parameters
+    try:
+        branch_id = int(branchid)
+        # Fetch branch information from the database
+        branch = get_object_or_404(Branch, branchid=branch_id)
 
-            # Check if there are any incomplete bookings for this client with the same provider
-            incomplete_bookings = ClientBooking.objects.filter(clientid_id=current_user, providerid_id=provider, status__in=['pending', 'ongoing'])
+        # Check if there are any incomplete bookings for this client with the same branch
+        incomplete_bookings = ClientBooking.objects.filter(clientid=current_user.client, branchid=branch_id, status__in=['pending', 'ongoing'])
 
-            if incomplete_bookings.exists():
-                # If there are incomplete bookings, display a message and redirect to the user page
-                messages.error(request, 'You already have an incomplete booking with this service provider.')
-                return redirect('userpage')  # Redirect to the user page or adjust the redirect as needed
+        if incomplete_bookings.exists():
+            # If there are incomplete bookings, display a message and redirect to the user page
+            messages.error(request, 'You already have an incomplete booking with this branch.')
+            return redirect('userpage')  # Redirect to the user page or adjust the redirect as needed
 
-            # Include providername and servicetype in the context dictionary
-            context = {
-                'client_id': client_id,
-                'client_phone': client_phone,
-                'provider_id': provider_id,
-                'client_district': client_district,
-                'providername': provider.providername,
-                'servicetype': provider.service_type,
-                'name': client_name
-            }
+        # Include branch information in the context dictionary
+        context = {
+            'client_id': client_id,
+            'client_phone': client_phone,
+            'branch_id': branch_id,
+            'client_district': client_district,
+            'branch_name': branch.providername,  # Adjust this according to your Branch model
+            'service_type': branch.service_type,  # Adjust this according to your Branch model
+            'name': client_name,
+            'branchid':branchid
+        }
 
-            return render(request, 'book_service.html', context)
+        return render(request, 'book_service.html', context)
 
-        except ValueError:
-            # Handle the case where provider_id is not a valid integer
-            # You can raise an error, redirect, or handle it as per your requirement
-            pass
-
-    return render(request, 'book_service.html', {'client_id': client_id, 'client_phone': client_phone,'servicetype': provider.service_type, 'name': client_name,'providername': provider.providername, 'provider_id': provider_id, 'client_district': client_district})
-
+    except ValueError:
+        # Handle the case where branch_id is not a valid integer
+        # You can raise an error, redirect, or handle it as per your requirement
+        messages.error(request, 'Invalid branch ID.')
+        return redirect('userpage')
 @login_required
 def create_booking(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         service_date = request.POST.get('service_date')
         service_time = request.POST.get('service_time')
-        provider_id = request.POST.get('providerid')  # Get providerid from the form data
+        branchid = request.POST.get('branchid')  # Get providerid from the form data
         client_id = request.POST.get('userid')
         client_phone = request.POST.get('clientphone')
         client_district = request.POST.get('clientdistrict')  # Get userid from the form data
-        
+        client_instance = Client.objects.get(user=client_id)
+        branch=Branch.objects.get(branchid=branchid)
         # Check if the current user has any pending bookings
-        existing_bookings = ClientBooking.objects.filter(clientid_id=client_id, status__in=['pending', 'approved'])
+        existing_bookings = ClientBooking.objects.filter(clientid=client_id, status__in=['pending', 'approved'])
         
         if existing_bookings.exists():
             # If pending bookings exist, display a message and redirect to the user page
@@ -761,19 +786,19 @@ def create_booking(request):
             district=client_district,
             date=service_date,
             time=service_time,
-            providerid_id=provider_id,  # Save providerid in the ClientBooking object
-            clientid_id=client_id,
+            branchid=branch,  # Save providerid in the ClientBooking object
+            clientid=client_instance,
             status="pending"  # Save userid in the ClientBooking object
         )
         new_booking.save()
         client_email = new_booking.clientid.email  # Replace with the actual field name for client email
-        provider_email = new_booking.providerid.user.email  # Replace with the actual field name for provider's user email
+        provider_email = "abhinandks2024a@mca.ajce.in"  # Replace with the actual field name for provider's user email
         
         # Compose email messages for the client and provider
         client_subject = 'Booking Confirmation'
         client_message = f"Dear {name},\nYour appointment has been booked successfully."
         provider_subject = 'New Booking Received'
-        provider_message = f"Dear {new_booking.providerid.providername},\nA new booking has been made."
+        provider_message = f"Dear {name},\nA new booking has been made."
 
         # Send email to the client
         send_mail(client_subject, client_message, 'sender@example.com', [client_email])
@@ -808,15 +833,17 @@ def search_providers(request):
 
 
 @login_required
-def provider_bookings(request):
-    provider_id = request.user.userid
-    bookings = ClientBooking.objects.filter(providerid=provider_id).exclude(status='completed').exclude(status='canceled')
+def provider_bookings(request,user):
+    user_id = user
+    manager = BranchManager.objects.get(user=user_id)
+    branch_id = BranchManagerAssignment.objects.get(manager=manager)
+    bookings = ClientBooking.objects.filter(branchid=branch_id.branch).exclude(status='completed').exclude(status='canceled')
 
     context = {
         'bookings': bookings
     }
 
-    return render(request, 'provider_bookings.html', context)
+    return render(request, 'manager_bookings.html', context)
 @login_required
 def bookinghistory(request):
     # Get the logged-in provider's user ID
@@ -863,50 +890,75 @@ def reject_booking(request, booking_id):
 @login_required
 def worker_requests(request, user_id):
     try:
+        # Get the branch manager
         manager = BranchManager.objects.get(user=user_id)
+
+        # Get the branch manager assignment
+        manager_assignment = BranchManagerAssignment.objects.get(manager=manager.managerid)
+
+        # Get the branch ID
+        branch_id = manager_assignment.branch.branchid
+
         # Filter workers based on the manager's ID and other criteria (provider, pincode)
         workers = Worker.objects.filter(
-                                        provider=manager.providerid,
-                                        pincode=manager.pincode,
-                                        status='registered'
-)
-        return render(request, 'workerrequest.html', {'workers': workers})
+            provider=manager.providerid,
+            status='registered'
+        )
+
+        return render(request, 'workerrequest.html', {'workers': workers, 'manager_id': manager.user.userid, 'branch_id': branch_id})
     except MyUser.DoesNotExist:
         messages.error(request, "Invalid request")
         return redirect('signin')  # Replace 'some_error_page' with an appropriate error page
 
 @login_required
 def approve_worker(request, user_id):
-    # Retrieve the ServiceProvider instance associated with the request ID
+    # Retrieve the Worker instance associated with the request ID
     worker_request = get_object_or_404(Worker, user_id=user_id, user__is_active=False)
-    # Set is_active to True and save the user
+    
+    # Set is_active to True and update the status to 'hired'
     worker_request.user.is_active = True
+    worker_request.status = 'hired'
+    
+    # Save the changes
     worker_request.user.save()
+    worker_request.save()
 
-    return redirect('worker_requests') 
+    return redirect('worker_requests')
+
 
 @login_required
-def activate_worker(request, userid):
-    user = get_object_or_404(MyUser, userid=userid)
+def activate_worker(request, user_id, manager_id, branch_id):
+    user = get_object_or_404(MyUser, userid=user_id)
+    
     if not user.is_active:
         user.is_active = True
         user.save()
+
+        # Update the status and branch field of the associated Worker instance
+        worker = get_object_or_404(Worker, user=user)
+        worker.status = 'hired'  # Update to the desired status
+
+        # Add the desired branch to the worker's branches
+        worker.branchid.add(branch_id)
+
+        worker.save()
+        
         subject = 'Account activated'
-        message = 'Your account has been activated by ur provider'
+        message = 'Your account has been activated by your provider'
         from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
         recipient_list = [user.email]
         html_message = render_to_string('activation_email.html', {'user': user})
         send_mail(subject, message, from_email, recipient_list, html_message=html_message)
-        return redirect('providerpage')
+        
+    return redirect('managerpage')
  
 @login_required       
-def available_workers(request, providerid_id, district, booking_id):
+def available_workers(request, branchid_id, district, booking_id):
     # Retrieve booking details for the specified booking ID
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
 
     # Filter workers based on providerid_id, district, status='available', and is_active=1
-    workers = Worker.objects.filter(provider=providerid_id, district=district, status='available', user__is_active=1)
-
+    workers = Worker.objects.filter(branchid=branchid_id)
     context = {
         'booking': booking,
         'workers': workers,
@@ -929,12 +981,22 @@ def assign_worker(request):
             bookingid=booking,
             clientid=client,
             district=booking.district,
-            providerid=booking.providerid,
+            branchid=booking.branchid,
             date=booking.date,
             time=booking.time,
             status=Service.ASSIGNED  # You can set the initial status to 'assigned'
         )
-        service.workerid.set([worker])
+
+        # Add the worker to the ManyToManyField
+        service.workerid.add(worker)
+        
+        # Create a new WorkerStatus instance and save it to the database
+        worker_status = WorkerStatus.objects.create(
+            branchid=booking.branchid,
+            workerid=worker,
+            workstatus=WorkerStatus.PENDING  # You can set the initial status to 'pending'
+        )
+        
         # Update the booking status to 'assigned'
         booking.status = ClientBooking.APPROVED
         booking.save()
@@ -945,10 +1007,10 @@ def assign_worker(request):
         
         # Redirect to a success page or back to the previous page
         messages.success(request, 'Service assigned successfully!')
-        return redirect('providerpage')  # Replace 'success_page' with the appropriate URL name
+        return redirect('managerpage')  # Replace 'success_page' with the appropriate URL name
 
     # Handle other cases, e.g., GET requests
-    return redirect('providerpage') # Replace 'error_page' with the appropriate URL name
+    return redirect('managerpage') # Replace 'error_page' with the appropriate URL name
 @login_required
 def worker_job(request):
     worker_id = request.user.userid  # Assuming the worker's ID is stored in the user object
@@ -996,22 +1058,26 @@ def update_status(request):
             client_booking.status = 'completed'
             client_booking.save()
 
-            # Sending emails to client and provider
-            client_email = client_booking.clientid.user.email
-            provider_email = service.providerid.user.email
+            # Fetch the branch associated with the service
+            branch = service.branchid
+            # Fetch the manager assigned to the branch
+            manager_assignment = BranchManagerAssignment.objects.get(branch=branch)
+            manager_email = manager_assignment.manager.user.email
 
-            client_message = f"Hi {client_booking.name}, The work for your booking has been marked as completed ."
-            provider_message = f"Dear Provider, The worker has marked the work for the booking completed."
+            # Sending emails to client, provider, and manager
+            client_email = client_booking.clientid.user.email
+
+            client_message = f"Hi {client_booking.name}, The work for your booking has been marked as completed."
+            manager_message = f"Dear Manager, The work for the booking has been marked as completed."
 
             send_mail('Work Completion Notification - Client', client_message, 'your@email.com', [client_email])
-            send_mail('Work Completion Notification - Provider', provider_message, 'your@email.com', [provider_email])
+            send_mail('Work Completion Notification - Manager', manager_message, 'your@email.com', [manager_email])
 
-            messages.success(request, 'Service status updated! Emails sent to the client and provider.')
+            messages.success(request, 'Service status updated! Emails sent to the client, provider, and manager.')
         else:
             messages.error(request, 'Payment pending. Cannot update service status.')
 
         return redirect('workerpage')
-
     return redirect('workerpage')
 @login_required
 def render_report_form(request, bookingid_id):
@@ -1030,7 +1096,7 @@ from .models import Service, Worker, ServiceProvider, WorkerReport
 def generate_report(request):
     if request.method == 'POST':
         serviceid = request.POST.get('serviceid')
-        providerid = request.POST.get('providerid')
+        branchid = request.POST.get('branchid')
         user_id = request.POST.get('workerid')
         duration_of_work = request.POST.get('duration_of_work')
         requirements = request.POST.get('requirements')
@@ -1040,13 +1106,13 @@ def generate_report(request):
         # Fetch necessary objects from the database
         service = get_object_or_404(Service, serviceid=serviceid)
         worker = get_object_or_404(Worker, user_id=user_id)
-        provider = get_object_or_404(ServiceProvider, user_id=providerid)
+        branch = get_object_or_404(Branch, branchid=branchid)
         
         # Create a WorkerReport instance to store the inputs
         report = WorkerReport.objects.create(
             serviceid=service,
             user_id=worker,
-            providerid=provider,
+            branchid=branch,
             duration_of_work=duration_of_work,
             requirements=requirements,
             cost=cost,
@@ -1059,9 +1125,9 @@ def generate_report(request):
         service.save()
 
         # Fetch additional data from related models
-        provider_name = provider.providername  # Replace 'provider_name' with the actual field name
+        provider_name = branch.providername  # Replace 'provider_name' with the actual field name
         worker_name = f"{worker.first_name} {worker.last_name}"
-        service_type = provider.service_type  # Replace 'service_type' with the actual field name
+        service_type = branch.service_type  # Replace 'service_type' with the actual field name
         
         # Fetch data to render in the PDF template
         context = {
@@ -1103,40 +1169,52 @@ def worker_list(request, provider_id):
 
     return render(request, 'worker_list.html', {'workers': workers})
 @login_required
-def worker_report(request, provider_id):
-    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id, status='REPORTGIVEN')
+def worker_report(request, managerid):
+    # Get the BranchManager instance based on the provided managerid
+    manager = get_object_or_404(BranchManager, user=managerid)
+
+    # Get the BranchManagerAssignment instance for the manager
+    assignment = get_object_or_404(BranchManagerAssignment, manager=manager.managerid)
+
+    # Retrieve worker_reports based on the manager's branchid
+    worker_reports = WorkerReport.objects.filter(branchid=assignment.branch, status='reportgiven')
+
+    # Create a dictionary to store service status for each report
     service_status = {}
 
+    # Retrieve service status for each report
     for report in worker_reports:
-        service_id = report.serviceid_id
+        service_id = report.serviceid_id  # Use _id to get the integer value
         service = Service.objects.get(serviceid=service_id)
         service_status[report.serviceid] = service.status
 
     context = {
         'worker_reports': worker_reports,
         'service_status': service_status,
+        'assignment': assignment.branch.branchid,
+        'workerreport':worker_reports
     }
     return render(request, 'worker_report.html', context)
 
 
-from django.db.models import Prefetch
-@login_required
-def worker_report(request, provider_id):
-    worker_reports = WorkerReport.objects.filter(providerid_id=provider_id,status="reportgiven")
+# from django.db.models import Prefetch
+# @login_required
+# def worker_report(request, provider_id):
+#     worker_reports = WorkerReport.objects.filter(providerid_id=provider_id,status="reportgiven")
     
-    # Prefetch the related Service objects and extract only the 'status' field
-    service_status = Service.objects.filter(providerid_id=provider_id).values_list('status', flat=True)
+#     # Prefetch the related Service objects and extract only the 'status' field
+#     service_status = Service.objects.filter(providerid_id=provider_id).values_list('status', flat=True)
     
-    # Combine the queries into a single call
-    worker_reports = worker_reports.prefetch_related(
-        Prefetch('serviceid', queryset=Service.objects.filter(providerid_id=provider_id))
-    )
+#     # Combine the queries into a single call
+#     worker_reports = worker_reports.prefetch_related(
+#         Prefetch('serviceid', queryset=Service.objects.filter(providerid_id=provider_id))
+#     )
     
-    context = {
-        'worker_reports': worker_reports,
-        'service_status': service_status,
-    }
-    return render(request, 'worker_report.html', context)
+#     context = {
+#         'worker_reports': worker_reports,
+#         'service_status': service_status,
+#     }
+#     return render(request, 'worker_report.html', context)
 
 
 
@@ -1147,8 +1225,15 @@ def client_bookings(request, client_id):
     client_bookings = Service.objects.filter(clientid_id=client_id)
     client_name = Client.objects.get(user_id=client_id).first_name
     
-    provider_name = [ServiceProvider.objects.get(user_id=booking.providerid_id).providername for booking in client_bookings]
-    service_type = [ServiceProvider.objects.get(user_id=booking.providerid_id).service_type for booking in client_bookings]
+    provider_info = []
+    
+    for booking in client_bookings:
+        branch_id = booking.branchid_id
+        branch = Branch.objects.get(pk=branch_id)
+        provider_name = branch.providername
+        service_type = branch.service_type.service_type
+        
+        
     
     context = {
         'client_bookings': client_bookings,
@@ -1382,20 +1467,43 @@ def payment_success(request):
     service = Service.objects.get(pk=service_id)
     service.paymentstatus = 'completed'
     service.save()
-    
-    # Get the necessary details for the email
-    provider_email = service.providerid.user.email
-    client_name = service.clientid.user.username
-    payment_date = timezone.now().date()
 
-    # Send an email to the provider
-    subject = 'Payment Successful Notification'
-    message = f'Dear Provider, {client_name} has made the payment on {payment_date}.'
-    from_email = 'your@email.com'  # Replace with your email
-    recipient_list = [provider_email]
-    send_mail(subject, message, from_email, recipient_list)
-    messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
-    return redirect('userpage')
+    # Get branch_id from the service
+    branch_id = service.branchid
+
+    # Get manager_id from BranchManagerAssignment using branch_id
+    try:
+        branch_manager_assignment = BranchManagerAssignment.objects.get(branch=branch_id)
+        manager_id = branch_manager_assignment.manager.managerid
+
+        # Get the manager object
+        manager =BranchManager.objects.get(pk=manager_id)
+
+        # Set provider_email as the manager's email
+        provider_email = manager.email
+
+        # Get other necessary details for the email
+        client_name = service.clientid.user.username
+        payment_date = timezone.now().date()
+
+        # Send an email to the provider
+        subject = 'Payment Successful Notification'
+        message = f'Dear Provider, {client_name} has made the payment on {payment_date}.'
+        from_email = 'your@email.com'  # Replace with your email
+        recipient_list = [provider_email]
+        send_mail(subject, message, from_email, recipient_list)
+        messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
+        return redirect('userpage')
+
+    except BranchManagerAssignment.DoesNotExist:
+        # Handle the case where there is no manager assigned to the branch
+        messages.error(request, 'Error: No manager assigned to the branch.')
+        return redirect('userpage')  # You may want to redirect to an error page or handle this differently
+
+    except BranchManager.DoesNotExist:
+        # Handle the case where the manager object is not found
+        messages.error(request, 'Error: Manager not found.')
+        return redirect('userpage')
 def add_service(request):
     if request.method == 'POST':
         # Extract data from the form
@@ -1528,3 +1636,144 @@ def manager_registration(request, provider_id, branch_id):
         return redirect('providerpage')
 
     return render(request, 'branchmanagereg.html', {'provider_id': provider_id, 'branch_id': branch_id, 'provider': provider})
+
+from django.shortcuts import get_object_or_404
+
+@login_required
+def apply_leave(request):
+    if request.method == 'POST':
+        leavetype = request.POST.get('leavetype')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # Validate the input if necessary
+
+        # Extract user ID from SimpleLazyObject
+        user_id = request.user.userid
+        userid = get_object_or_404(MyUser, userid=user_id)
+
+        try:
+            # Retrieve the first related branch
+            branch = Worker.objects.get(user=userid)
+
+            # Check if there's an existing pending leave request
+            existing_leave_request = WorkerLeaveapplication.objects.filter(
+                user_id=userid.userid,
+                status='pending'
+            )
+
+            if existing_leave_request.exists():
+                # If there's an existing pending leave request, show a message
+                messages.warning(request, 'You already have a pending leave request. Please wait for approval.')
+                return redirect('workerpage')
+
+            # Save the leave application
+            leave_application = WorkerLeaveapplication(
+                user_id=userid.userid,
+                leavetype=leavetype,
+                start_date=start_date,
+                end_date=end_date,
+                status='pending'
+            )
+            leave_application.save()
+
+            return redirect('leave_success')  # Redirect to a success page or your desired page
+
+        except Worker.DoesNotExist:
+            # Handle the case where the worker does not exist
+            pass
+
+    return render(request, 'apply_leave.html')
+
+# You can add this view if you want to display a success message after applying for leave
+def leave_success(request):
+    # Add a success message
+    messages.success(request, 'Leave has been applied successfully.')
+
+    return redirect('workerpage')
+@login_required
+def leave_requests(request, provider_id):
+    try:
+        # Get the branch associated with the provider
+        branch_manager = BranchManager.objects.get(user=provider_id)
+        
+        # Get the branch associated with the manager
+        branch_manager_assignment = BranchManagerAssignment.objects.get(manager=branch_manager)
+        branch = branch_manager_assignment.branch
+
+        # Get workers in the branch
+        workers_in_branch = Worker.objects.filter(branchid=branch)
+
+        # Get leave requests for workers in the branch with status 'requested'
+        leave_requests = WorkerLeaveapplication.objects.filter(user__in=workers_in_branch.values('user'), status='pending')
+
+        context = {
+            'leave_requests': leave_requests,
+            'provider_id': provider_id,
+        }
+
+        return render(request, 'leave_requests.html', context)
+    except (BranchManager.DoesNotExist, BranchManagerAssignment.DoesNotExist):
+        # Handle exceptions as needed
+        return render(request, 'managerpage')
+
+    except BranchManagerAssignment.DoesNotExist:
+        # Handle the case where the branch manager assignment does not exist
+        return redirect('managerpage')
+
+    except Branch.DoesNotExist:
+        # Handle the case where the branch does not exist
+        return redirect('managerpage')
+    
+def approve_leave(request, leave_id):
+    leave_request = get_object_or_404(WorkerLeaveapplication, leaveid=leave_id)
+
+    if leave_request.status == 'pending':
+        # Approve the leave
+        leave_request.status = 'approved'
+        leave_request.save()
+    messages.success(request, 'Leave has been approved successfully.')
+    return redirect('managerpage')
+
+def cancel_leave(request, leave_id):
+    leave_request = get_object_or_404(WorkerLeaveapplication, leaveid=leave_id)
+
+    if leave_request.status == 'pending':
+        # Cancel the leave
+        leave_request.status = 'canceled'
+        leave_request.save()
+    messages.success(request, 'Leave has been rejected')
+    return redirect('managerpage')
+@login_required
+def update_service_status(request, report_id):
+    worker_report = get_object_or_404(WorkerReport, reportid=report_id)
+    if worker_report.num_workers_needed == 1:
+        service = get_object_or_404(Service, serviceid=worker_report.serviceid)
+        service.status = 'reportverified'  # Replace 'YOUR_NEW_STATUS' with the desired status
+        service.save()
+        messages.success(request, 'Service status updated successfully.')
+        return redirect('managerpage')  
+
+    else:
+
+        return render(request, 'managerpage')  
+@login_required
+def branch_list(request, provider_id):
+    # Get the logged-in user's ServiceProvider instance
+    provider = get_object_or_404(ServiceProvider, user=request.user)
+
+    # Filter branches based on the provider_id
+    provider_branches = Branch.objects.filter(providerid=provider)
+
+    # Fetch corresponding branch manager assignments
+    branch_manager_assignments = BranchManagerAssignment.objects.filter(branch__in=provider_branches)
+
+    # Create a dictionary to map branchid to branch manager assignment
+    branch_manager_assignment_dict = {assignment.branch_id: assignment for assignment in branch_manager_assignments}
+
+    # Attach branch manager assignment to each branch
+    for branch in provider_branches:
+        branch.branch_manager_assignment = branch_manager_assignment_dict.get(branch.branchid)
+
+    context = {'branches': provider_branches}
+    return render(request, 'branch_list.html', context)

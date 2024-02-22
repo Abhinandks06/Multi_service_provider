@@ -100,8 +100,9 @@
                     <li>Phone: {{ request.phone }}</li>
                     <li>District: {{ request.district }}</li>
                     <li>Pincode {{ request.pincode }}</li>
+                    
                 </ul>
-                <form method="post" action="{% url 'activate_worker' user_id=request.user_id branch_manager_id=user.id %}">
+                <form method="post" action="{% url 'activate_worker' user_id=request.user_id manager_id=manager_id branch_id=branch_id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn-success">Approve</button>
                 </form>

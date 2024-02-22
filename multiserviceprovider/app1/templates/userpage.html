@@ -283,42 +283,17 @@
             </div>
             <div class="container">
                 <div class="ht-food-slider row">
-                    <div class="col text-center">
-                        <div class="single-food-category">
-                            <a id="cleaning-link" href="" class="food-cat-img"><img src="userassets/img/bg/mainhead.jpg" alt=""></a>
-                            <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a id="cleaning-category" href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></h4>
+                    {% for service in services %}
+                        <div class="col text-center">
+                            <div class="single-food-category">
+                                <a href="{% url 'service_providers_by_category' category=service.service_id %}" class="food-cat-img">
+                                    <img src="{% static service.image %}" alt="">
+                                </a>
+                                <img src="{% static 'userassets/img/icon/border.png' %}" alt="">
+                                <h4><a href="{% url 'service_providers_by_category' category=service.service_id %}">{{ service.service_type }}</a></h4>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col text-center">
-                        <div class="single-food-category">
-                            <a id="laundry-link" href="" class="food-cat-img"><img src="userassets/img/icon/burger.png" alt=""></a>
-                            <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a id="laundry-category" href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></h4>
-                        </div>
-                    </div>
-                    <div class="col text-center">
-                        <div class="single-food-category">
-                            <a id="plumbing-link" href="" class="food-cat-img"><img src="userassets/img/icon/fruit.png" alt=""></a>
-                            <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a id="plumbing-category" href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></h4>
-                        </div>
-                    </div>
-                    <div class="col text-center">
-                        <div class="single-food-category">
-                            <a id="pestcontrol-link" href="" class="food-cat-img"><img src="userassets/img/icon/vegetable.png" alt=""></a>
-                            <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a id="pestcontrol-category" href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></h4>
-                        </div>
-                    </div>
-                    <div class="col text-center">
-                        <div class="single-food-category">
-                            <a id="electrical-link" href="" class="food-cat-img"><img src="userassets/img/icon/tea.png" alt=""></a>
-                            <img src="userassets/img/icon/border.png" alt="">
-                            <h4><a id="electrical-category" href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</a></h4>
-                        </div>
-                    </div>
-                    
+                    {% endfor %}
                 </div>
             </div>
         </div>   

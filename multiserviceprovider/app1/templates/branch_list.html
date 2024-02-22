@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch List</title>
+    <style>
+        /* Add your CSS styles for a beautiful layout */
+        body {
+            background-image: url('{% static 'userassets/img/bg/manager.jpg' %}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+    
+        header {
+            background-image: url('{% static 'userassets/img/bg/manager.jpg' %}');
+            background-color: white;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+            transition: box-shadow 0.3s ease; /* Add transition for a smooth effect */
+        }
+        
+        header:hover {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+    
+        nav {
+            background-image: url('{% static 'userassets/img/bg/manager.jpg' %}');
+            display: flex;
+            padding: 10px;
+            background-color: white;
+        }
+    
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            position: relative;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+        }
+    
+        .neon-text {
+            display: inline-block;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+    
+        #logout:hover {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 1);
+        }
+    
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        /* Add your existing styles */
+        .branch-container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: rgba(173, 216, 230, 0.9); /* Pastel blue with 70% opacity */
+            color: black;
+        }
+    
+        h2, p, .branch-manager {
+            color: black;
+            font-weight: bolder;
+        }
+    
+        .branch-manager {
+            font-style: italic;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MULTISERVICEPROVIDER</h1>
+    </header>
+
+    <nav>
+        <a href="providerpage">HOME </a>
+        <a href="{% url 'provider_logout' %}">LOGOUT</a>
+    </nav>
+
+    {% if branches %}
+        {% for branch in branches %}
+            <div class="branch-container">
+                <h2>{{ branch.providername }} - {{ branch.service_type.service_type }}</h2>
+                <p>District: {{ branch.district }} | Pincode: {{ branch.pincode }}</p>
+                {% if branch.branch_manager_assignment %}
+                    <p class="branch-manager">Branch Manager: {{ branch.branch_manager_assignment.manager.user.username }}</p>
+                {% else %}
+                    <p class="branch-manager">Branch Manager: Not Assigned</p>
+                {% endif %}
+                <!-- Add more branch details as needed -->
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No branches found for the selected provider.</p>
+    {% endif %}
+
+</body>
+</html>

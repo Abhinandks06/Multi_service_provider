@@ -80,19 +80,7 @@
                                     </li>
                                     {% comment %} <li><a href="{% url 'provider_bookings' %}">Bookings</a></li> {% endcomment %}
                                   
-                                    <li class="dropdown dropdown-hover">
-                                        
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                            Workers <span class="caret"></span>
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="{% url 'worker_requests' user_id=provider.user_id %}">View Worker Requests</a></li>
-                                            <li><a href="{% url 'worker_list' provider_id=provider.providerid %}">Worker List</a></li>
-                                            <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
-                                            <li><a href="{% url 'worker_report' provider_id=provider.providerid %}">Worker Report</a></li>
-                                        </ul>
-                                    </li>  
-                                    <li><a href="{% url 'bookinghistory' %}">History</a></li>
+                            
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'provider_logout' %}">Logout</a></li>
                                     {% endif %}
@@ -174,7 +162,7 @@
                 <!-- Single Slide Start -->
                 <div class="ht-single-slide" >
                     <div class="branches-list" style="position: absolute; top: 5%; left: 5%; background: rgba(255, 255, 255, 0.8); padding: 20px;">
-                        <h2>Your Branches:</h2>
+                        <h2>Branches:</h2>
                         <ul>
                             {% for branch in inactive_branches %}
                             <div>

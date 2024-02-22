@@ -82,17 +82,16 @@
                                     <li class="active"><a href="providerpage">HOME </a>
                                     </li>
                                     {% comment %} <li><a href="{% url 'provider_bookings' %}">Bookings</a></li> {% endcomment %}
-                                   <li><a href="{% url 'branch_page' provider_id=provider_id %}">Branch</a></li>
+                                   <li><a href="{% url 'branch_page' provider_id=provider_id %}">Add Branch</a></li>
                                     <li class="dropdown dropdown-hover">
                                         
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                            Workers <span class="caret"></span>
+                                            Branch <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="{% url 'worker_requests' user_id=provider_id %}">View Worker Requests</a></li>
-                                            <li><a href="{% url 'worker_list' provider_id=provider_id %}">Worker List</a></li>
-                                            <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
-                                            <li><a href="{% url 'worker_report' provider_id=provider_id %}">Worker Report</a></li>
+                                            <li><a href="{% url 'branch_list' provider_id=provider_id %}">Branch list</a></li>
+                                            <li><a href="">Worker List</a></li>     
+                                            <li><a href="">Salary</a></li>  
                                         </ul>
                                     </li>  
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>

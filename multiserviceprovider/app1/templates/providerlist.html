@@ -589,12 +589,13 @@
                                 {% for provider in providers %}
                                 <div class="provider-card">
                                     <h3>{{ provider.providername }}</h3>
-                                    <p><strong>Service Type:</strong> {{ provider.service_type }}</p>
-                                    <p><strong>Email:</strong> {{ provider.email }}</p>
-                                    <a href="{% url 'render_booking_form' provider.user.userid %}" class="btn btn-primary">Book Service</a>
+                                    <p><strong>Service Type:</strong> {{ provider.service_type.service_type }}</p>
+                                    <p><strong>District:</strong> {{ provider.district }}</p>
+                                    <p><strong>Pincode:</strong> {{ provider.pincode }}</p>
+                                     <a href="{% url 'render_booking_form' user.userid provider.branchid %}" class="btn btn-primary">Book Service</a> 
                                 </div>
                                 {% empty %}
-                                <p>No providers found for {{ category }}.</p>
+                                <p>No providers found for for this service {{ category.service_type }}.</p>
                                 {% endfor %}
                             </ul>
 

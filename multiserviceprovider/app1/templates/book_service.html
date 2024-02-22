@@ -610,14 +610,14 @@
 
                                     
                                     <!-- Hidden input fields for providerid and userid -->
-                                    <input type="hidden" id="providerid" name="providerid" value="{{ provider_id }}">
+                                    <input type="hidden" id="branchid" name="branchid" value="{{ branchid }}">
                                     <input type="hidden" id="userid" name="userid" value="{{ client_id }}">
                                     <input type="hidden" id="clientphone" name="clientphone" value="{{ client_phone }}">
                                     <input type="hidden" id="clientdistrict" name="clientdistrict" value="{{ client_district }}">
                                     <input type="hidden" id="name" name="name" value="{{ name  }}">
                                     <!-- Display providername and servicetype -->
-                                    <p>Provider: {{ providername }}</p>
-                                    <p>Service Type: {{ servicetype }}</p>
+                                    <p>Provider: {{ branch_name }}</p>
+                                    <p>Service Type: {{ service_type.service_type }}</p>
                                     
                                     <!-- Fetch client instance and display the client's name -->
                                     {% with client=request.user.client %}

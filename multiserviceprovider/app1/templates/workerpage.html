@@ -57,6 +57,19 @@
             {% endfor %}
         </ul>
     {% endif %}
+    <!-- Add this script at the end of your HTML body -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set a timer to hide messages after 5 seconds (5000 milliseconds)
+        setTimeout(function () {
+            var messages = document.querySelectorAll('.messages');
+            messages.forEach(function (message) {
+                message.style.display = 'none';
+            });
+        }, 5000);
+    });
+</script>
+
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
             <div class="header-container">
@@ -76,6 +89,7 @@
                                             <li><a href="#">Work History</a></li>
                                         </ul>
                                     </li>  
+                                    <li><a href="{% url 'apply_leave' %}">Leave</a></li>
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'assignedwork' %}">Status</a></li>
                                     <li><a href="{% url 'worker_logout' %}">Logout</a></li>

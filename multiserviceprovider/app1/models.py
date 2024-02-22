@@ -143,7 +143,7 @@ class Service(models.Model):
     clientid = models.ForeignKey('Client', on_delete=models.CASCADE)
     district = models.TextField(max_length=100)
     branchid = models.ForeignKey('Branch', on_delete=models.CASCADE)
-    workerid = models.ForeignKey('Worker', on_delete=models.CASCADE)
+    workerid = models.ManyToManyField('Worker')
     date = models.DateField()
     time = models.TimeField()
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
@@ -173,3 +173,15 @@ class WorkerReport(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=REPORTGIVEN)
     report_pdf = models.FileField(upload_to='worker_reports/', blank=True, null=True)
 
+class WorkerLeaveapplication(models.Model):
+    leaveid = models.AutoField(primary_key=True)
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='worker_leave')
+    LEAVE_TYPES = (
+        ('medical', 'Medical'),
+        ('family_emergency', 'FamilyEmergency'),
+        ('other', 'Other'),
+    )
+    leavetype = models.CharField(max_length=20, choices=LEAVE_TYPES)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(max_length=20, default='pending')
