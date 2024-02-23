@@ -121,10 +121,28 @@
             
 
             <label for="district">District:</label>
-            <input type="text" name="district" required>
+<select name="district" id="district" required>
+    <option value="" disabled selected>Select a district</option>
+    <option value="thiruvananthapuram">Thiruvananthapuram</option>
+    <option value="kollam">Kollam</option>
+    <option value="pathanamthitta">Pathanamthitta</option>
+    <option value="alappuzha">Alappuzha</option>
+    <option value="kottayam">Kottayam</option>
+    <option value="idukki">Idukki</option>
+    <option value="ernakulam">Ernakulam</option>
+    <option value="thrissur">Thrissur</option>
+    <option value="palakkad">Palakkad</option>
+    <option value="malappuram">Malappuram</option>
+    <option value="kozhikode">Kozhikode</option>
+    <option value="wayanad">Wayanad</option>
+    <option value="kannur">Kannur</option>
+    <option value="kasaragod">Kasaragod</option>
+</select>
 
-            <label for="pincode">Pincode:</label>
-            <input type="text" name="pincode" required>
+
+<label for="pincode">Pincode:</label>
+<input type="number" name="pincode" pattern="[1-9][0-9]{5}" title="Enter a 6-digit pincode (first digit should not be 0)" required>
+
 
             <!-- Submit Button -->
             <div style="clear: both; margin-top: 20px;">

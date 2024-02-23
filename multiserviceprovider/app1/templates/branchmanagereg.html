@@ -89,39 +89,46 @@
 
     <!-- Container Div Start -->
     <div class="container" style="margin-top: 150px;">
-
-        <form method="post" action="{% url 'manager_registration' provider_id=provider.providerid branch_id=branch_id %}">
-
-        <h2 style="margin-bottom: 30px; color: white; font-weight: bolder">Manager Registration</h2>
-
-        
+        <form id="managerRegistrationForm" method="post" action="{% url 'manager_registration' provider_id=provider.providerid branch_id=branch_id %}">
+            <h2 style="margin-bottom: 30px; color: white; font-weight: bolder">Manager Registration</h2>
+    
             {% csrf_token %}
-
+            
             <!-- Manager Details -->
             <label for="user_name">User Name:</label>
-            <input type="text" name="user_name" required>
-
+            <input type="text" name="user_name" id="user_name" required minlength="4" maxlength="12" pattern="[A-Za-z]+" title="Only alphabets allowed">
+    
             <label for="email">Email:</label>
-            <input type="email" name="email" required>
-
+            <input type="email" name="email" id="email" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Enter a valid email address">
+    
             <label for="phone_no">Phone Number:</label>
-            <input type="text" name="phone_no" required>
-
+            <input type="text" name="phone_no" id="phone_no" required pattern="[6-9][0-9]{9}" title="Enter a valid 10-digit phone number starting with 6, 7, 8, or 9">
+    
             <label for="state">State:</label>
-            <input type="text" name="state" required>
-
+            <input type="text" name="state" value="Kerala" required readonly>
+    
             <label for="district">District:</label>
-            <input type="text" name="district" required>
-
+            <select name="district" id="district" required>
+                <option value="" disabled selected>Select a district</option>
+                <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                <option value="Kollam">Kollam</option>
+                <option value="Pathanamthitta">Pathanamthitta</option>
+                <option value="Alappuzha">Alappuzha</option>
+                <option value="Kottayam">Kottayam</option>
+                <option value="Idukki">Idukki</option>
+                <option value="Ernakulam">Ernakulam</option>
+                <option value="Thrissur">Thrissur</option>
+                <option value="Palakkad">Palakkad</option>
+                <option value="Malappuram">Malappuram</option>
+                <option value="Kozhikode">Kozhikode</option>
+                <option value="Wayanad">Wayanad</option>
+                <option value="Kannur">Kannur</option>
+                <option value="Kasaragod">Kasaragod</option>
+            </select>
+    
             <label for="pincode">Pincode:</label>
-            <input type="text" name="pincode" required>
-
-            <label for="password">Password:</label>
-            <input type="password" name="password" required>
-
-            <label for="confirm_password">Confirm Password:</label>
-            <input type="password" name="confirm_password" required>
-
+            <input type="text" name="pincode" id="pincode" required pattern="^6[0-9]{5}$" title="Enter a valid 6-digit pincode starting with 6">
+    
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
@@ -129,10 +136,79 @@
                     {% endfor %}
                 </ul>
             {% endif %}
-
-            <button type="submit">Register Manager</button>
+    
+            <button type="button" onclick="validateForm()">Register Manager</button>
         </form>
+    
+        <script>
+            function validateForm() {
+                var userNameInput = document.getElementById('user_name');
+                var emailInput = document.getElementById('email');
+                var phoneNoInput = document.getElementById('phone_no');
+                var districtInput = document.getElementById('district');
+                var pincodeInput = document.getElementById('pincode');
+    
+                if (!validateUserName(userNameInput) ||
+                    !validateEmail(emailInput) ||
+                    !validatePhoneNo(phoneNoInput) ||
+                    !validateDistrict(districtInput) ||
+                    !validatePincode(pincodeInput)) {
+                    return;
+                }
+    
+                // If all validations pass, submit the form
+                document.getElementById('managerRegistrationForm').submit();
+            }
+    
+            function validateUserName(input) {
+                var value = input.value.trim();
+                if (value.length < 4 || value.length > 12 || !/^[A-Za-z]+$/.test(value)) {
+                    alert('Invalid User Name. It should be between 4 and 12 characters and contain only alphabets.');
+                    return false;
+                }
+                return true;
+            }
+    
+            function validateEmail(input) {
+                var value = input.value.trim();
+                var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(value)) {
+                    alert('Invalid Email. Please enter a valid email address.');
+                    return false;
+                }
+                return true;
+            }
+    
+            function validatePhoneNo(input) {
+                var value = input.value.trim();
+                var phoneRegex = /^[6-9][0-9]{9}$/;
+                if (!phoneRegex.test(value)) {
+                    alert('Invalid Phone Number. Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.');
+                    return false;
+                }
+                return true;
+            }
+    
+            function validateDistrict(input) {
+                if (input.value === '') {
+                    alert('Please select a district.');
+                    return false;
+                }
+                return true;
+            }
+    
+            function validatePincode(input) {
+                var value = input.value.trim();
+                var pincodeRegex = /^6[0-9]{5}$/;
+                if (!pincodeRegex.test(value)) {
+                    alert('Invalid Pincode. Please enter a valid 6-digit pincode starting with 6.');
+                    return false;
+                }
+                return true;
+            }
+        </script>
     </div>
+    
     <!-- Container Div End -->
 
     <!-- Footer Area Start -->

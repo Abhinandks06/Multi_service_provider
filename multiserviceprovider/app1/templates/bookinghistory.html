@@ -645,7 +645,7 @@ text-align: center; /* Center-align text */
                         <div class="ht-main-menu">
                             <nav>
                                 <ul class="text-white">
-                                    <li class="active"><a href="providerpage" class="text-white">HOME </a>
+                                    <li class="active"><a href="managerpage" class="text-white">HOME </a>
                                     </li>
                                     <li><a href="{% url 'user_logout' %}" class="text-white">Logout</a></li>
                                 </ul>
@@ -722,7 +722,7 @@ text-align: center; /* Center-align text */
       {% for booking in bookings %}
       <tr class="booking-item">
           <td>{{ booking.clientid.first_name }}</td>
-          <td>{{ booking.providerid.service_type }}</td>
+          <td>{{ booking.branchid.service_type.service_type }}</td>
           <td>{{ booking.district }}</td>
           <td>{{ booking.date }}</td>
           <td>{{ booking.time }}</td>

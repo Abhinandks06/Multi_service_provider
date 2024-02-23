@@ -22,6 +22,8 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     </head>
     <style>
+
+            
         /* Apply standard font and add space */
         a.logo-text {
             font-family: Arial, sans-serif; /* Use Arial or any standard sans-serif font */
@@ -48,11 +50,67 @@
         }
 
         .branches-list {
-            position: absolute;
-            top: 5%;
-            left: 5%;
-
-            padding: 20px; /* Add padding for better readability */
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            top: 80%;
+            
+            padding: 20px;
+        }
+    
+        .branch-block {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden; /* Ensure the box corners are visible */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f5f5f5;
+        }
+    
+        .branch-content {
+            padding: 15px;
+        }
+    
+        .branch-block p {
+            margin: 0;
+        }
+        .ht-single-slide {
+            position: relative;
+            top: 15%;
+        }
+        .branch-block a {
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+    
+        .branch-block a:hover {
+            text-decoration: underline;
+        }
+    
+        .footer-widget-area {
+            margin-top: auto;
+        }
+    
+        .footer-bottom-area {
+            margin-top: auto;
+        }
+        .button-style {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            text-decoration: none;
+            border: 1px solid black;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+    
+        .button-style:hover {
+            background-color: #f0f0f0;
+            color: black;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -157,86 +215,27 @@
         </header>
         <!-- Header Area End -->
         <!-- Hero Area Start -->
-        <div class="ht-hero-section fix" style="position: relative; top: 30%;">
-            <div class="ht-hero-slider">
                 <!-- Single Slide Start -->
-                <div class="ht-single-slide" >
-                    <div class="branches-list" style="position: absolute; top: 5%; left: 5%; background: rgba(255, 255, 255, 0.8); padding: 20px;">
+                <div class="ht-single-slide">
+                    <div class="branches-list">
                         <h2>Branches:</h2>
-                        <ul>
-                            {% for branch in inactive_branches %}
-                            <div>
-                                <p>Service Type: {{ branch.service_type.service_type }}</p>
-                                <p>District: {{ branch.district }}</p>
-                                <p>Pincode: {{ branch.pincode }}</p>
-                                <a href="{% url 'manager_registration' branch_id=branch.branchid provider_id=branch.providerid.providerid %}">Add Manager</a>
-
+                        {% for branch in inactive_branches %}
+                            <div class="branch-block">
+                                <div class="branch-content">
+                                    <p>Service Type: {{ branch.service_type.service_type }}</p>
+                                    <p>District: {{ branch.district }}</p>
+                                    <p>Pincode: {{ branch.pincode }}</p>
+                                    <a href="{% url 'manager_registration' branch_id=branch.branchid provider_id=branch.providerid.providerid %}">Add Manager</a>
+                                </div>
                             </div>
                         {% endfor %}
-                        
-                        </ul>
-                        <a href="{% url 'add_branch_page' provider_id=provider.providerid %}">Add New Branch</a>
+                        <a href="{% url 'add_branch_page' provider_id=provider.providerid %}" class="button-style">Add New Branch</a>
+
+
                     </div>
                 </div>
-            </div>
-        </div>
         
         <!-- Hero Area End -->
-<!-- Footer Widget Area Start -->
-<div class="footer-widget-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-md-6">
-                <div class="single-footer-widget">
-                    <div class="footer-logo">
-                        <a href="#"><img src="" ></a>
-                    </div>
-                    <p>Your reliable partner for all your home service needs.</p>
-                    <div class="footer-text">
-                        <span><i class="icon icon-Pointer"></i>Address : 123 Service Lane, Abhinand, Thrissur, 680612</span>
-                        <span><i class="icon icon-Phone"></i>Phone : +(91) 8606561420</span>
-                        <span><i class="icon icon-Mail"></i>Email : info@multiserviceprovider.com</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-2 col-md-3">
-                <!-- Add more footer widgets as needed -->
-            </div>
-            <div class="col-lg-4">
-                <!-- Add Instagram feed or other social media content if desired -->
-            </div>
-        </div>
-    </div>
-</div>
-
-                <!-- Footer Widget Area End -->
-            </div>
-            <!-- Footer Top Area End -->
-            <!-- Footer Bottom Area Start -->
-            <div class="footer-bottom-area pt-15 pb-30">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 d-flex col-md-6">
-                            <div class="footer-text-bottom">
-                                <p>Copyright &copy; <a href="#">multiserviceprovider</a>. All Rights Reserved</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="payment-img d-flex justify-content-end">
-                                <img src="" >
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Footer Bottom Area End -->
-        </footer>
-        <!-- Footer Area End -->
-
-        
-        <!-- All js here -->
-        <!-- CSS -->
-
 
 <!-- JavaScript and jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

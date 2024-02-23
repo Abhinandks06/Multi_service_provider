@@ -97,7 +97,7 @@
                                         </a>
                                         <ul class="dropdown-menu">
                                             <li><a href="{% url 'worker_requests' user=manager_id %}">View Worker Requests</a></li>
-                                            <li><a href="">Worker List</a></li>
+                                            <li><a href="{% url 'worker_list' userid=manager_id %}">Worker List</a></li>
                                             <li><a href="{% url 'worker_registration' %}">Add Worker</a></li>
                                             <li><a href="{% url 'worker_report' managerid=manager_id %}">Worker Report</a></li>
                                             <li><a href="{% url 'leave_requests' provider_id=manager_id %}">Leave Requests</a></li>
@@ -118,16 +118,6 @@
                     </div>
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
-                            <div class="search-wrapper">
-                                <a href="#"><span class="icon icon-Search"></span></a>
-                                <form action="#" class="search-form">
-                                    <input type="text" placeholder="Search entire store here ...">
-                                    <button type="button">Search</button>
-                                </form>
-                            </div>
-                            <div class="settings-wrapper">
-                                <a href="#"><i class="fas fa-bell"></i></a>
-                            </div>
                             <div class="cart-wrapper">
                                 
                                 <a href="#"><i class="fas fa-user"></i></a>  

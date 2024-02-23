@@ -125,7 +125,16 @@ def register(request):
             messages.error(request, f'Error: {e}')
 
     return render(request, 'signup.html')
+@login_required
 def user_logout(request):
+    try:
+        del request.session['username']
+        request.session.flush()
+    except KeyError:
+        pass
+    return redirect('signin')
+@login_required
+def userlogout(request,category,userid):
     try:
         del request.session['username']
         request.session.flush()
@@ -143,6 +152,13 @@ def worker_logout(request):
     return redirect('signin')
 
 def provider_logout(request):
+    try:
+        del request.session['username']
+        request.session.flush() 
+    except KeyError:
+        pass
+    return redirect('signin')
+def manager_logout(request):
     try:
         del request.session['username']
         request.session.flush() 
@@ -184,7 +200,36 @@ def userpage(request):
                     email = user.email
                     return redirect('google_profile_update', username=username, email=email, user=user)  
             else:
-                messages.error(request, "You don't have permission to access this page.")
+                messages.error(request, "You dont have permission to access this page.")
+                return redirect('signin')
+        except MyUser.DoesNotExist:
+            messages.error(request, "User does not exist.")
+            return redirect('signin')  # Redirect to signin page if the user does not exist
+    else:
+        return render(request, 'userpage.html', {'user_id': user_id, 'services': services})
+@login_required
+def userpagehome(request,category,userid):
+    if 'username' in request.session:
+        username = request.session['username']
+        try:
+            user = MyUser.objects.get(username=username)
+            if user.role == 'client':
+                # Check if the user exists in the Client model
+                try:
+                    client = Client.objects.get(user=user)
+                    user_id = user.userid  # Get the user ID
+
+                    # Fetch the list of services
+                    services = ServiceTypes.objects.all()
+
+                    return render(request, 'userpage.html', {'user_id': user_id, 'services': services})
+                except Client.DoesNotExist:
+                    messages.warning(request, "User profile not found. Please update your profile.")
+                    # Pass username and email to google_profile_update view
+                    email = user.email
+                    return redirect('google_profile_update', username=username, email=email, user=user)  
+            else:
+                messages.error(request, "You dont have permission to access this page.")
                 return redirect('signin')
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
@@ -238,7 +283,7 @@ def workerpage(request):
                 worker = Worker.objects.get(user=user)
                 return render(request, 'workerpage.html', {'worker': worker})
             else:
-                messages.error(request, "You don't have permission to access this page.")
+                messages.error(request, "You dont have permission to access this page.")
                 return redirect('signin')
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
@@ -260,7 +305,7 @@ def providerpage(request):
                 }
                 return render(request, 'providerpage.html', context)
             else:
-                messages.error(request, "You don't have permission to access this page.")
+                messages.error(request, "You dont have permission to access this page.")
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
@@ -281,12 +326,13 @@ def providerpagehome(request,provider_id):
                 }
                 return render(request, 'providerpage.html', context)
             else:
-                messages.error(request, "You don't have permission to access this page.")
+                messages.error(request, "You dont have permission to access this page.")
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
         messages.error(request, "Login failed. Please check your credentials.")
         return redirect('signin')
+@login_required
 def managerpage(request):
     if 'username' in request.session:
         username = request.session['username']
@@ -301,7 +347,28 @@ def managerpage(request):
                 }
                 return render(request, 'managerpage.html', context)
             else:
-                messages.error(request, "You don't have permission to access this page.")
+                messages.error(request, "You dont have permission to access this page.")
+        except MyUser.DoesNotExist:
+            messages.error(request, "User does not exist.")
+    else:
+        messages.error(request, "Login failed. Please check your credentials.")
+        return redirect('signin')
+@login_required
+def managerpagehome(request,user):
+    if 'username' in request.session:
+        username = request.session['username']
+        try:
+            user = MyUser.objects.get(username=username)
+            
+            if user.role == 'branchmanager':
+                # If the user is a branch manager, you can add specific logic or render a manager-specific template.
+                context = {
+                    'user': user,
+                    'manager_id': user.userid  # Pass the manager's ID to the template context
+                }
+                return render(request, 'managerpage.html', context)
+            else:
+                messages.error(request, "You dont have permission to access this page.")
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
@@ -619,13 +686,13 @@ def workerregister(request):
 
     return render(request, 'signin')
 @login_required
-def service_providers_by_category(request, category):
-    # Retrieve service providers for the given category
-    
+def service_providers_by_category(request, category, userid):
+    # Retrieve the user profile based on the userid
+    client = Client.objects.get(user=userid)
+    # Retrieve branches associated with the category ID and the client's district
+    branches = Branch.objects.filter(service_type=category, district=client.district)
 
-    # Retrieve branches associated with the category ID
-    branches = Branch.objects.filter(service_type=category)
-    context = { 'providers': branches, 'category': category}
+    context = {'providers': branches, 'category': category}
     return render(request, 'providerlist.html', context)
 
 #update profile
@@ -847,10 +914,10 @@ def provider_bookings(request,user):
 @login_required
 def bookinghistory(request):
     # Get the logged-in provider's user ID
-    provider_id = request.user.userid
-
-    # Filter bookings based on the provider's providerid and status is 'pending'
-    bookings = Service.objects.filter(providerid_id=provider_id, status='Completed')
+    userid = request.user.userid
+    manager_id=BranchManager.objects.get(user=userid)
+    branch=BranchManagerAssignment.objects.get(manager=manager_id)
+    bookings = Service.objects.filter(branchid=branch.branch, status='Completed')
     context = {
         'bookings': bookings
     }
@@ -952,13 +1019,14 @@ def activate_worker(request, user_id, manager_id, branch_id):
         
     return redirect('managerpage')
  
-@login_required       
+@login_required
 def available_workers(request, branchid_id, district, booking_id):
     # Retrieve booking details for the specified booking ID
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
 
-    # Filter workers based on providerid_id, district, status='available', and is_active=1
-    workers = Worker.objects.filter(branchid=branchid_id)
+    # Filter workers based on branchid_id, district, status='available' or 'hired', and is_active=1
+    workers = Worker.objects.filter(branchid=branchid_id, district=district, status__in=['available', 'hired'], is_active=1)
+
     context = {
         'booking': booking,
         'workers': workers,
@@ -1162,12 +1230,18 @@ def generate_report(request):
     return render(request, 'generate_report.html', {})
 
 
-@login_required
-def worker_list(request, provider_id):
-    # Fetch workers belonging to the specific provider using the provider_id
-    workers = Worker.objects.filter(provider=provider_id)
+def worker_list(request, userid):
+    try:
+        managerid=BranchManager.objects.get(user=userid)
+        manager = BranchManagerAssignment.objects.get(manager=managerid)
+        branch_id = manager.branch
+        workers = Worker.objects.filter(branchid=branch_id)
 
-    return render(request, 'worker_list.html', {'workers': workers})
+        return render(request, 'worker_list.html', {'workers': workers})
+    except BranchManagerAssignment.DoesNotExist:
+        # Handle the case where there's no manager assignment for the user
+        messages.error(request, "You are not assigned as a branch manager.")
+        return redirect('home')
 @login_required
 def worker_report(request, managerid):
     # Get the BranchManager instance based on the provided managerid
@@ -1418,13 +1492,12 @@ def update_service_and_booking(request, booking_id):
         service.save()
 
         # Redirect to 'providerpage' view
-        return redirect('providerpage')
+        return redirect('managerpage')
 
     except (ClientBooking.DoesNotExist, Service.DoesNotExist) as e:
         messages.error(request, 'Cancelled booking.')
 
-        # Redirect to an appropriate page or handle the error scenario
-        return redirect('providerpage')
+        return redirect('managerpage')
 
 @login_required
 def update_rating(request):
@@ -1529,7 +1602,7 @@ def add_service(request):
 def add_branch(request):
     # Check if the user is a provider
     if request.user.role != 'provider':
-        return redirect('home')  # Redirect to home or another appropriate page
+        return redirect('providerpage')  # Redirect to home or another appropriate page
 
     provider = ServiceProvider.objects.get(user=request.user)
 
@@ -1584,10 +1657,12 @@ def branch_page(request, provider_id):
     # Pass the provider and inactive branches to the template
     return render(request, 'branch.html', {'provider': provider, 'inactive_branches': inactive_branches})
 from datetime import date as dt_date
+import secrets
 @login_required
 def manager_registration(request, provider_id, branch_id):
     provider = get_object_or_404(ServiceProvider, providerid=provider_id)
     branch = get_object_or_404(Branch, branchid=branch_id, providerid=provider)
+    
     if request.method == 'POST':
         user_name = request.POST.get('user_name')
         email = request.POST.get('email')
@@ -1595,12 +1670,9 @@ def manager_registration(request, provider_id, branch_id):
         state = request.POST.get('state')
         district = request.POST.get('district')
         pincode = request.POST.get('pincode')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-
-        if password != confirm_password:
-            messages.error(request, 'Passwords do not match.')
-            return redirect('manager_registration', branch_id=branch_id)
+        
+        # Generate a random password
+        password = secrets.token_urlsafe(8)  # Adjust the password length as needed
 
         # Create MyUser instance with role 'branchmanager'
         user = MyUser.objects.create_user(username=user_name, email=email, password=password)
@@ -1614,11 +1686,10 @@ def manager_registration(request, provider_id, branch_id):
         # Set the date_of_joining to the current date
         current_date = dt_date.today()
 
-
         # Create BranchManager instance
         branch_manager = BranchManager.objects.create(
             user=authenticated_user,
-            providerid=provider,  # Use the fetched provider
+            providerid=provider,
             providername=provider.providername,
             date_of_joining=current_date,
             phone_no=phone_no,
@@ -1632,8 +1703,17 @@ def manager_registration(request, provider_id, branch_id):
         branch.status = 'active'
         branch.save()
 
-        messages.success(request, 'Manager registered successfully.')
-        return redirect('providerpage')
+        # Send email with username and password
+        subject = 'Manager Registration'
+        message = f'Your username: {user_name}\nYour password: {password}\n\nPlease keep this information secure.'
+        from_email = 'abhinandks2024a@mca.ajce.in'  # Replace with your email
+        recipient_list = [email]
+
+        # Send the email
+        send_mail(subject, message, from_email, recipient_list)
+
+        messages.success(request, 'Manager registered successfully. Login credentials sent to the registered email.')
+        return render(request, 'branch.html', {'provider_id': provider_id, 'branch_id': branch_id, 'provider': provider})
 
     return render(request, 'branchmanagereg.html', {'provider_id': provider_id, 'branch_id': branch_id, 'provider': provider})
 
@@ -1725,6 +1805,9 @@ def leave_requests(request, provider_id):
         # Handle the case where the branch does not exist
         return redirect('managerpage')
     
+from django.contrib import messages
+from django.utils import timezone
+@login_required
 def approve_leave(request, leave_id):
     leave_request = get_object_or_404(WorkerLeaveapplication, leaveid=leave_id)
 
@@ -1732,8 +1815,23 @@ def approve_leave(request, leave_id):
         # Approve the leave
         leave_request.status = 'approved'
         leave_request.save()
-    messages.success(request, 'Leave has been approved successfully.')
+
+        # Get the userid and ending date from the leave_request object
+        user_id = leave_request.user.userid
+        ending_date = leave_request.end_date
+
+        # Update the Worker object's status as 'on leave'
+        worker = get_object_or_404(Worker, user=user_id)
+        worker.status = 'onleave'
+        worker.save()
+
+        messages.success(request, 'Leave has been approved successfully.')
+
+        # Schedule a task to update the worker's status to 'available' after the ending date
+
     return redirect('managerpage')
+
+
 
 def cancel_leave(request, leave_id):
     leave_request = get_object_or_404(WorkerLeaveapplication, leaveid=leave_id)

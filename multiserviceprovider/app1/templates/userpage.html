@@ -286,11 +286,11 @@
                     {% for service in services %}
                         <div class="col text-center">
                             <div class="single-food-category">
-                                <a href="{% url 'service_providers_by_category' category=service.service_id %}" class="food-cat-img">
+                                <a href="{% url 'service_providers_by_category' category=service.service_id userid=request.user.userid %}" class="food-cat-img">
                                     <img src="{% static service.image %}" alt="">
                                 </a>
                                 <img src="{% static 'userassets/img/icon/border.png' %}" alt="">
-                                <h4><a href="{% url 'service_providers_by_category' category=service.service_id %}">{{ service.service_type }}</a></h4>
+                                <h4><a href="{% url 'service_providers_by_category' category=service.service_id userid=request.user.userid %}" class="food-cat-img">{{ service.service_type }}</a></h4>
                             </div>
                         </div>
                     {% endfor %}

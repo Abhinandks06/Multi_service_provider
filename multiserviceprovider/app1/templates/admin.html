@@ -119,6 +119,46 @@
         span {
             font-weight: bold;
         }
+        #serviceForm {
+            max-width: 600px; /* Adjust the maximum width as needed */
+            margin: 0 auto; /* Center the form horizontally */
+            padding: 20px;
+            background-color: #ffffff; /* White background color */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        }
+        
+        label {
+            display: block; /* Make labels block-level for proper spacing */
+            margin-bottom: 8px; /* Adjust the margin as needed */
+        }
+        
+        input,
+        textarea {
+            width: 100%; /* Make input and textarea take up full width */
+            padding: 10px; /* Adjust padding as needed */
+            margin-bottom: 16px; /* Adjust margin as needed */
+            box-sizing: border-box; /* Include padding and border in the total width/height */
+            border: 1px solid #ccc; /* Border color */
+            border-radius: 5px; /* Rounded corners for inputs */
+        }
+        
+        textarea {
+            height: 100px; /* Adjust the height of the textarea */
+        }
+        
+        button {
+            background-color: #007bff; /* Button background color */
+            color: #ffffff; /* Button text color */
+            padding: 10px 20px; /* Adjust padding as needed */
+            border: none;
+            border-radius: 5px; /* Rounded corners for the button */
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3; /* Button background color on hover */
+        }
         
     </style>
     <link rel="stylesheet" href="{% static 'admin.css' %}">
@@ -301,7 +341,7 @@
                 <tr>
                     <th>Service Type</th>
                     <th>Description</th>
-                    <th>Number of Providers</th>
+                    
                 
                 </tr>
             </thead>
@@ -311,7 +351,7 @@
                     <tr>
                         <td>{{ service.service_type }}</td>
                         <td>{{ service.description }}</td>
-                        <td>{{ service.number_of_providers }}</td>
+                        
              
                     </tr>
                 {% endfor %}
@@ -319,7 +359,7 @@
         </table>
         
         <!-- Optionally, add a button to add a new service -->
-        <button class="btn btn-success mb-3" onclick="showServiceForm()">Add New Service</button>
+        <button id="addServiceButton" class="btn btn-success mb-3" onclick="showServiceForm()">Add New Service</button>
         <div id="serviceForm" style="display: none;">
             <h2>Add New Service</h2>
            <!-- Service Form -->
@@ -358,6 +398,9 @@
             clientTable.style.display = "none";
             providerTable.style.display = "none";
             workerTable.style.display = "none";
+            document.getElementById('addServiceButton').style.display = 'none';
+            document.getElementById('serviceForm').style.display = 'none';
+            document.getElementById('serviceTable').style.display = 'none';
 
             // Show the selected table based on the filter option
             if (selectedRole === "client") {
@@ -379,23 +422,33 @@
         window.location.href = "{% url 'provider_registration' %}";
     }
     function showTable(tableType) {
+        var clientTable = document.getElementById("clientTable");
+        var providerTable = document.getElementById("providerTable");
+        var workerTable = document.getElementById("workerTable");
+
         // Hide all tables by default
-        document.getElementById('clientTable').style.display = 'none';
-        document.getElementById('providerTable').style.display = 'none';
-        document.getElementById('workerTable').style.display = 'none';
-        document.getElementById('serviceTable').style.display = 'table';
-    
-        // Show the selected table based on the tableType parameter
-        if (tableType === 'client') {
-            document.getElementById('clientTable').style.display = 'table';
-        } 
-        else if (tableType === 'worker') {
-            document.getElementById('workerTable').style.display = 'table';
-        }
-        else if (tableType === 'service') {
+        clientTable.style.display = "none";
+        providerTable.style.display = "none";
+        workerTable.style.display = "none";
+        document.getElementById('addServiceButton').style.display = 'none';
+        document.getElementById('serviceTable').style.display = 'none';
+        document.getElementById('serviceForm').style.display = 'none';
+
+        // Show the selected table based on the filter option
+        if (tableType === "client") {
+            clientTable.style.display = "table";
+        } else if (tableType === "provider") {
+            providerTable.style.display = "table";
+        } else if (tableType === "worker") {
+            workerTable.style.display = "table";
+        } else if (tableType === "service") {
+            document.getElementById('addServiceButton').style.display = 'block';
             document.getElementById('serviceTable').style.display = 'table';
         }
-        
+    }
+    function showServiceForm() {
+        document.getElementById('serviceTable').style.display = 'none';
+        document.getElementById('serviceForm').style.display = 'block';
     }
     
     function showProviderOptions() {
