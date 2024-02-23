@@ -936,23 +936,36 @@ def approve_booking(request, booking_id):
     return redirect('provider_bookings')
 @login_required
 def reject_booking(request, booking_id):
-    booking = get_object_or_404(ClientBooking, bookingid=booking_id)
-    booking.status = 'canceled'
-    booking.save()
-    service_id = booking.serviceid_id
-    service = Service.objects.get(serviceid=service_id)
+    # Retrieve service and booking objects
+    service = get_object_or_404(Service, serviceid=booking_id)
+    booking = get_object_or_404(ClientBooking, bookingid=service.bookingid.bookingid)
+
+    # Get worker id from service object
+    worker_id = service.workerid
+
+    # Update service and booking statuses
     service.status = 'canceled'
     service.save()
+
+    booking.status = 'canceled'
+    booking.save()
+
+    # Update worker status to 'available'
+    worker = get_object_or_404(Worker, workerid=worker_id)
+    worker.status = 'available'
+    worker.save()
+
     messages.success(request, 'Appointment canceled.')
 
     # Send email notification to the client
-    client_email = booking.clientid.email  # Replace 'email' with the actual field name
+    user = MyUser.objects.get(userid=booking.clientid.user.userid)
+    client_email = user.email
     subject = 'Work Rejection Notification'
     message = f"Dear {booking.name},\n\nWe regret to inform you that your booking with provider {{provider_name}} has been rejected.\n\nRegards,\nMultiserviceprovider"
 
-    send_mail(subject, message, 'sender@example.com', [client_email], fail_silently=False)
+    send_mail(subject, message, 'abhinandks2024a@mca.ajce.in', [client_email], fail_silently=False)
 
-    return redirect('provider_bookings')
+    return redirect('managerpage')
 
 @login_required
 def worker_requests(request, user_id):
@@ -1025,7 +1038,7 @@ def available_workers(request, branchid_id, district, booking_id):
     booking = get_object_or_404(ClientBooking, bookingid=booking_id)
 
     # Filter workers based on branchid_id, district, status='available' or 'hired', and is_active=1
-    workers = Worker.objects.filter(branchid=branchid_id, district=district, status__in=['available', 'hired'], is_active=1)
+    workers = Worker.objects.filter(branchid=branchid_id, district=district, status__in=['available', 'hired'])
 
     context = {
         'booking': booking,
@@ -1150,7 +1163,6 @@ def update_status(request):
 @login_required
 def render_report_form(request, bookingid_id):
     worker_id = request.POST.get('worker_id')  # Get the worker_id from the POST data
-    
     service = get_object_or_404(Service, bookingid_id=bookingid_id)
     return render(request, 'generate_report.html', {'service': service, 'worker_id': worker_id})
 
@@ -1195,8 +1207,8 @@ def generate_report(request):
         # Fetch additional data from related models
         provider_name = branch.providername  # Replace 'provider_name' with the actual field name
         worker_name = f"{worker.first_name} {worker.last_name}"
-        service_type = branch.service_type  # Replace 'service_type' with the actual field name
-        
+        servicetype = branch.service_type  # Replace 'service_type' with the actual field name
+        service_type=servicetype.service_type
         # Fetch data to render in the PDF template
         context = {
             'duration_of_work': duration_of_work,

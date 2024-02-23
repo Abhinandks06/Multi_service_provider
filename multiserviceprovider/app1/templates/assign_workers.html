@@ -615,7 +615,7 @@ body {
                                                 </li>
                                             {% else %}
                                                 <li>No available workers</li>
-                                                <li><a href="" style="font-size: 16px; margin-top: 10px;">Cancel Booking</a></li>
+                                                <li><a href="{% url 'reject_booking' booking_id=service.serviceid %}" style="font-size: 16px; margin-top: 10px;">Cancel Booking</a></li>
                                             {% endif %}
                                         {% endif %}
                                     </ul>
