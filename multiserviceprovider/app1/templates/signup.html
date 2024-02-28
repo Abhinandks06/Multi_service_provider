@@ -66,10 +66,13 @@
                         </div>
                         <div class="mb-4 pb-2">
                           <div class="form-outline">
-                           <label class="form-label" for="form3Examplev4">Date of Birth</label>
-                            <input type="date" id="dob" name="dob" class="form-control form-control-lg" />
-                             <span id="dobError"></span>
-                          </div>
+                            <label for="dob">Date of Birth:</label>
+                            <input type="date" id="dob" name="dob" oninput="validateDOB()">
+                            
+                            <div id="ageError" class="error"></div>
+                            <span id="dobError" class="error"></span>
+                            <span id="successMessage" class="success"></span>
+                        </div>
                         </div>
       
         
@@ -252,6 +255,41 @@
         </div>
       </section>
     </form>
+    <script>
+      function validateDOB() {
+          var dobInput = document.getElementById('dob');
+          var ageError = document.getElementById('ageError');
+          var dobError = document.getElementById('dobError');
+          var successMessage = document.getElementById('successMessage');
+          
+          // Clear previous errors
+          ageError.textContent = '';
+          dobError.textContent = '';
+          successMessage.textContent = '';
+
+          // Check if a date is selected
+          if (!dobInput.value) {
+              dobError.textContent = 'Please enter your Date of Birth.';
+              return;
+          }
+
+          // Get the selected date and today's date
+          var selectedDate = new Date(dobInput.value);
+          var today = new Date();
+
+          // Calculate age
+          var age = today.getFullYear() - selectedDate.getFullYear();
+
+          // Check if the user is at least 16 years old and less than 100
+          if (age < 16) {
+              ageError.textContent = 'You must be at least 16 years old.';
+          } else if (age >= 100) {
+              dobError.textContent = 'Please enter a valid Date of Birth.';
+          } else {
+              successMessage.textContent = 'Good!';
+          }
+      }
+  </script>
     <script src="{% static 'js/registration.js' %}"></script>
     <script src="{% static 'js/reg.js' %}"></script>
     <script>
@@ -280,6 +318,7 @@
           }
       });
   </script>
+
     <script>
       function validateForm() {
           // Get form elements

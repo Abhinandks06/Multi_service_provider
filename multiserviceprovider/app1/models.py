@@ -185,3 +185,18 @@ class WorkerLeaveapplication(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.CharField(max_length=20, default='pending')
+
+class MultiBranch(models.Model):
+    branchid = models.AutoField(primary_key=True)
+    providerid = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    providername = models.CharField(max_length=100)
+    service_type = models.ForeignKey(ServiceTypes, on_delete=models.CASCADE)
+    district = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, default='inactive')
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    category = models.CharField(max_length=50)
+    def __str__(self):
+        return f"{self.category} - {self.question}"

@@ -162,10 +162,19 @@
     
             function validateUserName(input) {
                 var value = input.value.trim();
+                
+                // Check if the first character is an alphabet
+                if (!/^[A-Za-z]/.test(value)) {
+                    alert('Invalid User Name. It should start with an alphabet.');
+                    return false;
+                }
+            
+                // Check the length and ensure only alphabets are used
                 if (value.length < 4 || value.length > 12 || !/^[A-Za-z]+$/.test(value)) {
                     alert('Invalid User Name. It should be between 4 and 12 characters and contain only alphabets.');
                     return false;
                 }
+            
                 return true;
             }
     

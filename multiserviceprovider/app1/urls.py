@@ -182,6 +182,9 @@ urlpatterns = [
      path('managerpage/<int:provider_id>/', providerpage , name='providerpage'),
      path('branch_list/<int:provider_id>/', branch_list, name='branch_list'),
      path('branch_list/<int:provider_id>/providerpage', providerpagehome, name='providerpagehome'),
+     path('help_assistant/', help_assistant, name='help_assistant'),
+     path('help_assistant/userpage', userpage, name='userpage'),
+     path('help_assistant/user_logout', user_logout, name='user_logout'),
 
 
 ]

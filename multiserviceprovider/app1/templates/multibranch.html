@@ -1,0 +1,226 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Multiservice Provider</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'userassets/img/icon.png' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
+    <style>
+        .container {
+            margin-top: 150px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        /* Style for form elements */
+        form {
+            width: 45%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid; /* Add border */
+            border-radius: 10px; /* Add border-radius for rounded corners */
+            padding: 20px; /* Add padding for spacing inside the form */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Add shadow */
+        }
+
+        form h3 {
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        form label {
+            width: 70%;
+            text-align: left;
+            margin-bottom: 5px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        form input,
+        form select {
+            width: 70%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        {% if messages %}
+        ul.messages {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul.messages li {
+            margin-bottom: 5px;
+            color: red; /* Adjust the color as needed */
+        }
+        {% endif %}
+
+        form button {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+        }
+        .abc{
+            width: 70%;
+            
+        }
+    </style>
+</head>
+
+<body style="background: linear-gradient(to right, #141e30, #243b55);">
+    <!-- Header Area Start -->
+    <header class="header-area header-sticky">
+        <div class="header-container">
+            <div class="row">
+                <div class="col-lg-2 col-sm-4">
+                    <div class="logo text-center">
+                        <div>
+                            <h1 class="logo-text"><a href="providerpage" class="logo-text">MULTISERVICE <span class="provider-text">PROVIDER</span></a></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header Area End -->
+
+    <!-- Container Div Start -->
+    <div class="container" style="margin-top: 150px;">
+
+        <form method="post" action="{% url 'add_branch' %}">
+            <h2 style="margin-bottom: 30px; color: white; font-weight: bolder">Add Branch</h2>
+
+            {% csrf_token %}
+
+            <!-- Branch Details -->
+            <h3>Branch Details</h3>
+
+            <div class="form-outline form-white abc">
+                <label for="service_type">Select Service:</label>
+                <select id="service_type" name="service_type" style="width: 70%;">
+                    {% for service_type in service_types %}
+                        <option value="{{ service_type.id }}">{{ service_type.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+
+            <label for="district">Districts:</label>
+<div>
+    <input type="checkbox" name="branches[]" id="thiruvananthapuram" value="thiruvananthapuram">
+    <label for="thiruvananthapuram">Thiruvananthapuram</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="kollam" value="kollam">
+    <label for="kollam">Kollam</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="pathanamthitta" value="pathanamthitta">
+    <label for="pathanamthitta">Pathanamthitta</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="alappuzha" value="alappuzha">
+    <label for="alappuzha">Alappuzha</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="kottayam" value="kottayam">
+    <label for="kottayam">Kottayam</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="idukki" value="idukki">
+    <label for="idukki">Idukki</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="ernakulam" value="ernakulam">
+    <label for="ernakulam">Ernakulam</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="thrissur" value="thrissur">
+    <label for="thrissur">Thrissur</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="palakkad" value="palakkad">
+    <label for="palakkad">Palakkad</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="malappuram" value="malappuram">
+    <label for="malappuram">Malappuram</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="kozhikode" value="kozhikode">
+    <label for="kozhikode">Kozhikode</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="wayanad" value="wayanad">
+    <label for="wayanad">Wayanad</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="kannur" value="kannur">
+    <label for="kannur">Kannur</label>
+</div>
+<div>
+    <input type="checkbox" name="branches[]" id="kasaragod" value="kasaragod">
+    <label for="kasaragod">Kasaragod</label>
+</div>
+
+
+
+
+            <!-- Submit Button -->
+            <div style="clear: both; margin-top: 20px;">
+                <button type="submit" style="color:black; font-weight: bolder; font-size:15px ; border-radius: 9px">Add Branch</button>
+            </div>
+        </form>
+    </div>
+    <!-- Container Div End -->
+
+    <!-- Footer Area Start -->
+    <footer class="footer-widget-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="footer-text-bottom">
+                        <p>Copyright &copy; <a href="#">multiserviceprovider</a>. All Rights Reserved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer Area End -->
+
+    <!-- All js here -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Enable Bootstrap dropdown on hover
+            $('.dropdown').hover(function () {
+                $(this).addClass('show');
+                $(this).find('.dropdown-menu').addClass('show');
+            }, function () {
+                $(this).removeClass('show');
+                $(this).find('.dropdown-menu').removeClass('show');
+            });
+        });
+    </script>
+    <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
+    <script src="{% static 'userassets/js/main.js' %}"></script>
+</body>
+
+</html>

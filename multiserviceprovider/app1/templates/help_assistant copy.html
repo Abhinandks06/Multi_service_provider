@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .categories {
+            max-width: 200px;
+            background-color: #ffffff;
+            padding: 10px;
+            border-right: 1px solid #ccc;
+        }
+
+        .category {
+            cursor: pointer;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            max-width: 400px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        .questions {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .faq {
+            display: none;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .faq.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .faq-answer {
+            display: none;
+            margin-top: 5px;
+        }
+
+        .faq.active .faq-answer {
+            display: block;
+        }
+    </style>
+    <title>FAQ Chat</title>
+</head>
+
+<body>
+    <div class="categories">
+        <div class="category" onclick="showQuestions('provider')">Provider</div>
+        <div class="category" onclick="showQuestions('booking')">Booking</div>
+        <div class="category" onclick="showQuestions('order')">Order</div>
+        <div class="category" onclick="showQuestions('payment')">Payment</div>
+        <div class="category" onclick="showQuestions('cancellation')">Cancellation</div>
+        <!-- Add more categories as needed -->
+    </div>
+
+    <div class="content">
+        <div class="questions" id="questions">
+            {% for faq in all_faqs %}
+                <div class="faq {{ faq.category }}" data-category="{{ faq.category }}" onclick="toggleAnswer(this)">
+                    <strong>{{ faq.question }}</strong>
+                    <div class="faq-answer">{{ faq.answer }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="answer">
+        <!-- Answer will appear here -->
+    </div>
+
+    <script>
+        function showQuestions(category) {
+            const faqs = document.querySelectorAll('.faq');
+
+            // Hide all questions
+            faqs.forEach(faq => {
+                if (faq.dataset.category === category) {
+                    faq.style.display = 'block';
+                } else {
+                    faq.style.display = 'none';
+                }
+            });
+
+            // Clear the answer
+            document.querySelector('.answer').innerHTML = '';
+        }
+
+        function toggleAnswer(question) {
+            const faqs = document.querySelectorAll('.faq');
+
+            // Hide all answers
+            faqs.forEach(faq => {
+                faq.classList.remove('active');
+                faq.querySelector('.faq-answer').style.display = 'none';
+            });
+
+            // Show answer for the clicked question
+            question.classList.add('active');
+            question.querySelector('.faq-answer').style.display = 'block';
+
+            // Display the answer in the answer section
+            const answerSection = document.querySelector('.answer');
+            answerSection.innerHTML = question.querySelector('.faq-answer').innerHTML;
+        }
+    </script>
+</body>
+
+</html>

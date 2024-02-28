@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import Branch, BranchManager, BranchManagerAssignment, MyUser,Client,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
+from .models import FAQ, Branch, BranchManager, BranchManagerAssignment, MultiBranch, MyUser,Client,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -1887,3 +1887,13 @@ def branch_list(request, provider_id):
 
     context = {'branches': provider_branches}
     return render(request, 'branch_list.html', context)
+
+def help_assistant(request):
+    # Query all FAQs
+    all_faqs = FAQ.objects.all()
+
+    context = {
+        'all_faqs': all_faqs,
+    }
+
+    return render(request, 'help_assistant.html', context)
