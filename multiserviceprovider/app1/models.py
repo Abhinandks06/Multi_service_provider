@@ -200,3 +200,24 @@ class FAQ(models.Model):
     category = models.CharField(max_length=50)
     def __str__(self):
         return f"{self.category} - {self.question}"
+    
+class Salary(models.Model):
+    salaryid = models.AutoField(primary_key=True)
+    userid = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    branchid = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=15, default='pending')
+
+    def __str__(self):
+        return f"Salary - {self.userid.username} - {self.date}"
+
+class SalaryHistory(models.Model):
+    historyid = models.AutoField(primary_key=True)
+    salary = models.ForeignKey(Salary, on_delete=models.CASCADE)
+    userid = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Salary History - {self.salary.userid.username} - {self.date}"

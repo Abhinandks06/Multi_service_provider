@@ -92,7 +92,7 @@
                                         <ul class="dropdown-menu">
                                             <li><a href="{% url 'branch_list' provider_id=provider_id %}">Branch list</a></li>
                                             <li><a href="">Worker List</a></li>     
-                                            <li><a href="">Salary</a></li>  
+                                            <li><a href="{% url 'managerlist' provider_id=provider_id %}">Salary</a></li>  
                                         </ul>
                                     </li>  
                                     {% if user.is_authenticated %}

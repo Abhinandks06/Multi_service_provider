@@ -1,9 +1,12 @@
 from datetime import date
+import datetime
+import time
+from django import views
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import FAQ, Branch, BranchManager, BranchManagerAssignment, MultiBranch, MyUser,Client,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
+from .models import FAQ, Branch, BranchManager, BranchManagerAssignment, MultiBranch, MyUser,Client, Salary,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -1887,7 +1890,7 @@ def branch_list(request, provider_id):
 
     context = {'branches': provider_branches}
     return render(request, 'branch_list.html', context)
-
+@login_required
 def help_assistant(request):
     # Query all FAQs
     all_faqs = FAQ.objects.all()
@@ -1897,3 +1900,82 @@ def help_assistant(request):
     }
 
     return render(request, 'help_assistant.html', context)
+
+@login_required
+def manager_list(request, provider_id):
+    provider = ServiceProvider.objects.get(user=provider_id)
+    provider_managers = BranchManager.objects.filter(providerid=provider.providerid)
+    
+    # Fetch salary details for each manager
+    manager_salaries = []
+    for manager in provider_managers:
+        manager_salary = Salary.objects.filter(userid=manager.user.userid)
+        manager_salaries.append({'manager': manager, 'salaries': manager_salary})
+    
+    context = {'manager_salaries': manager_salaries}
+    return render(request, 'manager_list.html', context)
+
+
+from datetime import datetime
+
+@login_required
+def pay_salary(request, manager_id):
+    branch_manager = get_object_or_404(BranchManager, user=manager_id)
+    provider = get_object_or_404(ServiceProvider, providerid=branch_manager.providerid.providerid)
+    assignment = get_object_or_404(BranchManagerAssignment, manager=branch_manager)
+    branch_id = assignment.branch
+    branch = get_object_or_404(Branch, branchid=branch_id.branchid)
+
+    # Check if the user already has a salary entry with unpaid status
+    existing_salary = Salary.objects.filter(userid=branch_manager.user, branchid=branch_id, status='pending').first()
+
+    if existing_salary:
+        # Modify the existing salary entry and update the date
+        existing_salary.date = datetime.now()
+        existing_salary.amount = 250000  # Set the default salary amount, modify as needed
+        existing_salary.status = 'paid'
+        existing_salary.save()
+        messages.success(request, 'Salary payment initiated successfully.')
+    else:
+        # Create a new salary entry with the current date
+        salary = Salary.objects.create(
+            userid=branch_manager.user,
+            branchid=branch,
+            date=datetime.now(),
+            amount=250000,  # Set the default salary amount
+            status='paid'
+        )
+        messages.success(request, 'Salary payment initiated successfully.')
+
+    return redirect('managerlist', provider_id=provider.user.userid)
+
+
+from datetime import timedelta
+from django.utils import timezone
+import schedule
+import threading
+from django.db import transaction
+
+# ... (your other imports)
+
+# Function to update salary status to 'pending' after one month
+def update_salary_status():
+    with transaction.atomic():
+        one_month_ago = timezone.now() - timedelta(days=30)
+        salaries_to_update = Salary.objects.filter(status='paid', date__lte=one_month_ago)
+
+        for salary in salaries_to_update:
+            salary.status = 'pending'
+            salary.save()
+
+# Schedule the update_salary_status function to run every day
+schedule.every().day.at("00:00").do(update_salary_status)
+
+# Function to run the scheduled tasks in a separate thread
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+# Start the scheduled tasks in a separate thread when the application starts
+threading.Thread(target=run_schedule).start()

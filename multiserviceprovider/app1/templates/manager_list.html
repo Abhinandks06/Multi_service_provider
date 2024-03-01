@@ -1,0 +1,198 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager List</title>
+    <style>
+        /* Add your CSS styles for a beautiful layout */
+        body {
+            background-image: url('{% static 'userassets/img/bg/manager.jpg' %}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+    
+        header {
+            background-image: url('{% static 'userassets/img/bg/manager.jpg' %}');
+            background-color: white;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+            transition: box-shadow 0.3s ease; /* Add transition for a smooth effect */
+        }
+        
+        header:hover {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+    
+        nav {
+            background-image: url('{% static 'userassets/img/bg/manager.jpg' %}');
+            display: flex;
+            padding: 10px;
+            background-color: white;
+        }
+    
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            position: relative;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+        }
+    
+        .neon-text {
+            display: inline-block;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+    
+        #logout:hover {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 1);
+        }
+    
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        /* Add your existing styles */
+        .manager-container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: rgba(173, 216, 230, 0.9); /* Pastel blue with 70% opacity */
+            color: black;
+        }
+    
+        h2, p, .branch-manager {
+            color: black;
+            font-weight: bolder;
+        }
+    
+        .branch-manager {
+            font-style: italic;
+            color: black;
+        }
+
+        .pay-salary-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .pay-salary-button:hover {
+            background-color: #45a049;
+        }
+        .razorpay-payment-button {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            padding: 10px 20px; /* Padding for better appearance */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+            text-decoration: none; /* Remove underline */
+        }
+    
+        .razorpay-payment-button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+    </style>
+    
+</head>
+<body>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Set a timer to hide messages after 5 seconds (5000 milliseconds)
+            setTimeout(function () {
+                $(".messages").fadeOut("slow");
+            }, 5000);
+        });
+    </script>
+{% endif %}
+
+    <header>
+        <h1>MULTISERVICEPROVIDER</h1>
+    </header>
+
+    <nav>
+        <a href="{% url 'providerpagehome' provider_id=user.userid %}">HOME</a>
+        <a href="{% url 'provider_logout' %}">LOGOUT</a>
+    </nav>
+
+    {% if manager_salaries %}
+    {% for item in manager_salaries %}
+    <div class="manager-container">
+        <h2>{{ item.manager.user.username }}</h2>
+        <p>Email: {{ item.manager.user.email }}</p>
+        <p>Phone: {{ item.manager.phone_no }}</p>
+        <p>Joining Date: {{ item.manager.date_of_joining }}</p>
+        <p>Salary: 250,000 rs</p>
+        
+        {% if item.salaries %}
+            {% for salary in item.salaries %}
+                <p>Payment Status: {{ salary.status }}</p>
+                {% if salary.status == 'pending' %}
+                <form action="{% url 'pay_salary' item.manager.user.userid %}" method="POST">
+                    {% csrf_token %}
+                    <script src="https://checkout.razorpay.com/v1/checkout.js"
+                            data-key="rzp_test_bWe8tmmP1WXOe7"
+                            data-amount="{{ 2500000 }}"
+                            data-currency="INR"
+                            data-order_id="{{ payment.id }}"
+                            data-buttontext="Pay Salary"
+                            data-name="Multiservice provider"
+                            data-description="An efficient and reliable service provider"
+                            data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                            data-prefill.name="Abhinand K S"
+                            data-prefill.email="abhinandks2024a@mca.ajce.in"
+                            data-theme.color="#F37254">
+                    </script>
+                </form>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+        <form action="{% url 'pay_salary' item.manager.user.userid %}" method="POST">
+            {% csrf_token %}
+            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                    data-key="rzp_test_bWe8tmmP1WXOe7"
+                    data-amount="{{ 2500000 }}"
+                    data-currency="INR"
+                    data-order_id="{{ payment.id }}"
+                    data-buttontext="Pay Salary"
+                    data-name="Multiservice provider"
+                    data-description="An efficient and reliable service provider"
+                    data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                    data-prefill.name="Abhinand K S"
+                    data-prefill.email="abhinandks2024a@mca.ajce.in"
+                    data-theme.color="#F37254">
+            </script>
+        </form>
+            
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+        <p>No managers found for the selected provider.</p>
+    {% endif %}
+</body>
+</html>

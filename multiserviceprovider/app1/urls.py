@@ -1,6 +1,7 @@
 from django.urls import path , include
 from .views import *
 from . import views
+from .views import providerpagehome
 from .views import CustomPasswordResetView,CustomPasswordResetDoneView,CustomPasswordResetConfirmView,CustomPasswordResetCompleteView
 urlpatterns = [
     path('', index, name="index"),
@@ -185,6 +186,7 @@ urlpatterns = [
      path('help_assistant/', help_assistant, name='help_assistant'),
      path('help_assistant/userpage', userpage, name='userpage'),
      path('help_assistant/user_logout', user_logout, name='user_logout'),
-
-
+     path('managerlist/<int:provider_id>/', manager_list, name='managerlist'),
+     path('pay_salary/<int:manager_id>/', pay_salary, name='pay_salary'),
+     path('managerlist/<int:provider_id>/providerpage/', providerpage, name='providerpage'),
 ]
