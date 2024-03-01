@@ -604,20 +604,21 @@ body {
                                             <th>District</th>
                                             <th>Email</th>
                                             <th>Status</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for worker in workers %}
-                                            <tr class="worker-item">
-                                                <td>{{ worker.first_name }}</td>
-                                                <td>{{ worker.last_name }}</td>
-                                                <td>{{ worker.district }}</td>
-                                                <td>{{ worker.email }}</td>
-                                                <td>{{ worker.status }}</td>
-                                            </tr>
+                                        <tr class="worker-item">
+                                          <td>{{ worker.first_name }}</td>
+                                          <td>{{ worker.last_name }}</td>
+                                          <td>{{ worker.district }}</td>
+                                          <td>{{ worker.email }}</td>
+                                          <td>{{ worker.status }}</td>
+                                      </tr>
                                         {% empty %}
                                             <tr>
-                                                <td colspan="5" class="no-workers">No available workers</td>
+                                                <td colspan="5" class="no-workers">No workers in the branch</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

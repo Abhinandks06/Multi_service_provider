@@ -756,7 +756,37 @@ def google_authenticate(request):
         user.role = 'client'
         user.save()
 
-    return redirect('userpage')  
+    return redirect('userpage') 
+
+from datetime import timedelta
+from django.utils import timezone
+import schedule
+import threading
+from django.db import transaction
+
+# ... (your other imports)
+
+# Function to update salary status to 'pending' after one month
+def update_salary_status():
+    with transaction.atomic():
+        one_month_ago = timezone.now() - timedelta(days=30)
+        salaries_to_update = Salary.objects.filter(status='paid', date__lte=one_month_ago)
+
+        for salary in salaries_to_update:
+            salary.status = 'pending'
+            salary.save()
+
+# Schedule the update_salary_status function to run every day
+schedule.every().day.at("00:00").do(update_salary_status)
+
+# Function to run the scheduled tasks in a separate thread
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+# Start the scheduled tasks in a separate thread when the application starts
+threading.Thread(target=run_schedule).start() 
 from django.shortcuts import get_object_or_404
 from .models import ServiceProvider
 
@@ -1950,32 +1980,81 @@ def pay_salary(request, manager_id):
     return redirect('managerlist', provider_id=provider.user.userid)
 
 
-from datetime import timedelta
-from django.utils import timezone
-import schedule
-import threading
-from django.db import transaction
 
-# ... (your other imports)
+@login_required
+def workersalary(request, userid):
+    try:
+        # Get the manager and manager assignment
+        manager = BranchManager.objects.get(user=userid)
+        manager_assignment = BranchManagerAssignment.objects.get(manager=manager)
 
-# Function to update salary status to 'pending' after one month
-def update_salary_status():
-    with transaction.atomic():
-        one_month_ago = timezone.now() - timedelta(days=30)
-        salaries_to_update = Salary.objects.filter(status='paid', date__lte=one_month_ago)
+        # Get the branch ID from the manager assignment
+        branch_id = manager_assignment.branch
 
-        for salary in salaries_to_update:
-            salary.status = 'pending'
-            salary.save()
+        # Get all workers associated with the branch
+        workers = Worker.objects.filter(branchid=branch_id)
 
-# Schedule the update_salary_status function to run every day
-schedule.every().day.at("00:00").do(update_salary_status)
+        # Get salary details for each worker with a check for existence
+        workers_with_salary = []
+        for worker in workers:
+            try:
+                # Try to get the latest salary for the worker
+                salary = Salary.objects.filter(userid=worker.user.userid).latest('date')
 
-# Function to run the scheduled tasks in a separate thread
-def run_schedule():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+                # Create a dictionary to hold both worker and salary details
+                worker_with_salary = {
+                    'worker': worker,
+                    'salary': salary
+                }
+                workers_with_salary.append(worker_with_salary)
+            except Salary.DoesNotExist:
+                # Handle the case where there's no salary record for the worker
+                # You can choose to skip the worker or handle it differently
+                # Here, we're appending the worker with None for salary
+                worker_with_salary = {
+                    'worker': worker,
+                    'salary': None
+                }
+                workers_with_salary.append(worker_with_salary)
 
-# Start the scheduled tasks in a separate thread when the application starts
-threading.Thread(target=run_schedule).start()
+        return render(request, 'worker_salary.html', {'workers_with_salary': workers_with_salary})
+
+    except (BranchManager.DoesNotExist, BranchManagerAssignment.DoesNotExist):
+        # Handle the case where the manager or assignment doesn't exist
+        # You may want to redirect to an error page or handle it differently
+        return HttpResponse("Manager or assignment not found.", status=404)
+
+    except BranchManagerAssignment.DoesNotExist:
+        # Handle the case where there's no manager assignment for the user
+        messages.error(request, "You are not assigned as a branch manager.")
+        return redirect('home')
+    
+@login_required
+def worker_salary(request, userid, worker_id):
+    worker = get_object_or_404(Worker, user=worker_id)
+    branches = worker.branchid.all()
+
+    for branch in branches:
+        existing_salary = Salary.objects.filter(userid=worker.user, branchid=branch, status='pending').first()
+
+        if existing_salary:
+            # Modify the existing salary entry and update the date
+            existing_salary.date = datetime.now()
+            existing_salary.amount = 25000  # Set the default salary amount, modify as needed
+            existing_salary.status = 'paid'
+            existing_salary.save()
+            messages.success(request, 'Salary payment initiated successfully for worker {}.'.format(worker.first_name))
+        else:
+            # Create a new salary entry with the current date
+            salary = Salary.objects.create(
+                userid=worker.user,
+                branchid=branch,
+                date=datetime.now(),
+                amount=25000,  # Set the default salary amount
+                status='paid'
+            )
+            messages.success(request, 'Salary payment initiated successfully for worker {}.'.format(worker.first_name))
+
+    return redirect('workersalary', userid=userid)
+
+    return redirect('workersalary', userid=userid)

@@ -189,4 +189,6 @@ urlpatterns = [
      path('managerlist/<int:provider_id>/', manager_list, name='managerlist'),
      path('pay_salary/<int:manager_id>/', pay_salary, name='pay_salary'),
      path('managerlist/<int:provider_id>/providerpage/', providerpage, name='providerpage'),
+     path('provider/<int:userid>/workersalary/', views.workersalary, name='workersalary'),
+     path('worker_salary/<int:userid>//<int:worker_id>/', worker_salary, name='worker_salary'),
 ]

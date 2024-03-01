@@ -1,0 +1,275 @@
+
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="en">
+    
+<!-- Mirrored from htmldemo.net/naturecircle/naturecircle/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Oct 2023 11:40:36 GMT -->
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Multiservice provider</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'userassets/img/icon.png' %}">
+
+        <!-- All css here -->
+        <link rel="stylesheet" href="{% static 'userassets/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/ie7.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/plugins.css' %}">
+        <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
+        <script src="{% static 'userassets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+    </head>
+    <style>
+        
+
+        /* Apply standard font and add space */
+        a.logo-text {
+            font-family: Arial, sans-serif; /* Use Arial or any standard sans-serif font */
+            font-size: 30px; /* Set the font size */
+            font-weight: bold; /* Make the text bold */
+            text-decoration: none; /* Remove underline from the link */
+            color: white; /* Set a standard text color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Apply text shadow for a cool effect */
+            margin-bottom: 35px;
+        }
+        
+        /* Style the provider text separately */
+        span.provider-text {
+            padding-top: 30px !important;
+        }
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('path/to/font.woff');
+        }
+
+        .icon-Notification:before {
+            font-family: 'CustomFont';
+            content: "\e123"; /* Replace with the correct Unicode character for your notification icon */
+        }
+        .provider {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+      .provider strong {
+          display: block;
+          margin-bottom: 5px;
+      }
+        .provider-card {
+            background-color: rgba(255, 255, 255, 0.8); /* Set background color with opacity */
+            border-radius: 15px; /* Add curved borders */
+            margin: 10px;
+            padding: 15px;
+        }
+        /* styles.css */
+        /* styles.css */
+.booking-box {
+    margin-top: 20px;
+}
+
+.booking-item {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8); /* Set opacity to 0.8 */
+    padding: 15px;
+    margin-bottom: 10px;
+}
+body {
+  background-image: url('{% static 'userassets/img/bg/salary.jpeg' %}');
+  background-size: cover; /* This property ensures the image covers the entire background */
+  background-repeat: no-repeat; /* This property prevents the image from repeating */
+  /* You can also set other background properties like position, attachment, etc. as needed */
+}
+.booking-box {
+    color: white; /* Set text color to white */
+    font-family: Arial, sans-serif; /* Set font family */
+}
+
+.workers-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.7); /* Set background color with opacity */
+}
+
+.workers-table th, .workers-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 18px; /* Increase text size to 18px */
+}
+
+.no-workers {
+    text-align: center;
+    font-size: 18px; /* Increase text size to 18px */
+}
+.pay-salary-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pay-salary-button:hover {
+  background-color: #45a049;
+}
+.razorpay-payment-button {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Padding for better appearance */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  text-decoration: none; /* Remove underline */
+}
+
+.razorpay-payment-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <body style="background-image: url('{% static 'userassets/img/bg/salary.jpg' %}')">
+        
+        <!-- Header Area Start -->
+        <header class="header-area header-sticky">
+          <div class="header-container">
+              <div class="row">
+                  <div class="col-lg-5 display-none-md display-none-xs">
+                      <div class="ht-main-menu">
+                          <nav>
+                              <ul>
+                                  <li><a href="{% url 'managerpage' %}" style="color: white; font-weight: bold; font-size: 18px;">HOME </a></li>
+                                  
+                                  <li><a href="{% url 'user_logout' %}" style="color: white; font-weight: bold; font-size: 18px;">Logout</a></li>
+                              </ul>
+                          </nav>
+                      </div>
+                  </div>
+                  <div class="col-lg-2 col-sm-4">
+                      <div class="logo text-center">
+                          <a href="" class="logo-text" style="color: white; font-weight: bold; font-size: 24px;">MULTISERVICE <span class="provider-text" style="padding-top: 30px;">PROVIDER</span></a>
+                      </div>
+                  </div>
+                  <div class="col-lg-5 col-sm-8">
+                      <div class="header-content d-flex justify-content-end">
+                          <div class="settings-wrapper">
+                              <a href="#" style="color: white; font-weight: bold; font-size: 18px;"><i class="fas fa-bell"></i></a>
+                          </div>
+                          <div class="cart-wrapper">
+                              <a href="#" style="color: white; font-weight: bold; font-size: 18px;"><i class="fas fa-user"></i></a>
+                              <span style="color: white; font-weight: bold; font-size: 18px;">{{request.user}}</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <!-- Header Area End -->
+          <!-- Mobile Menu Area Start -->
+          <div class="mobile-menu-area">
+              <div class="mobile-menu container">
+                  <nav id="mobile-menu-active">
+                      <ul class="menu-overflow">
+                          <li><a href="userpage" style="color: white; font-weight: bold; font-size: 18px;">HOME</a></li>
+                          <li><a href="#" style="color: white; font-weight: bold; font-size: 18px;">Services <i class="fa fa-angle-down"></i></a></li>
+                          <li><a href="#bookings" style="color: white; font-weight: bold; font-size: 18px;">Bookings</a></li>
+                          <li><a href="#userprofile" style="color: white; font-weight: bold; font-size: 18px;">User Profile</a></li>
+                          <li><a href="#notifications" style="color: white; font-weight: bold; font-size: 18px;">Notifications</a></li>
+                      </ul>
+                  </nav>
+              </div>
+          </div>
+          <!-- Mobile Menu Area End -->
+      </header>      
+      
+
+                            <br> <br> <br> <br> <br> <br>
+                            
+                            <div class="booking-box">
+                              <h1>Workers list</h1>
+                              <table class="workers-table">
+                                  <thead>
+                                      <tr>
+                                          <th>First Name</th>
+                                          <th>Last Name</th>
+                                          <th>Email</th>
+                                          <th>Salary</th>
+                                          <th>Status</th>
+                                          <th>Option</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for worker in workers_with_salary %}
+                                      <tr class="worker-item">
+                                          <td>{{ worker.worker.first_name }}</td>
+                                          <td>{{ worker.worker.last_name }}</td>
+                                          <td>{{ worker.worker.email }}</td>
+                                          <td>25000</td> {# Assuming you have a fixed salary value #}
+                                          <td>
+                                            {% if worker.salary %}
+                                                {{ worker.salary.status }}
+                                            {% else %}
+                                                Pending
+                                            {% endif %}
+                                        </td>
+                                        
+                                          <td>
+                                              {% if not worker.salary or worker.salary.status == "pending" %}
+                                              <form action="{% url 'worker_salary' request.user.userid worker.worker.user.userid %}" method="POST">
+                                                {% csrf_token %}
+                                                <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                                        data-key="rzp_test_bWe8tmmP1WXOe7"
+                                                        data-amount="{{ 2500000 }}"
+                                                        data-currency="INR"
+                                                        data-order_id="{{ payment.id }}"
+                                                        data-buttontext="Pay Salary"
+                                                        data-name="Multiservice provider"
+                                                        data-description="An efficient and reliable service provider"
+                                                        data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                                        data-prefill.name="Abhinand K S"
+                                                        data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                                        data-theme.color="#F37254">
+                                                </script>
+                                            </form>
+                                            {% else%}
+
+                                             Already Paid 
+                                              {% endif %}
+                                          </td>
+                                          
+                                      </tr>
+                                      {% empty %}
+                                      <tr>
+                                          <td colspan="6" class="no-workers">No available workers</td>
+                                      </tr>
+                                      {% endfor %}
+                                  </tbody>
+                              </table>
+                          </div>
+                          
+                            
+                            
+
+                            
+
+        
+                <!-- Single Slide End -->
+        <!-- Hero Area End -->
+        <!-- Food Categry Area Start -->
+        <!-- All js here -->
+        <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+        <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
+        <script src="{% static 'userassets/js/plugins.js' %}"></script>
+        <script src="{% static 'userassets/js/ajax-mail.js' %}"></script>
+        <script src="{% static "userassets/js/main.js" %}"></script>
+    </body>
+</html>
