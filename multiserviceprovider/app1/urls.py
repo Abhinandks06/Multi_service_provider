@@ -191,4 +191,5 @@ urlpatterns = [
      path('managerlist/<int:provider_id>/providerpage/', providerpage, name='providerpage'),
      path('provider/<int:userid>/workersalary/', views.workersalary, name='workersalary'),
      path('worker_salary/<int:userid>//<int:worker_id>/', worker_salary, name='worker_salary'),
+     path('pay_all_salaries/<int:userid>/', pay_all_salaries, name='pay_all_salaries'),
 ]

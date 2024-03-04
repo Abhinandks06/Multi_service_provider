@@ -254,18 +254,31 @@ body {
                                       {% endfor %}
                                   </tbody>
                               </table>
+                <form action="{% url 'pay_all_salaries' request.user.userid %}" method="POST">
+    {% csrf_token %}
+    <script src="https://checkout.razorpay.com/v1/checkout.js"
+            data-key="rzp_test_bWe8tmmP1WXOe7"
+            data-amount="{{ 5000000 }}"
+            data-currency="INR"
+            data-order_id="{{ payment.id }}"
+            data-buttontext="Pay All Salary"
+            data-name="Multiservice provider"
+            data-description="An efficient and reliable service provider"
+            data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+            data-prefill.name="Abhinand K S"
+            data-prefill.email="abhinandks2024a@mca.ajce.in"
+            data-theme.color="#F37254">
+    </script>
+</form>
                           </div>
-                          
-                            
-                            
-
-                            
-
-        
                 <!-- Single Slide End -->
         <!-- Hero Area End -->
         <!-- Food Categry Area Start -->
         <!-- All js here -->
+        <!-- Add this script and span element at the end of your HTML body -->
+       
+        
+
         <script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
         <script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
         <script src="{% static 'userassets/js/plugins.js' %}"></script>
