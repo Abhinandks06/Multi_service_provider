@@ -221,3 +221,22 @@ class SalaryHistory(models.Model):
 
     def __str__(self):
         return f"Salary History - {self.salary.userid.username} - {self.date}"
+    
+
+class ClientWorkRequest(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, null=False, blank=False)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, blank=True)
+    provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, null=True, blank=True)
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, null=True, blank=True)
+    service_type = models.CharField(max_length=255)
+    description = models.TextField()  # Renamed from 'details'
+    district = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, default='pending')
+    additional_info = models.TextField()
+    start_date = models.DateField()  # Changed to DateField for start date
+    end_date = models.DateField()    # Changed to DateField for end date
+
+class Assignment(models.Model):
+    requestid = models.ForeignKey(ClientWorkRequest, on_delete=models.CASCADE)
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, default='requested')

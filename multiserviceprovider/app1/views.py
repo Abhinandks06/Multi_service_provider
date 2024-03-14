@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import FAQ, Branch, BranchManager, BranchManagerAssignment, MultiBranch, MyUser,Client, Salary,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
+from .models import FAQ, Assignment, Branch, BranchManager, BranchManagerAssignment, ClientWorkRequest, MultiBranch, MyUser,Client, Salary,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -349,8 +349,7 @@ def managerpage(request):
                     'manager_id': user.userid  # Pass the manager's ID to the template context
                 }
                 return render(request, 'managerpage.html', context)
-            else:
-                messages.error(request, "You dont have permission to access this page.")
+                
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
@@ -371,7 +370,7 @@ def managerpagehome(request,user):
                 }
                 return render(request, 'managerpage.html', context)
             else:
-                messages.error(request, "You dont have permission to access this page.")
+                messages.error(request, "")
         except MyUser.DoesNotExist:
             messages.error(request, "User does not exist.")
     else:
@@ -1386,29 +1385,22 @@ def assign_workers_service(request):
         report_id = request.POST.get('report_id')
         service_id = request.POST.get('service_id')
         selected_worker_ids = request.POST.getlist('selected_workers')
-        
-        # Retrieve the worker report and service objects
+
+        # Print or log the IDs for debugging
+        print("Report ID:", report_id)
+        print("Service ID:", service_id)
+        print("Selected Worker IDs:", selected_worker_ids)
+
         worker_report = WorkerReport.objects.get(reportid=report_id)
         service = Service.objects.get(serviceid=service_id)
-
-        # Retrieve selected workers based on their IDs
         selected_workers = Worker.objects.filter(user_id__in=selected_worker_ids)
-
-        # Assign selected workers to the service model
         service.workerid.add(*selected_workers)
-
-        # Update status of selected workers to "on duty"
         Worker.objects.filter(user_id__in=selected_worker_ids).update(status='onduty')
-
-        # Update status of worker report to "reportverified"
         worker_report.status = 'reportverified'
         worker_report.save()
 
-        return redirect('providerpage')
-  # Redirect to a success page or any other view upon successful assignment
-
-    # Render the page initially or handle GET requests
-    return redirect('providerpage')
+        return redirect('managerpage')
+    return redirect('managerpage')
     
 
 from django.http import FileResponse
@@ -2091,3 +2083,176 @@ def pay_all_salaries(request, userid):
         messages.error(request, f'Error: {e}')
 
     return redirect('workersalary', userid=userid)
+
+import pandas as pd
+
+def display_branches(request):
+    # Load the dataset
+    df = pd.read_csv("combined_data.csv")
+
+    # Select the first 5 branches
+    branches_data = df.head(5)
+
+    # Convert the DataFrame to a dictionary for easy rendering in the template
+    branches_dict = branches_data.to_dict(orient='records')
+
+    # Pass the data to the template
+    return render(request, 'display_branches.html', {'branches': branches_dict})
+
+
+def service_request(request):
+    user_id = request.user.userid
+
+    # Check if the user has a pending service request
+    has_pending_request = ClientWorkRequest.objects.filter(user_id=user_id, status='pending').exists()
+
+    if has_pending_request:
+        messages.info(request, 'You have a pending service request.')
+        return redirect('userpage') 
+    else:
+        return render(request, 'service_request.html', {'user_id': user_id})
+
+def submit_service_request(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        service_type = request.POST.get('service_type')
+        description = request.POST.get('description')
+        additional_info = request.POST.get('additional_info')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # Retrieve the user's district from the Client model
+        user_district = Client.objects.get(user=user_id).district
+
+        # Create a new ClientWorkRequest object and save it to the database
+        service_request = ClientWorkRequest.objects.create(
+            user_id=user_id,
+            service_type=service_type,
+            description=description,
+            district=user_district,  # Save the user's district
+            additional_info=additional_info,
+            start_date=start_date,
+            end_date=end_date,
+            # Add other fields as needed
+        )
+        messages.success(request, 'Service request has been send.')
+        return redirect('userpage')  # Redirect to userpage or any other desired page
+
+    return render(request, 'service_request.html')
+
+@login_required
+def pending_service_requests(request):
+    # Assuming the logged-in user is a worker
+    worker_district = Worker.objects.get(user=request.user).district
+
+    # Filter pending requests based on the worker's district
+    pending_requests = ClientWorkRequest.objects.filter(status='pending', district=worker_district)
+
+    return render(request, 'pending_service_requests.html', {'pending_requests': pending_requests})
+
+def approve_assignment(request, request_id, worker_id):
+    try:
+        client_request = ClientWorkRequest.objects.get(pk=request_id)
+        worker = Worker.objects.get(pk=worker_id)
+
+        # Check if an assignment already exists for the given ClientWorkRequest and Worker
+        existing_assignment = Assignment.objects.filter(requestid=client_request, worker=worker).first()
+
+        if existing_assignment:
+            messages.error(request, 'Assignment already exists. Already requested to do this work. Please wait for approval.')
+        else:
+            # Create a new Assignment record
+            assignment = Assignment.objects.create(requestid=client_request, worker=worker, status='requested')
+            messages.success(request, 'Assignment requested successfully.')
+    except ClientWorkRequest.DoesNotExist:
+        messages.error(request, 'ClientWorkRequest does not exist.')
+    except Worker.DoesNotExist:
+        messages.error(request, 'Worker does not exist.')
+
+    return redirect('workerpage')
+
+@login_required
+def service_requests_for_manager(request, manager_id):
+    try:
+        # Retrieve the manager's branch
+        managerid=BranchManager.objects.get(user=manager_id)
+        manager = BranchManagerAssignment.objects.get(manager=managerid)
+        branch_id = manager.branch
+        workers = Worker.objects.filter(branchid=branch_id)
+
+        # Retrieve service requests for the manager's workers in the same branch
+        service_requests = Assignment.objects.filter(
+            worker__in=workers,
+            status='requested'
+        )
+
+        return render(request, 'service_requests_for_manager.html', {'service_requests': service_requests})
+    except BranchManagerAssignment.DoesNotExist:
+        # Handle case when the manager assignment does not exist
+        return render(request, 'index.html', {'error_message': 'Manager assignment not found.'})
+    
+def apply_for_service(request, request_id,worker_id):
+    try:
+        # Get the ClientWorkRequest and Assignment objects
+        client_request = ClientWorkRequest.objects.get(pk=request_id)
+        assignment = Assignment.objects.get(requestid=client_request ,worker=worker_id)
+        client_request.branch = assignment.worker.branchid.first()
+        client_request.provider = assignment.worker.provider
+        client_request.worker = assignment.worker
+        client = Client.objects.get(user=client_request.user)
+        client_request.save()
+        assignment.delete()
+
+
+        assignment.status = 'approved'
+        assignment.save()
+        client_request.status ='accepted'
+
+  
+        booking = ClientBooking.objects.create(
+            clientid=client,
+            district=client_request.district,
+            branchid=client_request.branch,
+            name=client.username,
+            phone=client.phone,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            status=ClientBooking.APPROVED  # Assuming you want to set the status to Approved
+        )
+
+        # Create a Service entry
+        service = Service.objects.create(
+            bookingid=booking,
+            clientid=client,
+            district=client_request.district,
+            branchid=client_request.branch,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            status=Service.ASSIGNED  # Assuming you want to set the status to Assigned
+        )
+        service.workerid.add(worker_id)
+
+        messages.success(request, 'Work request applied successfully.')
+    except ClientWorkRequest.DoesNotExist:
+        messages.error(request, 'ClientWorkRequest does not exist.')
+    except Assignment.DoesNotExist:
+        messages.error(request, 'Assignment does not exist.')
+
+    return redirect('managerpage')
+
+
+def calendar_page(request, user_id):
+    # Assuming user_id is the primary key of the User model
+    manager = BranchManager.objects.get(user=user_id)
+    branch_assignment = BranchManagerAssignment.objects.get(manager=manager)
+    branch_id = branch_assignment.branch
+    
+    # Fetching services related to the branch
+    services = Service.objects.filter(branchid=branch_id)
+    
+    return render(request, 'calendar.html', {'manager': manager, 'branch': branch_assignment, 'services': services})
+
+def filter_services(request):
+    selected_date = request.GET.get('selected_date')
+    services = Service.objects.filter(date=selected_date)
+    return render(request, 'calendar.html', {'services': services})

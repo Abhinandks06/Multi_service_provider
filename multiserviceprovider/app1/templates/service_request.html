@@ -1,0 +1,194 @@
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://images8.alphacoders.com/134/1347727.png'); 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: .8; /* Adjust the opacity as needed */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: #333; /* Navbar background color */
+            color: white;
+            height:10%;
+        }
+
+        .navbar h1 {
+            margin: 
+        }
+
+        .container {
+            width: 50%;
+            background-color: #fff; /* Background color for the form container */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow for a subtle shadow effect */
+            padding: 20px;
+            opacity: 0.9; /* Adjust the opacity as needed */
+            margin-top: 10px; /* Add margin to separate the navbar and container */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+        }
+
+        input, textarea, select {
+            padding: 8px;
+            margin-bottom: 8px; /* Adjust the margin between input fields */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #007BFF; /* Button background color */
+            color: #fff; /* Button text color */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Change the color on hover */
+        }
+        .home-link {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            text-align: right;
+            font-size: 22px;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar" >
+        <h1 style=" text-align: center;">MULTISERVICEPROVIDER</h1>
+        <a href="{% url 'userpage' %}" class="home-link">HOME</a>
+
+
+    </div>
+
+    <div class="container">
+        <h2>Service Request Form</h2>
+
+        <form id="serviceRequestForm" method="post" action="{% url 'submit_service_request' %}">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+
+            <label for="service_type">Service Type:</label>
+            <input type="text" name="service_type" id="service_type" required pattern="[A-Za-z]+" title="Only alphabets are allowed">
+
+            <br>
+
+            <label for="description">Description of Service:</label>
+            <textarea name="description" id="description" required></textarea>
+
+            <br>
+
+            <label for="additional_info">Additional Information:</label>
+            <textarea name="additional_info" id="additional_info"></textarea>
+
+            <br>
+
+            <label for="date_range">Preferred Date Range:</label>
+            <input type="date" name="start_date" required>
+            <span> to </span>
+            <input type="date" name="end_date" required>
+
+            <br>
+
+            <button type="button" onclick="validateForm()">Submit Request</button>
+        </form>
+    </div>
+    <script>
+        function validateForm() {
+            const serviceTypeField = document.getElementById('service_type');
+            const descriptionField = document.getElementById('description');
+            const startDateField = document.getElementsByName('start_date')[0];
+            const endDateField = document.getElementsByName('end_date')[0];
+
+            // Validate service type
+            if (!serviceTypeField.checkValidity()) {
+                alert('Please enter a valid service type with only alphabets.');
+                return;
+            }
+
+            // Validate description
+            if (descriptionField.value.trim() === '') {
+                alert('Please enter a description for the service.');
+                return;
+            }
+
+            // Validate date range
+            const currentDate = new Date();
+            const selectedStartDate = new Date(startDateField.value);
+            const selectedEndDate = new Date(endDateField.value);
+
+            if (selectedStartDate < currentDate) {
+                alert('Start date should be today or later.');
+                return;
+            }
+
+            if (selectedEndDate < currentDate) {
+                alert('Check the end date (invalid entry)');
+                return;
+            }
+
+            if (selectedEndDate < selectedStartDate) {
+                alert('End date should be after the start date.');
+                return;
+            }
+
+            document.getElementById('serviceRequestForm').submit();
+        }
+
+        // Set minimum and maximum date values
+        window.onload = function () {
+            const startDateField = document.getElementsByName('start_date')[0];
+            const endDateField = document.getElementsByName('end_date')[0];
+
+            // Set minimum date to today
+            const currentDate = new Date().toISOString().split('T')[0];
+            startDateField.setAttribute('min', currentDate);
+            
+            // Set maximum date to one month from today
+            const oneMonthLater = new Date();
+            oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+            const maxDate = oneMonthLater.toISOString().split('T')[0];
+            endDateField.setAttribute('max', maxDate);
+        };
+
+        // Function to update end date min attribute based on start date selection
+        function updateEndDateMin() {
+            const startDateField = document.getElementsByName('start_date')[0];
+            const endDateField = document.getElementsByName('end_date')[0];
+
+            // Set minimum date for end date to the selected start date
+            endDateField.setAttribute('min', startDateField.value);
+
+            // Set maximum date for end date to two months from the selected start date
+            const twoMonthsLater = new Date(startDateField.value);
+            twoMonthsLater.setMonth(twoMonthsLater.getMonth() + 2);
+            const maxDate = twoMonthsLater.toISOString().split('T')[0];
+            endDateField.setAttribute('max', maxDate);
+        }
+    </script>
+        
+</body>
+</html>

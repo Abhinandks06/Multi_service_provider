@@ -175,7 +175,7 @@ urlpatterns = [
      path('apply_leave/', apply_leave, name='apply_leave'),
      path('leave_success/', views.leave_success, name='leave_success'),
      path('leave_requests/<int:provider_id>/', leave_requests, name='leave_requests'),
-     path('leave_requests/<int:provider_id>/providerpage', providerpagehome, name='providerpagehome'),
+     path('leave_requests/<int:user>/managerpage', managerpagehome, name='managerpage'),
      path('approve_leave/<int:leave_id>/', approve_leave, name='approve_leave'),
      path('cancel_leave/<int:leave_id>/', cancel_leave, name='cancel_leave'),
      path('update_service_status/<int:report_id>/', update_service_status, name='update_service_status'),
@@ -192,4 +192,15 @@ urlpatterns = [
      path('provider/<int:userid>/workersalary/', views.workersalary, name='workersalary'),
      path('worker_salary/<int:userid>//<int:worker_id>/', worker_salary, name='worker_salary'),
      path('pay_all_salaries/<int:userid>/', pay_all_salaries, name='pay_all_salaries'),
+    path('branches/', display_branches, name='display_branches'),
+    path('service-request/', service_request, name='service_request'),
+    path('submit_service_request/', submit_service_request, name='submit_service_request'),
+    path('pending_requests/', views.pending_service_requests, name='pending_service_requests'),
+    path('approve_assignment/<int:request_id>/<int:worker_id>/', approve_assignment, name='approve_assignment'),
+    path('service-requests-for-manager/<int:manager_id>/', service_requests_for_manager, name='service_requests_for_manager'),
+    path('apply_for_service/<int:request_id>/<int:worker_id>/', apply_for_service, name='apply_for_service'),
+    path('calendar_page/<int:user_id>/', views.calendar_page, name='calendar_page'),
+    path('calendar_page/<int:user>/managerpage', views.managerpagehome, name='managerpage'),
+
+
 ]

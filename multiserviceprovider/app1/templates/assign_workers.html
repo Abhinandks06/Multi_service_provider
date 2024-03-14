@@ -521,9 +521,8 @@ body {
                         <div class="ht-main-menu">
                             <nav>
                                 <ul>
-                                    <li class="active"><a href="{% url 'providerpage' %}">HOME </a>
+                                  <li class="active"><a href="{% url 'managerpage' %}">HOME </a>
                                     </li>
-                                    <li><a href="{% url 'provider_bookings' %}">Bookings</a></li>
                                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 </ul>
                             </nav>
@@ -554,7 +553,7 @@ body {
                 <div class="mobile-menu container">
                     <nav id="mobile-menu-active">
                         <ul class="menu-overflow">
-                            <li><a href="userpage">HOME</a>
+                            <li><a href="managerpage">HOME</a>
                               
                             </li>
                             <li><a href="#">Services <i class="fa fa-angle-down"></i></a>
@@ -606,6 +605,7 @@ body {
                                                     <li style="margin-bottom: 5px;">
                                                         <label>
                                                             <input type="checkbox" name="selected_workers" value="{{ worker.user_id }}">
+                                                            
                                                             <span style="font-size: 16px;">{{ worker.first_name }} {{ worker.last_name }} ({{ worker.district }})</span>
                                                         </label>
                                                     </li>

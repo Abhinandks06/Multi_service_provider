@@ -90,6 +90,8 @@
                                     {% comment %} <li><a href="{% url 'provider_bookings' %}">Bookings</a></li> {% endcomment %}
 
                                    <li><a href="{% url 'provider_booking' user=manager_id %}">Booking</a></li>
+                                   <li><a href="{% url 'service_requests_for_manager' manager_id=manager_id %}">Service Request</a></li>
+
                                     <li class="dropdown dropdown-hover">
                                         
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -103,11 +105,15 @@
                                             <li><a href="{% url 'worker_report' managerid=manager_id %}">Worker Report</a></li>
                                             <li><a href="{% url 'leave_requests' provider_id=manager_id %}">Leave Requests</a></li>
                                         </ul>
-                                    </li>  
+                                    </li> 
+                                    
                                     <li><a href="{% url 'bookinghistory' %}">History</a></li>
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'provider_logout' %}">Logout</a></li>
                                     {% endif %}
+                                    <li><a href="{% url 'calendar_page' user_id=manager_id %}">
+                                        <i class="far fa-calendar-alt" style="color: white; margin-left: 5px;"></i>
+                                    </a></li> 
                                 </ul>
                             </nav>
                         </div>
@@ -119,9 +125,10 @@
                     </div>
                     <div class="col-lg-5 col-sm-8">
                         <div class="header-content d-flex justify-content-end">
-                            <div class="cart-wrapper">
-                                
-                                <a href="#"><i class="fas fa-user"></i></a>  
+                            <div class="cart-wrapper">                             
+                                    <a href="{% url 'calendar_page' user_id=manager_id %}">
+                                        <i class="far fa-calendar-alt" style="color: white; margin-left: 5px;"></i>
+                                    </a>
                                 <span style="color: white;">{{request.user}}</span>
 
                             </div>

@@ -1,0 +1,81 @@
+<!-- pending_service_requests.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Service Requests</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://images8.alphacoders.com/134/1347727.png'); 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: .8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            height: 10%;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .request-container {
+            width: 50%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .apply-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .apply-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>MULTISERVICEPROVIDER</h2>
+    </div>
+    <h2 style="color: white;">Pending Service Requests</h2>
+    {% for requests in pending_requests %}
+        <div class="request-container">
+            <strong>Client name:</strong> {{ requests.user }}<br>
+            <strong>Location:</strong> {{ requests.district }}<br>
+            <strong>Service Type:</strong> {{ requests.service_type }}<br>
+            <strong>Description:</strong> {{ requests.description }}<br>
+            <strong>Additional Info:</strong> {{ requests.additional_info }}<br>
+            <b><u>Required time</u></b><br>
+            <strong>Start Date:</strong> {{ requests.start_date }}<br>
+            <strong>End Date:</strong> {{ requests.end_date }}<br>
+
+            <button class="apply-button"> <a href="{% url 'approve_assignment' requests.id request.user.userid  %}" class="apply-button">Apply</a></button>
+        </div>
+    {% endfor %}
+</body>
+</html>

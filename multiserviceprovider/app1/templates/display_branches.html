@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branches Details</title>
+</head>
+<body>
+    <h1>Branches Details</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Branch</th>
+                <th>Income</th>
+                <th>Expense</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for branch in branches %}
+            <tr>
+                <td>{{ branch.branch }}</td>
+                <td>{{ branch.income }}</td>
+                <td>{{ branch.expense }}</td>
+                <!-- Add more columns as needed -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
