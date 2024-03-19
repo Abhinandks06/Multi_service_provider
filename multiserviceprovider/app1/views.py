@@ -145,7 +145,7 @@ def userlogout(request,category,userid):
         pass
     return redirect('signin')
 
-
+@login_required
 def worker_logout(request):
     try:
         del request.session['username']
@@ -153,7 +153,7 @@ def worker_logout(request):
     except KeyError:
         pass
     return redirect('signin')
-
+@login_required
 def provider_logout(request):
     try:
         del request.session['username']
@@ -161,6 +161,7 @@ def provider_logout(request):
     except KeyError:
         pass
     return redirect('signin')
+@login_required
 def manager_logout(request):
     try:
         del request.session['username']
@@ -168,7 +169,7 @@ def manager_logout(request):
     except KeyError:
         pass
     return redirect('signin')
-
+@login_required
 def admin_logout(request):
     try:
         del request.session['username']
@@ -1273,7 +1274,7 @@ def generate_report(request):
 
     return render(request, 'generate_report.html', {})
 
-
+@login_required
 def worker_list(request, userid):
     try:
         managerid=BranchManager.objects.get(user=userid)
@@ -1496,15 +1497,15 @@ def cancel_service(request):
         booking.save()
 
         # Retrieve provider's email
-        provider_email = service.providerid.user.email
+        # provider_email = service.providerid.user.email
 
-        # Send an email to the provider
-        client_name = booking.name
-        subject = 'Booking Cancellation Notification'
-        message = f'Dear Provider, The booking made by {client_name} has been canceled.'
-        from_email = 'your@email.com'  # Replace with your email
-        recipient_list = [provider_email]
-        send_mail(subject, message, from_email, recipient_list)
+        # # Send an email to the provider
+        # client_name = booking.name
+        # subject = 'Booking Cancellation Notification'
+        # message = f'Dear Provider, The booking made by {client_name} has been canceled.'
+        # from_email = 'your@email.com'  # Replace with your email
+        # recipient_list = [provider_email]
+        # send_mail(subject, message, from_email, recipient_list)
 
         messages.success(request, 'Service cancelled successfully! An email has been sent to the provider.')
     return redirect('userpage')
@@ -1614,6 +1615,7 @@ def payment_success(request):
         # Handle the case where the manager object is not found
         messages.error(request, 'Error: Manager not found.')
         return redirect('userpage')
+@login_required
 def add_service(request):
     if request.method == 'POST':
         # Extract data from the form
@@ -1668,6 +1670,7 @@ def add_branch(request):
         return redirect('providerpage')  # Redirect to the branches page
 
     return render(request, 'add_branch.html', {'provider': provider})
+@login_required
 def add_branch_page(request, provider_id):
     # Fetch provider details based on the provider_id
     try:
@@ -1681,6 +1684,7 @@ def add_branch_page(request, provider_id):
         return render(request, 'signin')
 
     return render(request, 'branchregistration.html', {'provider': provider, 'service_types': service_types_list})
+@login_required
 def branch_page(request, provider_id):
     # Assuming provider_id is the user ID
     user_id = provider_id  # Rename the variable for clarity
@@ -1844,6 +1848,34 @@ def leave_requests(request, provider_id):
     
 from django.contrib import messages
 from django.utils import timezone
+import threading
+import time
+from datetime import datetime
+from django.utils import timezone
+from .models import WorkerLeaveapplication, Worker
+
+# Function to update worker status to 'available'
+def update_worker_status(worker_id):
+    worker = Worker.objects.get(user=worker_id)
+    worker.status = 'available'
+    worker.save()
+
+# Function to run the scheduling loop
+def run_schedule():
+    while True:
+        # Get leave requests with status 'approved' and end dates in the past
+        leave_requests = WorkerLeaveapplication.objects.filter(status='approved', end_date__lte=timezone.now())
+        
+        for leave_request in leave_requests:
+            update_worker_status(leave_request.user_id)
+        
+        # Sleep for some time before checking again
+        time.sleep(10)  # Sleep for 1 hour
+
+# Start the scheduling loop in a separate thread
+scheduler_thread = threading.Thread(target=run_schedule)
+scheduler_thread.start()
+
 @login_required
 def approve_leave(request, leave_id):
     leave_request = get_object_or_404(WorkerLeaveapplication, leaveid=leave_id)
@@ -1864,12 +1896,11 @@ def approve_leave(request, leave_id):
 
         messages.success(request, 'Leave has been approved successfully.')
 
-        # Schedule a task to update the worker's status to 'available' after the ending date
-
     return redirect('managerpage')
 
 
 
+@login_required
 def cancel_leave(request, leave_id):
     leave_request = get_object_or_404(WorkerLeaveapplication, leaveid=leave_id)
 
@@ -2085,7 +2116,7 @@ def pay_all_salaries(request, userid):
     return redirect('workersalary', userid=userid)
 
 import pandas as pd
-
+@login_required
 def display_branches(request):
     # Load the dataset
     df = pd.read_csv("combined_data.csv")
@@ -2099,7 +2130,7 @@ def display_branches(request):
     # Pass the data to the template
     return render(request, 'display_branches.html', {'branches': branches_dict})
 
-
+@login_required
 def service_request(request):
     user_id = request.user.userid
 
@@ -2111,7 +2142,7 @@ def service_request(request):
         return redirect('userpage') 
     else:
         return render(request, 'service_request.html', {'user_id': user_id})
-
+@login_required
 def submit_service_request(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
@@ -2149,7 +2180,7 @@ def pending_service_requests(request):
     pending_requests = ClientWorkRequest.objects.filter(status='pending', district=worker_district)
 
     return render(request, 'pending_service_requests.html', {'pending_requests': pending_requests})
-
+@login_required
 def approve_assignment(request, request_id, worker_id):
     try:
         client_request = ClientWorkRequest.objects.get(pk=request_id)
@@ -2190,7 +2221,7 @@ def service_requests_for_manager(request, manager_id):
     except BranchManagerAssignment.DoesNotExist:
         # Handle case when the manager assignment does not exist
         return render(request, 'index.html', {'error_message': 'Manager assignment not found.'})
-    
+@login_required  
 def apply_for_service(request, request_id,worker_id):
     try:
         # Get the ClientWorkRequest and Assignment objects
@@ -2240,7 +2271,7 @@ def apply_for_service(request, request_id,worker_id):
 
     return redirect('managerpage')
 
-
+@login_required
 def calendar_page(request, user_id):
     # Assuming user_id is the primary key of the User model
     manager = BranchManager.objects.get(user=user_id)
@@ -2251,8 +2282,20 @@ def calendar_page(request, user_id):
     services = Service.objects.filter(branchid=branch_id)
     
     return render(request, 'calendar.html', {'manager': manager, 'branch': branch_assignment, 'services': services})
-
+@login_required
 def filter_services(request):
     selected_date = request.GET.get('selected_date')
     services = Service.objects.filter(date=selected_date)
     return render(request, 'calendar.html', {'services': services})
+
+@login_required
+def track_booking(request, client_id):
+    # Retrieve the last service object with the matching client_id
+    last_service = Service.objects.filter(clientid=client_id).last()
+    last_client_booking = ClientBooking.objects.filter(clientid=client_id).last()
+    
+    # Retrieve the workers associated with the last service
+    workers = last_service.workerid.all() if last_service else []
+    
+    return render(request, 'trackbooking.html', {'service': last_service, 'workers': workers, 'client_booking': last_client_booking})
+

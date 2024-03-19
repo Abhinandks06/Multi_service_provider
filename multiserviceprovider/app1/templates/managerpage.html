@@ -111,9 +111,14 @@
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'provider_logout' %}">Logout</a></li>
                                     {% endif %}
-                                    <li><a href="{% url 'calendar_page' user_id=manager_id %}">
-                                        <i class="far fa-calendar-alt" style="color: white; margin-left: 5px;"></i>
-                                    </a></li> 
+                                    <li>
+                                        <a href="{% url 'calendar_page' user_id=manager_id %}">
+                                            calendar
+                                        </a>
+                                    </li>
+                                    
+                                    
+                                    
                                 </ul>
                             </nav>
                         </div>

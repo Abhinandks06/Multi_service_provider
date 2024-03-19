@@ -392,6 +392,8 @@
     color: #fff; /* Text color for the heading */
     font-size: 24px;
     margin-bottom: 20px;
+    text-align:center;
+    margin-left:70px;
 }
 
 .eventCard {
@@ -440,15 +442,15 @@
    <div class="main-wrapper">
       <div class="sidebar-wrapper side-nav fixed" id="sidebar">
          <div class="side">
-            <h4><a href="managerpage" class="managerpage">Home</a></h4>
-            <h4>Events</h4>
+            <h5><a href="managerpage" class="managerpage">Home</a></h5>
+            <h5 style="text-align: center;margin-top: 70px;">Events</h5>
             <h5 id="eventDayName">Date</h5>
             <!-- Add a new element to display the selected date -->
-            <b id="selectedDateSidebar">Selected Date: </b><br><br>
+            <b id="selectedDateSidebar" style="text-align: center;margin-left:50px;">Selected Date: </b><br><br>
         </div>
         
          <div class="sidebar-events" id="sidebarEvents">
-             <b class="sidebar-heading" >To be completed</b><br><br>
+             <b class="sidebar-heading"  >To be completed</b><br><br>
              {% for service in services %}
                  {% if service.status == "assigned" %}
                      <div class="eventCard">

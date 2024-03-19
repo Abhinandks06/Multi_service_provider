@@ -201,6 +201,7 @@ urlpatterns = [
     path('apply_for_service/<int:request_id>/<int:worker_id>/', apply_for_service, name='apply_for_service'),
     path('calendar_page/<int:user_id>/', views.calendar_page, name='calendar_page'),
     path('calendar_page/<int:user>/managerpage', views.managerpagehome, name='managerpage'),
+    path('track_booking/<int:client_id>/', views.track_booking, name='track_booking'),
 
 
 ]

@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> 
+    <style>
+        .abc {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            margin-left: 250px;
+        }
+
+        .heading {
+            text-align: center;
+            font-size: 27px;
+            color: white;
+        }
+
+        .heading1 {
+            margin-left: auto;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .details {
+            text-align: center;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 20%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none; /* Remove border */
+            border-radius: 5px;
+            background-color: transparent; /* Set background to transparent */
+            color: white; /* Set color to white */
+            position: relative;
+            flex-direction: column; /* Align icon and label vertically */
+        }
+
+        /* Add tick above the icon */
+        .tick {
+            position: absolute;
+            top: -20px; /* Adjust the position above the icon */
+            left: 50%;
+            transform: translateX(-50%);
+            color: green; /* Set color of tick */
+            font-size: 18px; /* Adjust size of the tick */
+        }
+
+        @media (min-width: 768px) {
+            .progress {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body style="background-image: url('{% static 'userassets/img/bg/manager.jpg' %}')">
+
+<div class="abc">
+    <h5 class="heading">MULTI SERVICE PROVIDER</h5>
+    <h4 class="heading1">Home</h4>
+</div>
+
+<div class="container pb-5 mb-sm-4">
+    <!-- Details -->
+    <div class="row mb-3">
+        <div class="col-sm-4 mb-2">
+            <div class="bg-secondary p-4 text-dark text-center">Tracking ID :<span class="font-weight-semibold mr-2" style="color: white;">{{ service.serviceid }}</span></div>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <div class="bg-secondary p-4 text-dark text-center">Provider Name :<span class="font-weight-semibold mr-2" style="color: white;">{{ service.branchid.providername }}</span></div>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <div class="bg-secondary p-4 text-dark text-center">
+                <span class="font-weight-semibold mr-2" >Status:</span>
+                {% if client_booking.status == 'pending' %}
+                    <span style="color: white;">Waiting for assigning worker</span>
+                {% else %}
+                    <span style="color: white;">{{ service.status }}</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-sm-4 mb-2">
+            <div class="bg-secondary p-4 text-dark text-center">Booked Date:<span class="font-weight-semibold mr-2" style="color: white;">{{ service.date }}</span></div>
+        </div>
+    </div>
+    <br><br>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                <i class="fas fa-check-circle fa-2x {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}"></i>
+                {% if client_booking.status == 'pending' %}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% elif service.status|lower == 'reportgiven' or service.status|lower == 'assigned'  or  service.status|lower == 'reportverified' or service.paymentstatus|lower == 'completed' or service.status|lower == 'completed' %}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% endif %}
+                <span class="label">Order Placed</span>
+            </div>
+            
+            <div class="progress-bar progress-bar-striped bg-success {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                <i class="fas fa-wrench fa-2x {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}"></i>
+                {% if client_booking.status == 'pending' %}
+                {% elif service.status|lower == 'reportgiven' or service.status|lower == 'assigned'  or service.status|lower == 'reportverified' or service.paymentstatus|lower == 'completed' or service.status|lower == 'completed' %}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% endif %}
+                <span class="label">Worker Assigned</span>
+            </div>
+            <div class="progress-bar progress-bar-striped bg-info {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                <i class="fas fa-file-alt fa-2x {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}"></i>
+                <!-- Check if other conditions need to be met for displaying a tick -->
+                {% if client_booking.status == 'pending' %}
+                {% elif service.status|lower == 'reportgiven' or service.status|lower == 'reportverified' or service.paymentstatus|lower == 'completed' or service.status|lower == 'completed' %}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% endif %}
+                <span class="label">Document Submitted</span>
+            </div>
+            <div class="progress-bar progress-bar-striped bg-warning {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                <i class="fas fa-check-double fa-2x {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}"></i>
+                <!-- Check if other conditions need to be met for displaying a tick -->
+                {% if client_booking.status == 'pending' %}
+                {% elif service.status|lower == 'reportverified' or service.paymentstatus|lower == 'completed'  or service.status|lower == 'completed'   %}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% endif %}
+                <span class="label">Approval Received</span>
+            </div>
+            <div class="progress-bar progress-bar-striped bg-danger {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                <i class="fas fa-money-bill-wave fa-2x {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}"></i>
+                <!-- Check if other conditions need to be met for displaying a tick -->
+                {% if client_booking.status == 'pending' %}
+                {% elif service.status|lower == 'completed' or service.paymentstatus|lower == 'completed' %}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% endif %}
+                <span class="label">Payment Completed</span>
+            </div>
+            <div class="progress-bar progress-bar-striped bg-primary {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                <i class="fas fa-check-circle fa-2x {% if service.status|lower == 'reportgiven' or service.status|lower == 'completed' %}completed{% endif %}"></i>
+                <!-- Check if other conditions need to be met for displaying a tick -->
+                {% if client_booking.status == 'pending' %}
+                {% elif service.status|lower == 'completed'%}
+                    <span class="tick"><i class="fas fa-check"></i></span>
+                {% endif %}
+                <span class="label">Service Completed</span>
+            </div>
+            
+        </div>
+        {% if client_booking.status != 'pending' %}
+<div class="d-sm-flex flex-wrap justify-content-between align-items-center text-center pt-4">
+    <div class="custom-control custom-checkbox mt-2 mr-3">
+        <div>
+            <p>Worker Assigned:
+                {% for worker in workers %}
+                    {{ worker.first_name }} {{ worker.last_name }}
+                    <!-- Add more attributes here as needed -->
+                    <br>
+                {% endfor %}
+            </p>
+            
+            <p>Type of Service: {{service.branchid.service_type.service_type}}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+</div>
+
+</body>
+</html>

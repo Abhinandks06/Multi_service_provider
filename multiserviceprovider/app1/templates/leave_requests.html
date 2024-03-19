@@ -17,6 +17,7 @@
             background: linear-gradient(to right, #141e30, #243b55);
             color: #fff;
             font-family: 'Arial', sans-serif;
+            background-image: url('')
         }
 
    
@@ -50,6 +51,8 @@
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
+            font-weight: bolder;
+            font-size: 15px;
         }
 
         th {
@@ -103,7 +106,7 @@
     </style>
 </head>
 
-<body>
+<body style="background-image: url('{% static 'userassets/img/bg/manager.jpg' %}')">
 
    <!-- Header Area Start -->
 <header class="header-area header-sticky">
@@ -180,7 +183,7 @@
     <!-- Container Div End -->
 
     <!-- Footer Area Start -->
-    <footer class="footer-widget-area">
+    {% comment %} <footer class="footer-widget-area">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-2">
@@ -190,7 +193,7 @@
                 </div>
             </div>
         </div>
-    </footer>
+    </footer> {% endcomment %}
     <!-- Footer Area End -->
 
     <!-- All js here -->

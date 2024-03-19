@@ -16,6 +16,7 @@
     <style>
         .container {
             margin-top: 150px;
+            opacity : 5;    
         }
 
         h2 {
@@ -64,7 +65,7 @@
     </style>
 </head>
 
-<body style="background: linear-gradient(to right, #141e30, #243b55);">
+<body style="background-image: url('{% static 'userassets/img/bg/leave.jpg' %}'); background-repeat: no-repeat;background-size: cover; ">
     <!-- Header Area Start -->
     <header class="header-area header-sticky">
         <div class="header-container">
@@ -80,30 +81,31 @@
     <!-- Header Area End -->
 
     <!-- Container Div Start -->
-    <div class="container" style="margin-top: 150px;padding-left:44px">
+    <div class="container" style="margin-top: 150px;padding-left:44px ; ">
 
-        <form method="post" action="{% url 'apply_leave' %}">
-            <h2 style="color:white; font-weight: bolder">Apply for Leave</h2><br>
+        <form method="post" action="{% url 'apply_leave' %}" style="background-color: rgba(255, 255, 255, 0.7);">
+
+            <h2 style="font-weight: bolder; color:black">Apply for Leave</h2><br>
 
             {% csrf_token %}
 
-            <label for="leavetype">Leave Type:</label>
+            <label for="leavetype" style="font-weight: bolder; color:black">Leave Type:</label>
             <select name="leavetype" id="leavetype">
-                <option value="medical">Medical</option>
-                <option value="family_emergency">Family Emergency</option>
-                <option value="other">Other</option>
+                <option value="medical" style="font-weight: bolder; color:black">Medical</option>
+                <option value="family_emergency" style="font-weight: bolder; color:black">Family Emergency</option>
+                <option value="other" style="font-weight: bolder; color:black">Other</option>
             </select>
             <br><br>
 
-            <label for="start_date">Start Date:</label>
+            <label for="start_date" style="font-weight: bolder; color:black">Start Date:</label>
             <input type="date" name="start_date" id="start_date">
             <br><br>
 
-            <label for="end_date">End Date:</label>
+            <label for="end_date" style="font-weight: bolder; color:black">End Date:</label>
             <input type="date" name="end_date" id="end_date">
             <br><br>
 
-            <button type="submit">Submit</button>
+            <button type="submit" style="font-weight: bolder; color:black">Submit</button>
         </form>
     </div>
     <!-- Container Div End -->

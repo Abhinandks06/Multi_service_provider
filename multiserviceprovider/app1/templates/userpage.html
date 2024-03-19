@@ -114,7 +114,8 @@
                                         </ul> 
                                     </li> 
                                     {% comment %} <li><a href="{% url 'update_profile' %}" id="updateProfileLink">Update Profile</a></li> {% endcomment %}
-                                  
+                                    <li><a href="{% url 'track_booking' client_id=user_id %}">Track Booking</a></li>
+
                                     <li><a href="user_logout">Logout</a></li> 
                                     {% endif %}
                                 </ul>
