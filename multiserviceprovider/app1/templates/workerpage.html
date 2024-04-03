@@ -91,6 +91,7 @@
                                             <li><a href="#">Work History</a></li>
                                         </ul>
                                     </li>  
+                                    <li><a href="{% url 'wallet' %}">Wallet</a></li>
                                     <li><a href="{% url 'apply_leave' %}">Leave</a></li>
                                     {% if user.is_authenticated %}
                                     <li><a href="{% url 'assignedwork' %}">Status</a></li>

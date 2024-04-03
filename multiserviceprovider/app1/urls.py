@@ -153,9 +153,11 @@ urlpatterns = [
      path('cancel_service/', views.cancel_service, name='cancel_service'),
      path('update_rating/', views.update_rating, name='update_rating'),
      path('update_review/', views.update_review, name='update_review'),
+     path('update_reply/', views.update_reply, name='update_reply'),
      path('update-service-and-booking/<int:booking_id>/', views.update_service_and_booking, name='update_service_and_booking'),
      path('client_work_reports/<int:client_id>/payment_success', views.payment_success, name='payment_success'),
      path('payment_success/', payment_success, name='payment_success'),
+     path('bonus_payment_success/', bonus_payment_success, name='bonus_payment_success'),
      path('add_service/', add_service, name='add_service'),
      path('add_branch/', add_branch, name='add_branch'),
      path('add_branch_page/<int:provider_id>/', add_branch_page, name='add_branch_page'),
@@ -202,6 +204,8 @@ urlpatterns = [
     path('calendar_page/<int:user_id>/', views.calendar_page, name='calendar_page'),
     path('calendar_page/<int:user>/managerpage', views.managerpagehome, name='managerpage'),
     path('track_booking/<int:client_id>/', views.track_booking, name='track_booking'),
+    path('worker-bonus/<int:service_id>/', worker_bonus, name='worker_bonus'),
+    path('wallet/', views.wallet_view, name='wallet'),
 
 
 ]

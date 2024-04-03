@@ -149,6 +149,7 @@ class Service(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=ASSIGNED)
     rating = models.IntegerField(blank=True, null=True)  # Field to store the rating
     review = models.TextField(blank=True, null=True) 
+    reply= models.TextField(blank=True, null=True)
     paymentstatus = models.CharField(max_length=15, choices=PAYMENT_STATUS_CHOICES, default=REQUESTED)
 class WorkerReport(models.Model):
     COMPLETED = 'completed'
@@ -240,3 +241,14 @@ class Assignment(models.Model):
     requestid = models.ForeignKey(ClientWorkRequest, on_delete=models.CASCADE)
     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, default='requested')
+
+class Bonus(models.Model):
+    bonusid = models.AutoField(primary_key=True)
+    userid = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    reportid = models.ForeignKey(WorkerReport, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Wallet(models.Model):
+    walletid = models.AutoField(primary_key=True)
+    userid = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)

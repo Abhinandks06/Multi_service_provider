@@ -782,8 +782,11 @@ textarea[name="review"] {
                                             {% csrf_token %}
                                             <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
                                             <textarea name="review" rows="3" cols="30" placeholder="Write a review">{{ booking.review }}</textarea>
-                                            <center><button class="submit-button btn btn-outline-primary my-3" type="submit">Submit Review</button></center>
+                                            {% if not booking.review %}
+                                                <center><button class="submit-button btn btn-outline-primary my-3" type="submit">Submit Review</button></center>
+                                            {% endif %}
                                         </form>
+                                        
                                         </td>
                                       </tr>
                                        {% endif %}

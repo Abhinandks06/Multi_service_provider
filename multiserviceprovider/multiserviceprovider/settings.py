@@ -146,10 +146,13 @@ MESSAGES_TAGS={
 }
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_PORT = 587  # or the appropriate port for your email host
 EMAIL_HOST_USER = 'abhinandks2024a@mca.ajce.in'
 EMAIL_HOST_PASSWORD = 'Saltpot@006'
+
+# Set either EMAIL_USE_TLS or EMAIL_USE_SSL to True, and the other one to False
+EMAIL_USE_TLS = True  # Set to True if your email provider requires TLS
+EMAIL_USE_SSL = False  # Set to False if you're using TLS, otherwise set to True if your email provider requires SSL
 
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY =  '194823522532-38u3jnj1mnb2di3tc6c1g10ahjiopc5s.apps.googleusercontent.com'

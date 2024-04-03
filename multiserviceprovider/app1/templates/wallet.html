@@ -1,0 +1,178 @@
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Multiservice provider</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'userassets/img/icon.png' %}">
+    <!-- All css here -->
+    <link rel="stylesheet" href="{% static 'userassets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/ie7.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/plugins.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
+    <script src="{% static 'userassets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Apply standard font and add space */
+        a.logo-text {
+            font-family: Arial, sans-serif; /* Use Arial or any standard sans-serif font */
+            font-size: 30px; /* Set the font size */
+            font-weight: bold; /* Make the text bold */
+            text-decoration: none; /* Remove underline from the link */
+            color: white; /* Set a standard text color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Apply text shadow for a cool effect */
+            margin-bottom: 35px;
+        }
+        
+        /* Style the provider text separately */
+        span.provider-text {
+            padding-top: 30px !important;
+        }
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('path/to/font.woff');
+        }
+
+     
+        .wallet-content {
+            max-width: 600px; /* Set the maximum width of the wallet content */
+            margin: 10% auto 0; /* Center the wallet content horizontally and align it 20% from the top */
+            padding: 20px; /* Add padding around the wallet content */
+        }
+        
+
+.wallet-info-container {
+    background-color: #fff; /* White background color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow effect */
+    padding: 20px; /* Add padding inside the container */
+}
+.wallet-head{
+    font-weight: bolder;
+    text-align : center;
+}
+
+
+
+    </style>
+</head>
+<body style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
+    <!-- Header Area Start -->
+    <header class="header-area header-sticky">
+        <div class="header-container">
+            <div class="row">
+            <div class="col-lg-5 display-none-md display-none-xs">
+                <div class="ht-main-menu">
+                    <nav>
+                        <ul>
+                            <li class="active"><a href="{% url 'workerpage' %}">HOME </a></li>
+                            
+                            <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-lg-2 col-sm-4">
+                <div class="logo text-center">
+                    <a href="" class="logo-text">
+                        MULTISERVICE <span class="provider-text" style="padding-top: 30px;">PROVIDER</span></a>
+                </div>
+            </div>
+            <div class="col-lg-5 col-sm-8">
+                <div class="header-content d-flex justify-content-end">
+                    <div class="search-wrapper">
+                        <a href="#"><span class="icon icon-Search"></span></a>
+                        <form action="#" class="search-form">
+                            <input type="text" placeholder="Search entire store here ...">
+                            <button type="button">Search</button>
+                        </form>
+                    </div>
+                    <div class="settings-wrapper">
+                        <a href="#"><i class="fas fa-bell"></i></a>
+                    </div>
+                    <div class="cart-wrapper">
+                        <a href="#"><i class="fas fa-user"></i></a>  
+                        <span>{{ request.user }}</span>         
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Hero Area Start -->
+<div>
+    <div>
+        <!-- Single Slide Start -->
+        <div>
+            <div class="container">
+                <div class="content-section">
+                    <!-- Wallet content -->
+                    </div><div class="wallet-content">
+                        <h2 class="wallet-head">Wallet Information</h2>
+                        <div class="wallet-info-container">
+                            <div class="wallet-info">
+                                {% if user_wallet %}
+                                <h2>Wallet Balance: ${{ user_wallet.0.amount }}</h2>
+                                <!-- Add more wallet details as needed -->
+                                {% else %}
+                                <p>No wallet information available.</p>
+                                {% endif %}
+                            </div>
+                    
+                            <h3>Bonuses</h3>
+                            <div class="bonus-list">
+                                {% if user_bonuses %}
+                                {% for bonus in user_bonuses %}
+                                <div class="bonus-box" style="margin-bottom: 10px;">
+                                    <div class="bonus-details">
+                                        <p style="font-weight: bolder; margin-bottom: 5px;">Bonus Obtained: ${{ bonus.amount }}</p>
+                                        <p style="font-weight: bolder; margin-bottom: 5px;">Given by : {{ bonus.reportid.serviceid.clientid.first_name }}</p>
+                                        <p style="font-weight: bolder; margin-bottom: 5px;">Date : {{ bonus.reportid.created_at }}</p>
+                                    </div>
+                                </div>
+                                <hr style="margin-top: 10px; margin-bottom: 10px;">
+                                {% endfor %}
+                                {% else %}
+                                <p>No bonus information available.</p>
+                                {% endif %}
+                            </div>
+                    
+                            <h3>Salaries</h3>
+                            <div class="salary-list">
+                                {% if user_salaries %}
+                                <div class="salary-box">
+                                    <div class="salary-details">
+                                        <p style="font-weight: bolder">Salary Amount: ${{ user_salaries.0.amount }}</p>
+                                        <p style="font-weight: bolder">Salary Credited Dates:</p>
+                                        <ul style="font-weight: bolder">
+                                            {% for date in user_salaries %}
+                                            <li>{{ date.date }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <p>No salary information available.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Wallet content -->
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+<script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
+<script src="{% static 'userassets/js/plugins.js' %}"></script>
+<script src="{% static 'userassets/js/ajax-mail.js' %}"></script>
+<script src="{% static "userassets/js/main.js" %}"></script>
+</body>
+</html>
+

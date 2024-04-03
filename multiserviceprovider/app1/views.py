@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import FAQ, Assignment, Branch, BranchManager, BranchManagerAssignment, ClientWorkRequest, MultiBranch, MyUser,Client, Salary,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
+from .models import FAQ, Assignment, Bonus, Branch, BranchManager, BranchManagerAssignment, ClientWorkRequest, MultiBranch, MyUser,Client, Salary, Wallet,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -1184,8 +1184,8 @@ def update_status(request):
             client_message = f"Hi {client_booking.name}, The work for your booking has been marked as completed."
             manager_message = f"Dear Manager, The work for the booking has been marked as completed."
 
-            send_mail('Work Completion Notification - Client', client_message, 'your@email.com', [client_email])
-            send_mail('Work Completion Notification - Manager', manager_message, 'your@email.com', [manager_email])
+            send_mail('Work Completion Notification - Client', client_message, 'abhinandks2024a@mca.ajce.in', [client_email])
+            send_mail('Work Completion Notification - Manager', manager_message, 'abhinandks2024a@mca.ajce.in', [manager_email])
 
             messages.success(request, 'Service status updated! Emails sent to the client, provider, and manager.')
         else:
@@ -1569,6 +1569,22 @@ def update_review(request):
 
     # Handle other cases, e.g., GET requests
     return redirect('userpage')
+@login_required
+def update_reply(request):
+    if request.method == 'POST':
+        service_id = request.POST.get('service_id')
+        reply = request.POST.get('reply')
+
+        # Update the Service model with the received review
+        service = Service.objects.get(serviceid=service_id)
+        service.reply = reply
+        service.save()
+
+        # Redirect to the client bookings page or any other page
+        return redirect('bookinghistory')
+
+    # Handle other cases, e.g., GET requests
+    return redirect('managerpage')
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 @csrf_exempt
@@ -1588,7 +1604,7 @@ def payment_success(request):
         manager_id = branch_manager_assignment.manager.managerid
 
         # Get the manager object
-        manager =BranchManager.objects.get(pk=manager_id)
+        manager = BranchManager.objects.get(pk=manager_id)
 
         # Set provider_email as the manager's email
         provider_email = manager.email
@@ -1604,7 +1620,9 @@ def payment_success(request):
         recipient_list = [provider_email]
         send_mail(subject, message, from_email, recipient_list)
         messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
-        return redirect('userpage')
+
+        # Pass the service object to worker_bonus view
+        return redirect('worker_bonus', service_id=service_id)
 
     except BranchManagerAssignment.DoesNotExist:
         # Handle the case where there is no manager assigned to the branch
@@ -1615,6 +1633,46 @@ def payment_success(request):
         # Handle the case where the manager object is not found
         messages.error(request, 'Error: Manager not found.')
         return redirect('userpage')
+    
+def worker_bonus(request, service_id):
+    # Retrieve the service object
+    service = get_object_or_404(Service, pk=service_id)
+
+
+    return render(request, 'worker_bonus.html', {'service': service})
+
+from django.core.exceptions import ObjectDoesNotExist
+
+@login_required
+def bonus_payment_success(request):
+    service_id = request.POST.get('service_id')
+    amount = Decimal(request.POST.get('amount'))  # Convert the amount to a Decimal
+    service = Service.objects.get(pk=service_id)
+    reportid = WorkerReport.objects.get(serviceid=service)
+
+    # Create a new bonus entry
+    Bonus.objects.create(
+        userid=reportid.user_id.user,
+        reportid=reportid,
+        amount=amount 
+    )
+
+    # Check if the user has a wallet
+    try:
+        wallet = Wallet.objects.get(userid=reportid.user_id.user)
+    except ObjectDoesNotExist:
+        # If wallet doesn't exist, create a new one
+        Wallet.objects.create(userid=reportid.user_id.user, amount=amount)
+    else:
+        # If wallet exists, update its amount
+        wallet.amount += amount
+        wallet.save()
+
+    messages.success(request, 'Payment successful! Thanks for adding your worker bonus.')
+    return redirect('userpage')
+
+
+    
 @login_required
 def add_service(request):
     if request.method == 'POST':
@@ -1636,6 +1694,7 @@ def add_service(request):
 
     # Render the service form page for GET requests
     return render(request, 'custom_admin_page')
+
 
 @login_required
 def add_branch(request):
@@ -2046,6 +2105,10 @@ def workersalary(request, userid):
         messages.error(request, "You are not assigned as a branch manager.")
         return redirect('home')
     
+from django.db.models import F
+
+from django.core.exceptions import ObjectDoesNotExist
+
 @login_required
 def worker_salary(request, userid, worker_id):
     worker = get_object_or_404(Worker, user=worker_id)
@@ -2061,6 +2124,15 @@ def worker_salary(request, userid, worker_id):
             existing_salary.status = 'paid'
             existing_salary.save()
             messages.success(request, 'Salary payment initiated successfully for worker {}.'.format(worker.first_name))
+            try:
+                wallet = Wallet.objects.get(userid=worker.user)
+            except ObjectDoesNotExist:
+                # If wallet doesn't exist, create a new one
+                Wallet.objects.create(userid=worker.user, amount=existing_salary.amount)
+            else:
+                # If wallet exists, update its amount
+                wallet.amount += existing_salary.amount
+                wallet.save()
         else:
             # Create a new salary entry with the current date
             salary = Salary.objects.create(
@@ -2072,7 +2144,20 @@ def worker_salary(request, userid, worker_id):
             )
             messages.success(request, 'Salary payment initiated successfully for worker {}.'.format(worker.first_name))
 
+            # Check if the worker has a wallet
+            try:
+                wallet = Wallet.objects.get(userid=worker.user)
+            except ObjectDoesNotExist:
+                # If wallet doesn't exist, create a new one
+                Wallet.objects.create(userid=worker.user, amount=salary.amount)
+            else:
+                # If wallet exists, update its amount
+                wallet.amount += salary.amount
+                wallet.save()
+
     return redirect('workersalary', userid=userid)
+
+
 @login_required
 def pay_all_salaries(request, userid):
     try:
@@ -2299,3 +2384,13 @@ def track_booking(request, client_id):
     
     return render(request, 'trackbooking.html', {'service': last_service, 'workers': workers, 'client_booking': last_client_booking})
 
+@login_required
+def wallet_view(request):
+    # Retrieve wallet information for the logged-in user
+    user_wallet = Wallet.objects.filter(userid=request.user)
+
+    # Retrieve bonus and salary objects for the logged-in user
+    user_bonuses = Bonus.objects.filter(userid=request.user)
+    user_salaries = Salary.objects.filter(userid=request.user)
+
+    return render(request, 'wallet.html', {'user_wallet': user_wallet, 'user_bonuses': user_bonuses, 'user_salaries': user_salaries})

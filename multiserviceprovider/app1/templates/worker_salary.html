@@ -139,7 +139,16 @@ body {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <body style="background-image: url('{% static 'userassets/img/bg/salary.jpg' %}')">
-        
+        <script>
+            // Display alert message if it exists in the session
+            {% if messages %}
+                window.onload = function() {
+                    {% for message in messages %}
+                        alert("{{ message }}");
+                    {% endfor %}
+                };
+            {% endif %}
+        </script>  
         <!-- Header Area Start -->
         <header class="header-area header-sticky">
           <div class="header-container">

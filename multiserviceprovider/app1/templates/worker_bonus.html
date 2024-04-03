@@ -1,0 +1,291 @@
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Multiservice provider</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'userassets/img/icon.png' %}">
+    <!-- All css here -->
+    <link rel="stylesheet" href="{% static 'userassets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/ie7.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/plugins.css' %}">
+    <link rel="stylesheet" href="{% static 'userassets/css/style.css' %}">
+    <script src="{% static 'userassets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Apply standard font and add space */
+        a.logo-text {
+            font-family: Arial, sans-serif; /* Use Arial or any standard sans-serif font */
+            font-size: 30px; /* Set the font size */
+            font-weight: bold; /* Make the text bold */
+            text-decoration: none; /* Remove underline from the link */
+            color: white; /* Set a standard text color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Apply text shadow for a cool effect */
+            margin-bottom: 35px;
+        }
+        
+        /* Style the provider text separately */
+        span.provider-text {
+            padding-top: 30px !important;
+        }
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('path/to/font.woff');
+        }
+
+        .icon-Notification:before {
+            font-family: 'CustomFont';
+            content: "\e123"; /* Replace with the correct Unicode character for your notification icon */
+        }
+        .provider {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .provider strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .provider-card {
+            background-color: rgba(255, 255, 255, 0.8); /* Set background color with opacity */
+            border-radius: 15px; /* Add curved borders */
+            margin: 10px;
+            padding: 15px;
+        }
+        .report-list {
+            list-style: none;
+            padding: 0;
+        }
+        .report-item {
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .report-item ul {
+            padding: 0;
+            margin: 0;
+        }
+        .report-item li {
+            margin-bottom: 10px;
+        }
+        .report-item a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .tip-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 80%; /* Set maximum width */
+            width: auto; /* Allow the box to expand based on content */
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .tip-box h3 {
+            margin-bottom: 20px;
+        }
+        .tip-box .btn {
+            margin-bottom: 20px;
+        }
+        .razorpay-payment-button {
+            background-color: #007bff; /* Blue background color */
+            color: #ffffff; /* White text color */
+            border: none; /* Remove border */
+            padding: 10px 20px; /* Adjust padding */
+            font-size: 16px; /* Adjust font size */
+            border-radius: 5px; /* Add border radius for rounded corners */
+            cursor: pointer; /* Change cursor to pointer on hover */
+        }
+
+        /* Change button color on hover */
+        .razorpay-payment-button:hover {
+            background-color: #0056b3; /* Darker shade of blue */
+        }
+        
+    </style>
+</head>
+<body style="background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}')">
+    <!-- Header Area Start -->
+    <header class="header-area header-sticky">
+        <div class="header-container">
+            <div class="row">
+            <div class="col-lg-5 display-none-md display-none-xs">
+                <div class="ht-main-menu">
+                    <nav>
+                        <ul>
+                            <li class="active"><a href="{% url 'userpage' %}">HOME </a></li>
+                            <li><a href="">Services <i class="fa fa-angle-down"></i></a>
+                                <ul class="ht-mega-menu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="{% url 'service_providers_by_category' category='Cleaning' %}">Cleaning</a></li>
+                                            <li><a href="{% url 'service_providers_by_category' category='Laundry' %}">Laundry</a></li>
+                                            <li><a href="{% url 'service_providers_by_category' category='Electrical' %}">Electrical</a></li>
+                                            <li><a href="{% url 'service_providers_by_category' category='Plumbing' %}">Plumbing</a></li>
+                                            <li><a href="{% url 'service_providers_by_category' category='Pestcontrol' %}">Pest control</a></li>
+                                            <li><a href="{% url 'service_providers_by_category' category='Repair' %}">Repair</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-lg-2 col-sm-4">
+                <div class="logo text-center">
+                    <a href="" class="logo-text">MULTISERVICE <span class="provider-text" style="padding-top: 30px;">PROVIDER</span></a>
+                </div>
+            </div>
+            <div class="col-lg-5 col-sm-8">
+                <div class="header-content d-flex justify-content-end">
+                    <div class="search-wrapper">
+                        <a href="#"><span class="icon icon-Search"></span></a>
+                        <form action="#" class="search-form">
+                            <input type="text" placeholder="Search entire store here ...">
+                            <button type="button">Search</button>
+                        </form>
+                    </div>
+                    <div class="settings-wrapper">
+                        <a href="#"><i class="fas fa-bell"></i></a>
+                    </div>
+                    <div class="cart-wrapper">
+                        <a href="#"><i class="fas fa-user"></i></a>  
+                        <span>{{ request.user }}</span>         
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Hero Area Start -->
+<div>
+    <div>
+        <!-- Single Slide Start -->
+        <div>
+            <div class="container">
+                <div class="content-section">
+                    <!-- Your content goes here -->
+                    <!-- Your content elements and sections go here -->
+                    <br> <br> <br> <br> 
+                    <ul class="report-list">
+                        <div class="tip-box card-body text-center">
+                            <h3>Would you like to tip the worker?</h3>
+                            <br>
+                            <p>Worker Details:</p>
+                            <ul>
+                                {% for worker in service.workerid.all %}
+                                <li>Worker Name: {{ worker.first_name }} {{ worker.last_name }}</li>
+                                <li>Employee of  : {{ worker.provider.providername }}</li>
+                                <li>Phone: {{ worker.phone }}</li>
+                                <!-- Add other worker details as needed -->
+                                {% endfor %}
+                            </ul>
+                            
+                            </form>
+                            
+                            <div class="mt-4">
+                                <form id="razorpay-form" action="{% url 'bonus_payment_success' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="service_id" value="{{ service.serviceid }}">
+                                    <input type="hidden" name="amount" value="50">
+                        
+                                    <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                            data-key="rzp_test_bWe8tmmP1WXOe7"
+                                            data-amount="{{ 5000 }}"
+                                            data-currency="INR"
+                                            data-order_id="{{ payment.id }}"
+                                            data-buttontext="Tip $50"
+                                            data-name="Multiservice provider"
+                                            data-description="An efficient and reliable service provider"
+                                            data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                            data-prefill.name="Abhinand K S"
+                                            data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                            data-theme.color="#F37254">
+                                    </script>
+                                    <form id="razorpay-form" action="{% url 'bonus_payment_success' %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="service_id" value="{{ service.serviceid }}">
+                                        <input type="hidden" name="amount" value="100">
+                            
+                                        <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                                data-key="rzp_test_bWe8tmmP1WXOe7"
+                                                data-amount="{{ 10000 }}"
+                                                data-currency="INR"
+                                                data-order_id="{{ payment.id }}"
+                                                data-buttontext="Tip $100"
+                                                data-name="Multiservice provider"
+                                                data-description="An efficient and reliable service provider"
+                                                data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                                data-prefill.name="Abhinand K S"
+                                                data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                                data-theme.color="#F37254">
+                                        </script>
+                                        <form id="razorpay-form" action="{% url 'bonus_payment_success' %}" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="service_id" value="{{ service.serviceid }}">
+                                            <input type="hidden" name="amount" value="200">
+                                
+                                            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                                    data-key="rzp_test_bWe8tmmP1WXOe7"
+                                                    data-amount="{{ 20000 }}"
+                                                    data-currency="INR"
+                                                    data-order_id="{{ payment.id }}"
+                                                    data-buttontext="Tip $200"
+                                                    data-name="Multiservice provider"
+                                                    data-description="An efficient and reliable service provider"
+                                                    data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                                    data-prefill.name="Abhinand K S"
+                                                    data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                                    data-theme.color="#F37254">
+                                            </script><br><br>
+                                <button class="btn btn-secondary mx-2" onclick="selectTip(0)">No, thanks</button>
+                            </div>
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function selectTip(amount) {
+        document.getElementById('tip-amount').value = amount;
+        var razorpayForm = document.getElementById('razorpay-form');
+        var razorpayScript = razorpayForm.querySelector('script[data-key="rzp_test_bWe8tmmP1WXOe7"]');
+        razorpayScript.dataset.amount = amount * 100; // Convert amount to paise (multiply by 100 for INR)
+    }
+</script>
+
+<script>
+    const costElements = document.querySelectorAll('.report-item li:nth-child(4)');
+    costElements.forEach((element) => {
+        const originalCost = parseFloat(element.textContent.split(': ')[1]);
+        const dividedCost = originalCost / 100;
+        element.textContent = `Cost: ${dividedCost}`;
+    });
+</script>
+<script src="{% static 'userassets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+<script src='{% static "userassets/js/bootstrap.min.js" %}'></script>
+<script src="{% static 'userassets/js/plugins.js' %}"></script>
+<script src="{% static 'userassets/js/ajax-mail.js' %}"></script>
+<script src="{% static "userassets/js/main.js" %}"></script>
+</body>
+</html>
