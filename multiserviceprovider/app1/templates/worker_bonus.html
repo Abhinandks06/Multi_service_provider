@@ -199,12 +199,12 @@
                             
                             </form>
                             
-                            <div class="mt-4">
-                                <form id="razorpay-form" action="{% url 'bonus_payment_success' %}" method="POST">
+                            <div class="mt-4" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                                <form id="razorpay-form-50" action="{% url 'bonus_payment_success' %}" method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="service_id" value="{{ service.serviceid }}">
                                     <input type="hidden" name="amount" value="50">
-                        
+                                    
                                     <script src="https://checkout.razorpay.com/v1/checkout.js"
                                             data-key="rzp_test_bWe8tmmP1WXOe7"
                                             data-amount="{{ 5000 }}"
@@ -218,46 +218,53 @@
                                             data-prefill.email="abhinandks2024a@mca.ajce.in"
                                             data-theme.color="#F37254">
                                     </script>
-                                    <form id="razorpay-form" action="{% url 'bonus_payment_success' %}" method="POST">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="service_id" value="{{ service.serviceid }}">
-                                        <input type="hidden" name="amount" value="100">
+                                </form>
                             
-                                        <script src="https://checkout.razorpay.com/v1/checkout.js"
-                                                data-key="rzp_test_bWe8tmmP1WXOe7"
-                                                data-amount="{{ 10000 }}"
-                                                data-currency="INR"
-                                                data-order_id="{{ payment.id }}"
-                                                data-buttontext="Tip $100"
-                                                data-name="Multiservice provider"
-                                                data-description="An efficient and reliable service provider"
-                                                data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
-                                                data-prefill.name="Abhinand K S"
-                                                data-prefill.email="abhinandks2024a@mca.ajce.in"
-                                                data-theme.color="#F37254">
-                                        </script>
-                                        <form id="razorpay-form" action="{% url 'bonus_payment_success' %}" method="POST">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="service_id" value="{{ service.serviceid }}">
-                                            <input type="hidden" name="amount" value="200">
-                                
-                                            <script src="https://checkout.razorpay.com/v1/checkout.js"
-                                                    data-key="rzp_test_bWe8tmmP1WXOe7"
-                                                    data-amount="{{ 20000 }}"
-                                                    data-currency="INR"
-                                                    data-order_id="{{ payment.id }}"
-                                                    data-buttontext="Tip $200"
-                                                    data-name="Multiservice provider"
-                                                    data-description="An efficient and reliable service provider"
-                                                    data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
-                                                    data-prefill.name="Abhinand K S"
-                                                    data-prefill.email="abhinandks2024a@mca.ajce.in"
-                                                    data-theme.color="#F37254">
-                                            </script><br><br>
+                                <form id="razorpay-form-100" action="{% url 'bonus_payment_success' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="service_id" value="{{ service.serviceid }}">
+                                    <input type="hidden" name="amount" value="100">
+                                    
+                                    <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                            data-key="rzp_test_bWe8tmmP1WXOe7"
+                                            data-amount="{{ 10000 }}"
+                                            data-currency="INR"
+                                            data-order_id="{{ payment.id }}"
+                                            data-buttontext="Tip $100"
+                                            data-name="Multiservice provider"
+                                            data-description="An efficient and reliable service provider"
+                                            data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                            data-prefill.name="Abhinand K S"
+                                            data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                            data-theme.color="#F37254">
+                                    </script>
+                                </form>
+                            
+                                <form id="razorpay-form-200" action="{% url 'bonus_payment_success' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="service_id" value="{{ service.serviceid }}">
+                                    <input type="hidden" name="amount" value="200">
+                                    
+                                    <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                            data-key="rzp_test_bWe8tmmP1WXOe7"
+                                            data-amount="{{ 20000 }}"
+                                            data-currency="INR"
+                                            data-order_id="{{ payment.id }}"
+                                            data-buttontext="Tip $200"
+                                            data-name="Multiservice provider"
+                                            data-description="An efficient and reliable service provider"
+                                            data-image="https://img.freepik.com/free-vector/payment-background-design_1223-72.jpg"
+                                            data-prefill.name="Abhinand K S"
+                                            data-prefill.email="abhinandks2024a@mca.ajce.in"
+                                            data-theme.color="#F37254">
+                                    </script>
+                                </form>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
                                 <button class="btn btn-secondary mx-2" onclick="selectTip(0)">No, thanks</button>
                             </div>
                             
-                        </div>
                     </ul>
                 </div>
             </div>

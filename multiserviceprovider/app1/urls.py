@@ -184,6 +184,7 @@ urlpatterns = [
      path('worker_report/<int:provider_id>/', views.worker_report, name='worker_report'),
      path('managerpage/<int:provider_id>/', providerpage , name='providerpage'),
      path('branch_list/<int:provider_id>/', branch_list, name='branch_list'),
+     path('statistics/<int:provider_id>/', statistics, name='statistics'),
      path('branch_list/<int:provider_id>/providerpage', providerpagehome, name='providerpagehome'),
      path('help_assistant/', help_assistant, name='help_assistant'),
      path('help_assistant/userpage', userpage, name='userpage'),
@@ -206,6 +207,8 @@ urlpatterns = [
     path('track_booking/<int:client_id>/', views.track_booking, name='track_booking'),
     path('worker-bonus/<int:service_id>/', worker_bonus, name='worker_bonus'),
     path('wallet/', views.wallet_view, name='wallet'),
+    path('reschedule-booking/', views.reschedule_booking, name='reschedule_booking'),
+    path('reschedulebooking/', views.reschedulebooking, name='reschedulebooking'),
 
 
 ]

@@ -45,7 +45,9 @@
             font-family: 'CustomFont';
             content: "\e123"; /* Replace with the correct Unicode character for your notification icon */
         }
-
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...your-sha512-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -104,7 +106,23 @@
                                         </ul>
                                     </li>
                                     {% if user.is_authenticated %}
-                                    <li><a href="{% url 'client_bookings' client_id=user_id %}">Bookings</a></li>
+                                    <li class="dropdown">
+                                        <a class="dropdown" href="#" id="bookingDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            Bookings <i class="fa fa-angle-down"></i>
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="bookingDropdown">
+                                            <li class="dropdown-item">
+                                                <a href="{% url 'client_bookings' client_id=user_id %}">Booking History</a>
+                                            </li>
+                                            <li class="dropdown-item">
+                                                <a href="{% url 'reschedule_booking' %}">Reschedule Booking</a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    
+                                    
                                     <li><a href="{% url 'client_work_reports' client_id=user_id %}" id="work-report-link">Work Report</a></li>
                                      <li id="profileMenu">
                                       <a href="#bookings">Profile</a>

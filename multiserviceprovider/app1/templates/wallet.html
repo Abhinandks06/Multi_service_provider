@@ -117,37 +117,18 @@
                         <div class="wallet-info-container">
                             <div class="wallet-info">
                                 {% if user_wallet %}
-                                <h2>Wallet Balance: ${{ user_wallet.0.amount }}</h2>
+                                <h2 id="wallet-balance">Wallet Balance: ${{ user_wallet.0.amount }}</h2>
                                 <!-- Add more wallet details as needed -->
                                 {% else %}
-                                <p>No wallet information available.</p>
+                                <p></p>
                                 {% endif %}
                             </div>
-                    
-                            <h3>Bonuses</h3>
-                            <div class="bonus-list">
-                                {% if user_bonuses %}
-                                {% for bonus in user_bonuses %}
-                                <div class="bonus-box" style="margin-bottom: 10px;">
-                                    <div class="bonus-details">
-                                        <p style="font-weight: bolder; margin-bottom: 5px;">Bonus Obtained: ${{ bonus.amount }}</p>
-                                        <p style="font-weight: bolder; margin-bottom: 5px;">Given by : {{ bonus.reportid.serviceid.clientid.first_name }}</p>
-                                        <p style="font-weight: bolder; margin-bottom: 5px;">Date : {{ bonus.reportid.created_at }}</p>
-                                    </div>
-                                </div>
-                                <hr style="margin-top: 10px; margin-bottom: 10px;">
-                                {% endfor %}
-                                {% else %}
-                                <p>No bonus information available.</p>
-                                {% endif %}
-                            </div>
-                    
                             <h3>Salaries</h3>
                             <div class="salary-list">
                                 {% if user_salaries %}
                                 <div class="salary-box">
                                     <div class="salary-details">
-                                        <p style="font-weight: bolder">Salary Amount: ${{ user_salaries.0.amount }}</p>
+                                        <h4><p style="font-weight: bolder" id="salary-amount">Salary Amount: ${{ user_salaries.0.amount }}</p></h4>
                                         <p style="font-weight: bolder">Salary Credited Dates:</p>
                                         <ul style="font-weight: bolder">
                                             {% for date in user_salaries %}
@@ -159,7 +140,58 @@
                                 {% else %}
                                 <p>No salary information available.</p>
                                 {% endif %}
+                            </div><br>
+                            <h3 id="total-bonus">Total Bonus Obtained: </h3>
+                            <h3>
+                                Bonuses 
+                                <span class="arrow" style="cursor: pointer;">▶</span> <!-- Arrow mark for toggling -->
+                            </h3>
+                            <div class="bonus-list" style="display: none;"> <!-- Hidden by default -->
+                                {% if user_bonuses %}
+                                    {% for bonus in user_bonuses %}
+                                        <div class="bonus-box" style="margin-bottom: 10px;">
+                                            <div class="bonus-header">
+                                                <span style="font-weight: bold;">Bonus Obtained: ${{ bonus.amount }}</span>
+                                            </div>
+                                            <div class="bonus-details">
+                                                <p style="font-weight: bold; margin-bottom: 5px;">Given by : {{ bonus.reportid.serviceid.clientid.first_name }}</p>
+                                                <p style="font-weight: bold; margin-bottom: 5px;">Date : {{ bonus.reportid.created_at }}</p>
+                                            </div>
+                                        </div>
+                                        <hr style="margin-top: 10px; margin-bottom: 10px;">
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No bonus information available.</p>
+                                {% endif %}
                             </div>
+                            
+                            <script>
+                                // Add event listener to the arrow mark in the heading
+                                document.querySelector('.arrow').addEventListener('click', () => {
+                                    // Toggle the display of all bonus details
+                                    const bonusList = document.querySelector('.bonus-list');
+                                    bonusList.style.display = bonusList.style.display === 'none' ? 'block' : 'none';
+                                });
+                            </script>
+                            {% block scripts %}
+                            <script>
+                                // Initialize the sum variable
+                                let totalBonusAmount = 0;
+                        
+                                // Iterate through each bonus box element
+                                document.querySelectorAll('.bonus-box').forEach(bonusBox => {
+                                    // Extract the bonus amount from the bonus box
+                                    const bonusAmountText = bonusBox.querySelector('.bonus-header span').innerText;
+                                    const bonusAmount = parseFloat(bonusAmountText.replace('Bonus Obtained: $', ''));
+                        
+                                    // Add the bonus amount to the total
+                                    totalBonusAmount += bonusAmount;
+                                });
+                        
+                                // Update the total bonus amount in the HTML
+                                document.getElementById('total-bonus').innerText = `Total Bonus Obtained: $${totalBonusAmount.toFixed(2)}`;
+                            </script>
+                        {% endblock %}
                         </div>
                     </div>
                     <!-- End Wallet content -->

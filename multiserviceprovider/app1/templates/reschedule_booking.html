@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reschedule Booking</title>
+    <style>
+        body {
+            background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column; /* Change to column layout */
+            align-items: center;
+            justify-content: flex-start; /* Align content to the top */
+            min-height: 100vh; /* Ensure the body takes up at least the full height of the viewport */
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between; /* Align items to the start and end */
+            align-items: center;
+            background-image: url('{% static 'userassets/img/bg/mainhead.jpg' %}');
+            padding: 5px 20px; /* Add padding to the left and right */
+            width: 100%; /* Occupy full width */
+            font-size: 24px; /* Adjust the font size as needed */
+            border-bottom: 2px solid #000; /* Add a black border at the bottom */
+        }
+        
+        .navbar h3 {
+            font-size: 34px; /* Adjust the font size as needed */
+            margin: 0; /* Remove default margin */
+            flex: 1; /* Allow the heading to grow and occupy available space */
+            text-align: center; /* Center align the heading */
+        }
+
+        .home-link {
+            color: black;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #f2f2f2;
+            border-radius: 10px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+        }
+
+        .booking-info {
+            margin-left: 20px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h3>Multiserviceprovider</h3>
+        <a href="{% url 'userpage' %}" class="home-link">HOME</a>
+    </div>
+    <div class="container">
+        <h1>Reschedule Booking</h1>
+        <div class="booking-details">
+            <h2>Current Booking Details</h2>
+            <div class="booking-info">
+                    <p><strong>Client Name:</strong> {{ last_client_record.clientid.first_name }} {{ last_client_record.clientid.last_name }}</p>
+                    <p><strong>District:</strong> {{ last_client_record.district }}</p>
+                    <p><strong>Branch:</strong> {{ last_client_record.branchid.providername }}-{{last_client_record.branchid.district}}</p>
+                    <p><strong>Date:</strong> {{ last_client_record.date }}</p>
+                    <p><strong>Time:</strong> {{ last_client_record.time }}</p>
+                    <p><strong>Current service status :</strong> {{ last_client_record.status }}</p><hr>
+            </div>
+        </div>
+        {% if last_client_record.status == 'pending' %}
+        <div class="reschedule-section">
+            <h2>Select Reschedule Date</h2>
+            <form action="{% url 'reschedulebooking' %}" method="post">
+                {% csrf_token %}
+                <label for="reschedule_date">Reschedule Date:</label>
+                <input type="hidden" id="client_booking_id" name="client_booking_id" value="{{ last_client_record.bookingid }}">
+                <input type="date" id="reschedule_date" name="reschedule_date" required>
+                <br> <br>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </div>
+        <script>
+            // Get the current date
+            var currentDate = new Date();
+            // Calculate the date 15 days from the current date
+            var maxDate = new Date();
+            maxDate.setDate(currentDate.getDate() + 15);
+            var formattedMaxDate = maxDate.toISOString().slice(0, 10);
+
+            // Set the minimum and maximum dates for the input field
+            document.getElementById('reschedule_date').setAttribute('min', currentDate.toISOString().slice(0, 10));
+            document.getElementById('reschedule_date').setAttribute('max', formattedMaxDate);
+        </script>
+        {% elif last_client_record.status == 'completed' %}
+        <div class="reschedule-section">
+            <p>No active bookings to reschedule.</p>
+        </div>
+        {% else %}
+        <div class="reschedule-section">
+            <b><p>Your booking has already been accepted cannot reschedule at this time</p></b>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

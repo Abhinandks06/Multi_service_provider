@@ -252,3 +252,30 @@ class Wallet(models.Model):
     walletid = models.AutoField(primary_key=True)
     userid = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Expense(models.Model):
+    expense_id = models.AutoField(primary_key=True)
+    branch = models.ForeignKey('Branch', on_delete=models.CASCADE)
+    date = models.DateField(("Date"), auto_now_add=True)
+    income = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    expense = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    num_workers = models.IntegerField()
+    status = models.CharField(max_length=10,null=True, blank=True )
+    target = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return f"Expense - {self.date} - Income: {self.income}, Expense: {self.expense}, Workers: {self.num_workers}"
+
+    def save(self, *args, **kwargs):
+        self.date = self.date.replace(day=1)  # Set the day to 1 to only store the month
+        super().save(*args, **kwargs)
+
+class ExpenseHistory(models.Model):
+    branch = models.ForeignKey('Branch', on_delete=models.CASCADE)
+    month = models.DateField()
+    income = models.DecimalField(max_digits=10, decimal_places=2)
+    expense = models.DecimalField(max_digits=10, decimal_places=2)
+    num_workers = models.IntegerField()
+
+    def __str__(self):
+        return f"Expense History - {self.branch} - {self.month.strftime('%B %Y')}"

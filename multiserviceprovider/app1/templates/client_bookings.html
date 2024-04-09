@@ -717,6 +717,7 @@ textarea[name="review"] {
                                             <th>Status</th>
                                             <th>Rating</th>
                                             <th>Review</th>
+                                            <th>Reply</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -788,6 +789,14 @@ textarea[name="review"] {
                                         </form>
                                         
                                         </td>
+                                        <td>
+                                          {% if booking.reply %}
+                                          <textarea readonly>{{ booking.reply|default:"No replies" }}</textarea>
+                                          {% else %}
+                                            No replies
+                                          {% endif %}
+                                        </td>
+                                        
                                       </tr>
                                        {% endif %}
                                   {% empty %}

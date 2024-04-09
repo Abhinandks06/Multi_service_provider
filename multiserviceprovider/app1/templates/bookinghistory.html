@@ -721,7 +721,7 @@ text-align: center; /* Center-align text */
         </tr>
     </thead>
     <tbody>
-        {% for booking in bookings %}
+        {% for booking in bookings reversed %}
         <tr class="booking-item">
             <td>{{ booking.clientid.first_name }}</td>
             <td>{{ booking.branchid.service_type.service_type }}</td>
@@ -758,9 +758,10 @@ text-align: center; /* Center-align text */
               <form method="post" action="{% url 'update_reply' %}">
                 {% csrf_token %}
                 <input type="hidden" name="service_id" value="{{ booking.serviceid }}">
-                <textarea name="reply" rows="3" cols="30" placeholder="Write a review">{{ booking.reply }}</textarea>
+
+                <textarea name="reply" rows="3" cols="30" placeholder="Write a review"  style="margin-top: 13px;">{{ booking.reply }}</textarea>
                 {% if not booking.reply %}
-                    <center><button class="submit-button btn btn-outline-primary my-3" type="submit">Reply</button></center>
+                    <center><button class="submit-button btn btn-outline-primary my-1" type="submit">Reply</button></center>
                 {% endif %}
             </form>
             

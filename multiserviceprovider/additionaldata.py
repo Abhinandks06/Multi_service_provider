@@ -11,6 +11,7 @@ additional_data = pd.DataFrame({
     'income': 0,  # Placeholder for income
     'num_booking': np.random.randint(45, 160, size=450),
     'avg_cost': np.random.randint(480, 1000, size=450),
+    'number_of_workers': np.random.randint(2, 16, size=450)  # Random number of workers
 })
 
 # Calculate income based on expense

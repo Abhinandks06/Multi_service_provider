@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import FAQ, Assignment, Bonus, Branch, BranchManager, BranchManagerAssignment, ClientWorkRequest, MultiBranch, MyUser,Client, Salary, Wallet,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
+from .models import FAQ, Assignment, Bonus, Branch, BranchManager, BranchManagerAssignment, ClientWorkRequest, Expense, MultiBranch, MyUser,Client, Salary, Wallet,Worker,ClientBooking,Service, WorkerLeaveapplication,WorkerReport,ServiceTypes, WorkerStatus
 from django.core.exceptions import ValidationError
 from .views import *
 from django.views.decorators.cache import cache_control
@@ -1590,49 +1590,81 @@ from django.utils import timezone
 @csrf_exempt
 @login_required
 def payment_success(request):
-    service_id = request.POST.get('service_id')  # Ensure to pass the service_id via POST
-    service = Service.objects.get(pk=service_id)
-    service.paymentstatus = 'completed'
-    service.save()
-
-    # Get branch_id from the service
-    branch_id = service.branchid
-
-    # Get manager_id from BranchManagerAssignment using branch_id
     try:
-        branch_manager_assignment = BranchManagerAssignment.objects.get(branch=branch_id)
-        manager_id = branch_manager_assignment.manager.managerid
+        service_id = request.POST.get('service_id')  # Ensure to pass the service_id via POST
+        print(f"Service ID: {service_id}")
+        service = Service.objects.get(pk=service_id)
+        service.paymentstatus = 'completed'
+        service.save()
+        report = get_object_or_404(WorkerReport, serviceid_id=service_id)
+        worker_report_id = report.reportid
+        amount = report.cost
+        print(f"Worker Report ID: {worker_report_id}")
+        print(f"Cost: {amount}")
+        # Get branch_id from the service
+        branch_id = service.branchid
 
-        # Get the manager object
-        manager = BranchManager.objects.get(pk=manager_id)
+        # Get or create the Expense object for the branch
+        try:
+            expense, created = Expense.objects.get_or_create(branch=branch_id, date__year=timezone.now().year, date__month=timezone.now().month)
+            if created:
+                # Get the total number of workers in the branch
+                num_workers = Worker.objects.filter(branchid=branch_id).count()
+                expense.num_workers = num_workers
+                expense.save()
 
-        # Set provider_email as the manager's email
-        provider_email = manager.email
+            # Increment the income by the amount
+            if expense.income:
+                expense.income += amount
+            else:
+                expense.income = amount
+            expense.save()
+        except Exception as e:
+            # Handle the case where there is an error in retrieving or updating the Expense object
+            messages.error(request, f'Error: {e}')
+            return redirect('userpage')  # Redirect to an error page or handle this differently
 
-        # Get other necessary details for the email
-        client_name = service.clientid.user.username
-        payment_date = timezone.now().date()
+        # Get manager_id from BranchManagerAssignment using branch_id
+        try:
+            branch_manager_assignment = BranchManagerAssignment.objects.get(branch=branch_id)
+            manager_id = branch_manager_assignment.manager.managerid
 
-        # Send an email to the provider
-        subject = 'Payment Successful Notification'
-        message = f'Dear Provider, {client_name} has made the payment on {payment_date}.'
-        from_email = 'your@email.com'  # Replace with your email
-        recipient_list = [provider_email]
-        send_mail(subject, message, from_email, recipient_list)
-        messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
+            # Get the manager object
+            manager = BranchManager.objects.get(pk=manager_id)
 
-        # Pass the service object to worker_bonus view
-        return redirect('worker_bonus', service_id=service_id)
+            # Set provider_email as the manager's email
+            provider_email = manager.email
 
-    except BranchManagerAssignment.DoesNotExist:
-        # Handle the case where there is no manager assigned to the branch
-        messages.error(request, 'Error: No manager assigned to the branch.')
-        return redirect('userpage')  # You may want to redirect to an error page or handle this differently
+            # Get other necessary details for the email
+            client_name = service.clientid.user.username
+            payment_date = timezone.now().date()
 
-    except BranchManager.DoesNotExist:
-        # Handle the case where the manager object is not found
-        messages.error(request, 'Error: Manager not found.')
+            # Send an email to the provider
+            subject = 'Payment Successful Notification'
+            message = f'Dear Provider, {client_name} has made the payment on {payment_date}.'
+            from_email = 'your@email.com'  # Replace with your email
+            recipient_list = [provider_email]
+            send_mail(subject, message, from_email, recipient_list)
+            messages.success(request, 'Payment successful! Confirmation email has been sent to the provider.')
+
+            # Pass the service object to worker_bonus view
+            return redirect('worker_bonus', service_id=service_id)
+
+        except BranchManagerAssignment.DoesNotExist:
+            # Handle the case where there is no manager assigned to the branch
+            messages.error(request, 'Error: No manager assigned to the branch.')
+            return redirect('userpage')  # You may want to redirect to an error page or handle this differently
+
+        except BranchManager.DoesNotExist:
+            # Handle the case where the manager object is not found
+            messages.error(request, 'Error: Manager not found.')
+            return redirect('userpage')
+
+    except Exception as e:
+        # Handle any other unexpected errors
+        messages.error(request, f'Error: {e}')
         return redirect('userpage')
+
     
 def worker_bonus(request, service_id):
     # Retrieve the service object
@@ -2043,23 +2075,57 @@ def pay_salary(request, manager_id):
 
     if existing_salary:
         # Modify the existing salary entry and update the date
-        existing_salary.date = datetime.now()
+        existing_salary.date = timezone.now()
         existing_salary.amount = 250000  # Set the default salary amount, modify as needed
         existing_salary.status = 'paid'
         existing_salary.save()
         messages.success(request, 'Salary payment initiated successfully.')
+
+        # Update or create Expense model
+        try:
+            expense = Expense.objects.get(branch=branch, date__year=timezone.now().year, date__month=timezone.now().month)
+            num_workers = Worker.objects.filter(branchid=branch_id).count()
+            expense.expense += existing_salary.amount
+            expense.num_workers = num_workers
+            expense.save()
+        except Expense.DoesNotExist:
+            num_workers = Worker.objects.filter(branchid=branch_id).count()
+            Expense.objects.create(
+                branch=branch,
+                date=timezone.now().date().replace(day=1),
+                expense=250000,
+                num_workers=num_workers  
+            )
     else:
         # Create a new salary entry with the current date
         salary = Salary.objects.create(
             userid=branch_manager.user,
             branchid=branch,
-            date=datetime.now(),
+            date=timezone.now(),
             amount=250000,  # Set the default salary amount
             status='paid'
         )
         messages.success(request, 'Salary payment initiated successfully.')
 
+        # Update or create Expense model
+        try:
+            expense = Expense.objects.get(branch=branch, date__year=timezone.now().year, date__month=timezone.now().month)
+            num_workers = Worker.objects.filter(branchid=branch_id).count()
+            expense.expense += salary.amount
+            expense.num_workers = num_workers
+            expense.save()
+        except Expense.DoesNotExist:
+            num_workers = Worker.objects.filter(branchid=branch_id).count()
+            Expense.objects.create(
+                branch=branch,
+                date=timezone.now().date().replace(day=1),
+                expense=salary.amount,
+                num_workers=num_workers  
+            )
+
     return redirect('managerlist', provider_id=provider.user.userid)
+
+
 
 
 
@@ -2119,43 +2185,66 @@ def worker_salary(request, userid, worker_id):
 
         if existing_salary:
             # Modify the existing salary entry and update the date
-            existing_salary.date = datetime.now()
+            existing_salary.date = timezone.now()
             existing_salary.amount = 25000  # Set the default salary amount, modify as needed
             existing_salary.status = 'paid'
             existing_salary.save()
             messages.success(request, 'Salary payment initiated successfully for worker {}.'.format(worker.first_name))
+            
             try:
-                wallet = Wallet.objects.get(userid=worker.user)
-            except ObjectDoesNotExist:
-                # If wallet doesn't exist, create a new one
-                Wallet.objects.create(userid=worker.user, amount=existing_salary.amount)
+                # Get the existing expense object for the branch
+                expense = Expense.objects.get(branch=branch, date__year=timezone.now().year, date__month=timezone.now().month)
+            except Expense.DoesNotExist:
+                # If no expense exists, create a new one
+                num_workers = Worker.objects.filter(branchid=branch).count()
+                expense = Expense.objects.create(
+                    branch=branch,
+                    date=timezone.now().date().replace(day=1),
+                    expense=existing_salary.amount,
+                    num_workers=num_workers
+                )
             else:
-                # If wallet exists, update its amount
-                wallet.amount += existing_salary.amount
-                wallet.save()
+                # Update the existing expense object
+                expense.expense += existing_salary.amount
+                expense.save()
+
         else:
             # Create a new salary entry with the current date
             salary = Salary.objects.create(
                 userid=worker.user,
                 branchid=branch,
-                date=datetime.now(),
+                date=timezone.now(),
                 amount=25000,  # Set the default salary amount
                 status='paid'
             )
             messages.success(request, 'Salary payment initiated successfully for worker {}.'.format(worker.first_name))
 
-            # Check if the worker has a wallet
+            try:
+                # Get the existing expense object for the branch
+                expense = Expense.objects.get(branch=branch, date__year=timezone.now().year, date__month=timezone.now().month)
+            except Expense.DoesNotExist:
+                # If no expense exists, create a new one
+                num_workers = Worker.objects.filter(branchid=branch).count()
+                Expense.objects.create(
+                    branch=branch,
+                    date=timezone.now().date().replace(day=1),
+                    expense=salary.amount,
+                    num_workers=num_workers  
+                )
+            else:
+                # Update the existing expense object
+                expense.expense += salary.amount
+                expense.save()
+
             try:
                 wallet = Wallet.objects.get(userid=worker.user)
-            except ObjectDoesNotExist:
-                # If wallet doesn't exist, create a new one
-                Wallet.objects.create(userid=worker.user, amount=salary.amount)
-            else:
-                # If wallet exists, update its amount
                 wallet.amount += salary.amount
                 wallet.save()
-
+            except Wallet.DoesNotExist:            
+                 Wallet.objects.create(userid=worker.user, amount=salary.amount)
+  
     return redirect('workersalary', userid=userid)
+
 
 
 @login_required
@@ -2394,3 +2483,118 @@ def wallet_view(request):
     user_salaries = Salary.objects.filter(userid=request.user)
 
     return render(request, 'wallet.html', {'user_wallet': user_wallet, 'user_bonuses': user_bonuses, 'user_salaries': user_salaries})
+
+def reschedule_booking(request):
+    # Get the user ID of the client
+    user_id = request.user.userid
+
+    # Filter the last record in the Service model with the user ID
+    last_service_record = Service.objects.filter(clientid=user_id).last()
+
+    # Filter the last record in the Client model with the user ID
+    last_client_record = ClientBooking.objects.filter(clientid=user_id).last()
+
+    context = {
+        'user_id': user_id,
+        'last_service_record': last_service_record,
+        'last_client_record': last_client_record
+    }
+
+    return render(request, 'reschedule_booking.html', context)
+
+def reschedulebooking(request):
+    if request.method == 'POST':
+        # Get the client booking ID and the reschedule date from the form
+        client_booking_id = request.POST.get('client_booking_id')
+        reschedule_date = request.POST.get('reschedule_date')
+
+        try:
+            client_booking = ClientBooking.objects.get(bookingid=client_booking_id)
+            client_booking.date = reschedule_date
+            client_booking.save()
+            messages.success(request, 'Booking successfully rescheduled!')
+        except ClientBooking.DoesNotExist:
+            messages.error(request, 'Client booking does not exist!')
+        
+        return redirect('userpage')  
+
+    else:
+        
+        return redirect('userpage')
+    
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import ServiceProvider, Branch, BranchManagerAssignment, Expense
+from datetime import datetime
+import pandas as pd
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from decimal import Decimal
+
+@login_required
+def statistics(request, provider_id):
+    # Get the logged-in user's ServiceProvider instance
+    provider = get_object_or_404(ServiceProvider, user=request.user)
+
+    # Filter branches based on the provider_id
+    provider_branches = Branch.objects.filter(providerid=provider)
+
+    # Fetch corresponding branch manager assignments
+    branch_manager_assignments = BranchManagerAssignment.objects.filter(branch__in=provider_branches)
+
+    # Create a dictionary to map branchid to branch manager assignment
+    branch_manager_assignment_dict = {assignment.branch_id: assignment for assignment in branch_manager_assignments}
+
+    # Load dataset
+    df = pd.read_csv("combined_data.csv")
+    X = df[['income', 'expense']]
+    y = df['is_profitable']
+    
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    # Standardize features
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    # Train Decision Tree model
+    dt_model = DecisionTreeClassifier(class_weight='balanced')
+    dt_model.fit(X_train_scaled, y_train)
+
+    # Attach branch manager assignment and expenses of the current month to each branch
+    for branch in provider_branches:
+        branch.branch_manager_assignment = branch_manager_assignment_dict.get(branch.branchid)
+        
+        # Fetch expenses for the branch for the current month
+        current_month_expenses = Expense.objects.filter(branch=branch, date__year=datetime.now().year, date__month=datetime.now().month)
+        
+        # If there are expenses for the current month
+        if current_month_expenses.exists():
+            for expense in current_month_expenses:
+                new_data = pd.DataFrame({'income': [expense.income],'expense': [expense.expense]})
+                new_data_scaled = new_data.copy()
+                new_data_scaled[['income', 'expense']] = scaler.transform(new_data_scaled[['income', 'expense']])
+                dt_prediction = dt_model.predict(new_data_scaled)
+                if dt_prediction[0] == 1:  
+                    expense.status = 'profitable'
+                else:  # If prediction is 0 (not profitable)
+                    expense.status = 'not profitable'
+                    # Calculate target based on expense and number of workers
+                    num_workers = expense.num_workers
+                    target_percentage = Decimal('5') + Decimal(num_workers)  # Example: 5% + 1% per worker
+                    target_amount = expense.expense * (1 + target_percentage / 100)
+                    expense.target = target_amount
+                expense.save()
+        else:
+            for expense in current_month_expenses:
+                expense.status = 'no data'
+                expense.save()
+
+        branch.expenses = current_month_expenses
+
+    context = {'branches': provider_branches}
+    return render(request, 'statistics.html', context)
