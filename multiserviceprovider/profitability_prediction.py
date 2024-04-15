@@ -2,9 +2,10 @@ import pandas as pd
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier 
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, r2_score
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Load the dataset
 df = pd.read_csv("combined_data.csv")
@@ -27,23 +28,34 @@ dt_model.fit(X_train_scaled, y_train)
 dt_predictions = dt_model.predict(X_test_scaled)
 
 # Train Random Forest model
-rf_model = RandomForestClassifier() 
-rf_model.fit(X_train_scaled, y_train)
-rf_predictions = rf_model.predict(X_test_scaled)
 
-# Models dictionary
-models = {'Decision Tree': dt_predictions, 'Random Forest': rf_predictions}
 
-# Evaluate models
-for model_name, predictions in models.items():
-    accuracy = accuracy_score(y_test, predictions)
-    r2 = r2_score(y_test, predictions)
-    print(f'{model_name} Accuracy: {accuracy}')
-    print(f'{model_name} R2 Score: {r2}')
-    conf_matrix = confusion_matrix(y_test, predictions)
-    print(f'{model_name} Confusion Matrix:\n{conf_matrix}')
-    print(f'{model_name} Classification Report:\n{classification_report(y_test, predictions)}')
-    print('-' * 50)
+# Calculate accuracy and R2 score for Decision Tree
+dt_accuracy = accuracy_score(y_test, dt_predictions)
+dt_r2 = r2_score(y_test, dt_predictions)
+
+
+# Display metrics for Decision Tree
+print('Decision Tree:')
+print(f'Accuracy: {dt_accuracy}')
+print(f'R2 Score: {dt_r2}')
+print(confusion_matrix(y_test, dt_predictions))
+print(classification_report(y_test, dt_predictions))
+
+
+
+# Visualize confusion matrices
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+sns.heatmap(confusion_matrix(y_test, dt_predictions), annot=True, cmap='Blues', fmt='g')
+plt.title('Decision Tree Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('True')
+
+
+plt.tight_layout()
+plt.show()
 
 # Example prediction for new data
 new_data = pd.DataFrame({
@@ -54,11 +66,11 @@ new_data = pd.DataFrame({
 new_data_scaled = scaler.transform(new_data)
 
 dt_prediction = dt_model.predict(new_data_scaled)
-rf_prediction = rf_model.predict(new_data_scaled)
 
-print("Predictions for new data:")
+
+print("\nPredictions for new data:")
 print(f'Decision Tree Prediction: {dt_prediction[0]}')
-print(f'Random Forest Prediction: {rf_prediction[0]}')
+
 
 # Calculate target for new data
 new_data_expense = new_data['expense'].iloc[0]
@@ -72,11 +84,8 @@ if dt_prediction[0] == 1:
 else:
     print('Decision Tree Prediction: The branch is not profitable.')
 
-if rf_prediction[0] == 1:
-    print(f'Random Forest Prediction: The branch is profitable.')
-else:
-    print(f'Random Forest Prediction: The branch is not profitable.')
+
 
 # Save the models
 joblib.dump(dt_model, 'decision_tree_model.pkl')
-joblib.dump(rf_model, 'random_forest_model.pkl')
+

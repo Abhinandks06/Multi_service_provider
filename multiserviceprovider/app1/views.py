@@ -2581,11 +2581,10 @@ def statistics(request, provider_id):
                 dt_prediction = dt_model.predict(new_data_scaled)
                 if dt_prediction[0] == 1:  
                     expense.status = 'profitable'
-                else:  # If prediction is 0 (not profitable)
+                else:  
                     expense.status = 'not profitable'
-                    # Calculate target based on expense and number of workers
                     num_workers = expense.num_workers
-                    target_percentage = Decimal('5') + Decimal(num_workers)  # Example: 5% + 1% per worker
+                    target_percentage = Decimal('5') + Decimal(num_workers)  
                     target_amount = expense.expense * (1 + target_percentage / 100)
                     expense.target = target_amount
                 expense.save()
